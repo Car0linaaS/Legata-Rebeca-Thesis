@@ -1,5 +1,5 @@
 # Afra
-*.0
+*.o
 *.h
 *.cpp
 *.txt
