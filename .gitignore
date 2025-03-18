@@ -4,7 +4,7 @@
 *.cpp
 *.txt
 *.xml
-
+*.php
 
 # General
 .DS_Store
