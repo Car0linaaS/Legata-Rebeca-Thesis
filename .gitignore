@@ -5,6 +5,9 @@
 *.txt
 *.xml
 *.php
+*.lock
+*.log
+workspace/.metadata/*
 
 # General
 .DS_Store
