@@ -1,0 +1,17 @@
+property {
+	define{
+		phil1Stat = phil1.eating;
+		phil2Stat = phil2.eating;
+		/*phil1HasPickedUpLeft = phil1.leftPickedUp;
+		phil2HasPickedUpLeft = phil2.leftPickedUp;
+		phil1HasPickedUpRight = phil1.rightPickedUp;
+		phil2HasPickedUpRight = phil2.rightPickedUp;*/
+	}
+	Assertion {
+	
+	}
+	LTL{
+		NoStarvation: G(F(phil1Stat) && F(phil2Stat));
+		NoDeadlock: G(F(phil1Stat) || F(phil2Stat));
+	}
+}

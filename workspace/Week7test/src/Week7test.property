@@ -1,0 +1,23 @@
+property {
+	define{
+		boat1Stat = boat1.inVTS;
+		boat1VisibilityRange = boat1.visRange;
+		minVisRange = vtsController.minVisRange;
+		
+		boat1Len = boat1.length;
+		boat1Draught = boat1.draught;
+		boat1Speed = boat1.speed
+		boat1undercurrent = boat1.undercurrent;
+		
+		maxLength = vtsController.maxLength;
+		maxDraught = vtsController.maxDraught;		
+		minSpeed = vtsController.minSpeed;
+		maxUndercurrent = vtsController.maxUndercurrent;
+
+	}
+	Assertion {
+		VisSafety: !(boat1Stat && !(boat1VisibilityRange > minVisRange)
+
+		LargeVesselSafety: !(  ((  boat1Stat && ((boat1Len > maxLength) || (boat1Draught > maxDraught))) && (boat1undercurrent > maxUndercurrent)) && (boat1Speed < minSpeed))	}		
+	}
+}

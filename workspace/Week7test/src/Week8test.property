@@ -1,0 +1,20 @@
+property {
+	define{
+		// Area.Near.ProximityRange == ProximityToOtherShips
+		//distanceToShip is false if proximity range is OK
+		distanceToShip = OwnShip.distance.nearestShip <= Area.Near.ProximityRange;
+		
+		minVisRange = vtsController.minVisRange;
+		ownShipVisibilityRange = OwnShip.visRange;
+		// Blir true om skeppet har högre visibility range än minVisRange
+		visibilityRange = ownShipVisibilityRange > minVisRange
+		
+		
+
+	}
+	Assertion{
+		// one of these must be bad if the program is to chrash	
+		Safety: !distanceToShip || visibilityRange
+
+	}
+}
