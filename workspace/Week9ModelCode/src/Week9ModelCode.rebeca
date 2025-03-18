@@ -1,7 +1,7 @@
 
 //ROS2 to Rebeca modelling
 
-//approximation threshold
+// Math approximations
 env double EPSILON = 0.01;
 env double INFINITY = 9999;
 env double PI = 3.14;
@@ -11,6 +11,7 @@ env double SQRT2 = 1.4142;
 env double SIN45 = 0.7071;	//sqrt2/2
 env double COS45 = 0.7071;
 
+// Map and cell variables
 env int MAP_WIDTH=50;	//cols
 env int MAP_HEIGHT=50;	//rows
 env double MAP_RESOL=10;	//cell size in reality in meters
@@ -19,19 +20,23 @@ env double CELL_DIAG = SQRT2*MAP_RESOL;
 env int XMAX = MAP_HEIGHT-1;
 env int YMAX = MAP_WIDTH-1;
 
+// Safety and collision values
 env double SAFE_MARGIN = 0.02;	
 env double STOP_ZONE = 0.3;
 env double COLLISION_RADIUS = 0.30;
 env double COLLISION_MARGIN = 0.02;	
 
+// Scanning and detection variables
 env double ship_ANGULAR_VELOCITY = 360;//degrees per second
 env int ANGLE_INC = 2; //angle increment in degrees
 env int FIELD_OF_VIEW = 180;		//field of view (LIDAR sensor)
 env int LASERSCAN_RATE = 100;	//7Hz
 env double LASERSCAN_MAX_DISTANCE = 10.0;	//= max range in meters
 
+// ??
 env boolean COMBINE_ZICZAC = true;
 
+// Used for path??
 env int BUFFER_SIZE = 101;	//generic bufffer size + 1 (counter)
 
 //directions, start from East = 0, moving counter-clockwise 45o each direction
@@ -50,46 +55,46 @@ env int ACTION_ONGOING 	= 1;
 env int ACTION_DONE 	= 2;
 env int ACTION_CANCELLED= 3;
 
-env int MAX_TOPIC_SUBSCRIBERS = 5;
-env int MAX_TOPIC_PUBLISHERS = 2;
-
-env int ACTION_FEEDBACK_RATE = 5000;
-
-env int WCET_SERVICE_DEFAULT = 50;
-
-env int MAX_ACTIONS = 2;	//buffer size
 env int WCET_ACTION_NAME = 30000;
 
+
+// =======================
+// Variables for Legata clauses
 env int NROFSHIPS = 2;
+
+// Visual variables
 env int VISRANGEOK = 1200;
 env int VISRANGENOTOK = 500;
 env int MINVISRANGE = 926;
 
+// =======================
+
+
+// Summary of class: ...??
 reactiveclass Ship(50) {
 	knownrebecs {
 		MapServer theMap;
 	}
 	statevars{
 		byte rindex;	//numerical index of the ship, starting from 1
-		int targetX, targetY;
-		int rx, ry, rdir, velocity;
-		int distance2target;
+		int targetX, targetY;  // target goal coordinates ??
+		int rx, ry, rdir, velocity; //coordinats, direction and speed for ship
+		int distance2target;  // distance from ship to target
 		int target_tolerance;
 		int[101] obstacles;	//nearest obstacles in 8 possible directions
-		int front_obstacle;
-		int[11] targets;
+		int front_obstacle; // Distance to front obstacle ??
+		int[11] targets; // a list of targets to visit, target[0] is index ??
 		int[101/*BUFFER_SIZE*/] moves;	//movement commands to tell the ship to move in a path, element 0 = size	
-		int moveidx;	//current pointer in path
-		boolean isWaiting;
-		int waits;
+		int moveidx;	//index to tell the state of the movement in the moves list??
+		boolean isWaiting; 
+		int waits; // Counter for how long the ship has been waiting
 		int max_waiting_rounds;
-		int failures;
+		int failures;  // Failure if waited too long, then constructing new path??
 		boolean scan_before_move;		
-		int default_velocity;
-		int default_time_cross;
-		int default_time_cross_diag;
-		int safe_front;
-		int safe_side;
+		int default_velocity;  //velocity as cells per second
+		int default_time_cross;  //time in miliseconds to cross a cell horizontally or vertically
+		int default_time_cross_diag;  //time in miliseconds to cross a cell diagonally
+
 		//ADDED
 		int ship_length;
 		int ship_width;
@@ -97,38 +102,43 @@ reactiveclass Ship(50) {
 		int vis_range;
 	}
 	
+	// Constructor
 	Ship (byte idx, int x, int y, int tx, int ty, int tolerance, double real_velocity, int maxwait, boolean scanfirst, int s_length, int s_width, int s_draught){
 		assertion(idx>=1,"Ship index must be from 1");
 		
+		// ADDED
 		ship_length = s_length;
 		ship_width = s_width;
 		ship_draught = s_draught;
 		vis_range = VISRANGEOK;
 		
-		rindex = idx;
-		int[2] p1 = {x,y};
-		int[2] p2 = {tx,ty};	
-		//int[2] p1 = pixel2map(x,y);
-		//int[2] p2 = pixel2map(tx,ty);	
+		rindex = idx;  // Assigning ship index from constructor value
+		int[2] p1 = {x,y};  // Ship's current xy-coordinate??
+		int[2] p2 = {tx,ty};	// Ship's target xy-coordinate??
+		// Ship's current x and y coordinates, direction, and target x y coordinates
 		rx = p1[0]; ry = p1[1]; rdir = DIR_N; targetX = p2[0]; targetY = p2[1]; 
-		distance2target = (int)INFINITY;
-		target_tolerance = tolerance;
+		distance2target = (int)INFINITY; 
+		target_tolerance = tolerance;  // Assigning from constructor value
 		default_velocity = round(real_velocity / MAP_RESOL); //velocity as cells per second
 		default_time_cross = round(1000 * MAP_RESOL / real_velocity); //time in miliseconds to cross a cell horizontally or vertically
 		default_time_cross_diag = round(1000 * SQRT2 * MAP_RESOL / real_velocity); //time in miliseconds to cross a cell diagonally
-		velocity = 0;	
-		moves[0]=0;
+		velocity = 0;	// Starting velocity
+		moves[0]=0;  // Saying that we have no moves in the list yet
 		for(int i=0;i<BUFFER_SIZE;i++) moves[i]=0;	//it is important to initialize all elements in an state variable array
-		moveidx=0;
-		waits=0; isWaiting=false;
-		failures = 0;
-		scan_before_move = scanfirst;
-		max_waiting_rounds = round((double)maxwait / LASERSCAN_RATE);		
-		safe_front = real2map(ship_length/2.0 + STOP_ZONE);
-		safe_side = real2map(ship_width/2.0 + SAFE_MARGIN);	
+		moveidx=0;  // We haven't made a move yet
 		
+		// Initialise the statevars (value NOT from constructor)
+		waits=0; isWaiting=false;  
+		failures = 0;
+		
+		
+		scan_before_move = scanfirst; // Assigning from constructor value
+		max_waiting_rounds = round((double)maxwait / LASERSCAN_RATE); // Assigning and calculating from constructor value	
+		
+		// Zero all targets
 		for(int i=0;i<11;i++) targets[i]=0;
 		
+		// Zero all obstacles
 		for(int i=0;i<BUFFER_SIZE;i++) obstacles[i]=0;
 		front_obstacle = 0;
 		
@@ -976,6 +986,7 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 	//encode two integers (-999 to 999) into one integer 
 	//e.g: 23-->1023, -23->2023, code2 = code_y * 10000 + code_x
 	//(3,-200) --> 1003*10000 + 2200 = 10032200
+	// Convert X and Y coordinates to a single integer (index)
 	int xy2idx(int ox,int oy){
 		int x,sx,y,sy;	
 		if (ox<0){
@@ -994,7 +1005,8 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		return idx;
 	}
 	
-	//decode
+	//Convert from single integer (index) to X and Y coordinates
+	// This is the opposite as the above helper function
 	int[2] idx2xy(int idx){
 		int ex = idx % 10000;
 		int ey = (idx - ex) / 10000;
