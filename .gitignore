@@ -8,6 +8,11 @@
 *.lock
 *.log
 workspace/.metadata/*
+*.exe
+*.spec
+*.statespace
+*.dot
+*.prefs
 
 # General
 .DS_Store
