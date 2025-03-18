@@ -13,6 +13,7 @@ workspace/.metadata/*
 *.statespace
 *.dot
 *.prefs
+*progress
 
 # General
 .DS_Store
