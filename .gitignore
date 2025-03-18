@@ -11,6 +11,7 @@
 *.statespace
 *.dot
 *.history
+*.metadata
 
 # General
 .DS_Store
