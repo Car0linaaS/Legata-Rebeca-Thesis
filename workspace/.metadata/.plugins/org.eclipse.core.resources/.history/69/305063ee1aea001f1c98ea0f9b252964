@@ -1,0 +1,27 @@
+property {
+    define {
+        p0eat = phil0.eating;
+        p1eat = phil1.eating;
+        p2eat = phil2.eating;
+        p0fR = phil0.cR;
+        p1fR = phil1.cR;
+        p2fR = phil2.cR;
+        p0fL = phil0.cL;
+        p1fL = phil1.cL;
+        p2fL = phil2.cL;
+		p0s = false;
+        if !(phil1.cL && phil0.cL) {
+				p0s = true;
+        p1s = !(phil1.cR && phil2.cL);
+        p2s = !(phil0.cR && phil2.cR);
+    }
+
+    Assertion {
+        Safety: p0s && p1s && p2s;
+    }
+
+    LTL {
+        NoStarvation: G(F(p0eat) && F(p1eat) && F(p2eat));
+        NoDeadlock: G(F(p0eat || p1eat || p2eat));
+    }
+}

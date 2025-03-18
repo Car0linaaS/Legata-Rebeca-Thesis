@@ -1,0 +1,123 @@
+reactiveclass Philosopher(3) {
+	knownrebecs { 
+		Fork forkLeft;
+		Fork forkRight;
+	}
+	statevars{
+		boolean leftPickedUp;
+		boolean rightPickedUp;
+		boolean eating;
+	}
+	Philosopher()
+		{ 
+		leftPickedUp = false;
+		rightPickedUp = false;
+		eating = false;
+		self.TryEating();
+		}
+	msgsrv TryEating()
+	{ 
+		if (leftPickedUp == false){
+			self.PickUpLeft();
+		}
+		else if (rightPickedUp == false){
+			self.PickUpRight();
+		}
+		else{
+			eating = true;
+			self.Eat();
+		}
+	}
+	msgsrv Eat()
+	{
+		leftPickedUp = false;
+		rightPickedUp = false;
+		forkLeft.PutDown();
+		forkRight.PutDown();
+		eating = false;
+		self.TryEating();
+	}
+	msgsrv PickUpLeft()
+	{ 
+		forkLeft.PickUpFork();
+	}
+	msgsrv PickUpRight()
+	{ 
+		forkRight.PickUpFork();
+	}
+			
+	msgsrv LeftForkPickedUp()
+	{
+		 leftPickedUp = true;
+		 self.TryEating();
+	}
+	msgsrv RightForkPickedUp()
+	{
+		 rightPickedUp = true;
+		 self.TryEating();
+	}
+	msgsrv ForkBusy()
+	{
+		self.TryEating();
+	}
+}
+
+
+
+reactiveclass Fork(3) {
+	knownrebecs { 
+		Philosopher philLeft;
+		Philosopher philRight;
+	}
+	statevars{
+		boolean isAvailable;
+//		boolean leftPhilIsWaiting;
+//		boolean rightPhilIsWaiting;
+//		boolean leftPhilIsUsing;
+//		boolean rightPhilIsUsing;
+	}
+	Fork()
+	{ 
+		isAvailable = true;
+	}
+
+	msgsrv PickUpFork()
+	{
+		if (sender == philLeft){
+			if (isAvailable == true) {
+				isAvailable = false;
+				//leftPhilIsUsing = true;
+				philLeft.RightForkPickedUp();
+			}
+			else{
+				//leftPhilIsWaiting = true;
+				philLeft.ForkBusy();
+			}
+		}
+		else{
+		if (isAvailable == true) {
+				isAvailable = false;
+				//rightPhilIsUsing = true;
+				philRight.LeftForkPickedUp();
+			}
+			else{
+				//rightPhilIsWaiting = true;
+				philRight.ForkBusy();
+			}
+		}
+	 }
+	 msgsrv PutDown()
+	 {
+	 	isAvailable = true;
+	 }
+}
+
+main {
+
+
+Philosopher phil1(fork1, fork2):();
+Philosopher phil2(fork2, fork1):();
+Fork fork1(phil2, phil1):();
+Fork fork2(phil1, phil2):();
+
+}

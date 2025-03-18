@@ -1,0 +1,19 @@
+reactiveclass Philosopher(2) {
+	knownrebecs { 
+		Fork forkLeft;
+		Fork forkRight;
+	}
+	statevars{}
+	Rebec1()
+		{ self.msg1();
+		/* the constructor */}
+	msgsrv msg1()
+		{ d.askForService();}
+	msgsrv msg2()
+		{ /* Handling message 2*/}
+	void method1(int param1)
+		{ /* method definition */}
+	int method2()
+		{ /* method definition */
+	return intValue;}
+}
