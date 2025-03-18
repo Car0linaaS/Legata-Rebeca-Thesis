@@ -7,13 +7,9 @@
 *.php
 *.lock
 *.log
-workspace/.metadata/*
 *.exe
-*.spec
 *.statespace
 *.dot
-*.prefs
-*progress
 
 # General
 .DS_Store
