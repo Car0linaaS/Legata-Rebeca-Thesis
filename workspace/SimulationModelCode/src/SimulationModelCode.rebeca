@@ -142,6 +142,7 @@ reactiveclass Ship(50) {
 		for(int i=0;i<BUFFER_SIZE;i++) obstacles[i]=0;
 		front_obstacle = 0;
 		
+
 		setTarget(p2[0],p2[1]);
 	}
 	
@@ -180,8 +181,15 @@ reactiveclass Ship(50) {
 		}
 	}
 	
+	// Hash/Encode x and y to be represented by single int (byte?) 
 	int xy2idx(int ox,int oy){
 		int x,sx,y,sy;	
+		// If negative coordinate value, set sign bit to 2 and flip coordinate to posivite value
+		// If positive coordinate value, set sign bit to 1 and save coordinate value
+		// Ex: (-12, 45) -> 
+		// ex = sx×1000+x=2×1000+12=2012 
+		// ey = sy×1000+y=1×1000+45=1045
+		// idx=ey×10000+ex=1045×10000+2012=10450000+2012= 10452012
 		if (ox<0){
 			sx=2;x=-ox;
 		}else{
@@ -244,6 +252,7 @@ reactiveclass Ship(50) {
 		if (x>xmax) x = xmax;
 		if (y<ymin) y = ymin;
 		if (y>ymax) y = ymax;
+		// Encode x and y to be represented by single int (byte?) 
 		int code = xy2idx(x,y);
 		//if target is not already in queue
 		if (targets[targets[0]]!=code){

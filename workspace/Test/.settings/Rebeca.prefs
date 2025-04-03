@@ -1,7 +1,0 @@
-dfs-maxdepth=100000
-eclipse.preferences.version=1
-exportStateSpace=true
-hashMapSize=20
-languageVersion=CORE_2_3
-projectType=CoreRebeca
-runInSafeMode=true
