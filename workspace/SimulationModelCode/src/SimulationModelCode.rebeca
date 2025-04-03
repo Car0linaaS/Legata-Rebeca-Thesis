@@ -589,20 +589,37 @@ reactiveclass Ship(50) {
 				ship_dir = new_dir; //rotate the ship to the next direction		
 				theMap.updateShipLocation(ship_index,ship_x,ship_y,ship_dir,velocity,ship_length,ship_width);
 			} 			
+			// If rotation has been done, (time_to_rotate>0),
+			// update moving status AFTER time_to_rotate has passed
 			if (time_to_rotate>0){
 				updateMovingStatus(moveNext) after(time_to_rotate);
-			} else {
+			}
+			else {
+				// Check if ship direction is diagonal or not
 				boolean diag = ship_dir % 2 >0;
+				// step length depending on if moving diagonally or not
 				double steplen = diag ? CELL_DIAG : CELL_WIDTH;
+				// step wait (time) depending on if moving diagonally or not
 				int stepwait = diag ? default_time_cross_diag : default_time_cross;
+				// Check current direction for clostest obstacle
+				// If found, calculate number of tiles to obstacle
 				double distance = getObstacleAtDir(ship_dir,false);
 				front_obstacle = distance==INFINITY?(int)INFINITY:(int)(distance / steplen);
-				double expected_distance = steplen + ship_length/2 + STOP_ZONE;
-				if (distance > expected_distance){
-					if (velocity <= 0 ) velocity = default_velocity;
+				// Calculate 
+				double needed_safe_distance = steplen + ship_length/2 + STOP_ZONE;
+				if (distance > needed_safe_distance){
+					if (velocity <= 0 ) {
+						velocity = default_velocity;
+					}
+					// Send direction, nr of steps to take (1) and check if we
+					// have done all moves in the moves[] array
 					move(ship_dir,1,moveidx==moves[0]);	//always just move 1 step
-					if (xy2idx(ship_x,ship_y) == moves[moveidx+1]) moveidx++;
-					waits = 0; isWaiting = false;
+					// If ship has moved to next moves coordinate, update move index
+					if (xy2idx(ship_x,ship_y) == moves[moveidx+1]) {
+						moveidx++;
+					}
+					waits = 0; 
+					isWaiting = false;
 					if (moveNext) updateMovingStatus(moveNext) after(stepwait);
 				} else {
 					//cannot move, stop if is moving, wait for obstacles to go away
