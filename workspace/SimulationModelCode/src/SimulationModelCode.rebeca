@@ -243,18 +243,36 @@ reactiveclass Ship(50) {
 	
 	void setTarget(int x, int y){
 		stop(true);
+		// Probably prevent target coordinates from going too close to the map edges (isch epsilon?)
 		int safe_margin = real2map(SAFE_MARGIN);
 		int xmin = safe_margin;
 		int xmax = XMAX - safe_margin;
 		int ymin = safe_margin;
 		int ymax = YMAX - safe_margin;
+		// Clamp values
 		if (x<xmin) x = xmin;
 		if (x>xmax) x = xmax;
 		if (y<ymin) y = ymin;
 		if (y>ymax) y = ymax;
-		// Encode x and y to be represented by single int (byte?) 
+		// Encode x and y to be represented by single int (byte) 
 		int code = xy2idx(x,y);
-		//if target is not already in queue
+		//if target is not already in current queue at index (targets[0]), add one to index (targets[0])
+		// and add target encoded coordinate
+		/*
+		targets[0] == 0 (inget i kön)
+		// Now we will add 20561034 to targets
+		targets[0]++ -> targets[0] == 1
+		targets[targets[0]] -> targets[1] = 20561034 
+		targets[targets[0]] == 20561034 
+
+		// Now we will add 10062054 to targets
+		targets[0]++ -> targets[0] == 2
+		targets[targets[0]] -> targets[2] = 10062054 
+		targets[targets[0]] == 10062054 
+
+		targets[1] == 20561034 
+		targets[2] == 10062054
+		*/
 		if (targets[targets[0]]!=code){
 			targets[0]++;
 			targets[targets[0]] = code;
@@ -645,19 +663,19 @@ reactiveclass MapServer(50) {
 	}
 	statevars{
 	//NROFSHIPS
-		int[9] rloc; //#0 = counter, [1,2,3,4] = [x,y,dir,isMoving] of each ship
+		int[9] ship_loc_dir_vel; //#0 = counter, [1,2,3,4] = [x,y,dir,isMoving] of each ship
 		int min_vis_range;
 	}
 		
 	MapServer(int rcount){
 		int max = NROFSHIPS;//(int)((BUFFER_SIZE-1)/4);
 		assertion(rcount>=1 && rcount<=max,"Number of ships is out of range");
-		rloc[0] = rcount;
+		ship_loc_dir_vel[0] = rcount;
 		for(int i=0;i<max;i++) {
-			rloc[4*i+1]=-1;
-			rloc[4*i+2]=-1;
-			rloc[4*i+3]=0;
-			rloc[4*i+4]=0;
+			ship_loc_dir_vel[4*i+1]=-1;
+			ship_loc_dir_vel[4*i+2]=-1;
+			ship_loc_dir_vel[4*i+3]=0;
+			ship_loc_dir_vel[4*i+4]=0;
 		}
 		int max_range = round(LASERSCAN_MAX_DISTANCE / MAP_RESOL);
 		scanObstacles(s1,1,LASERSCAN_RATE,FIELD_OF_VIEW,max_range);
@@ -669,7 +687,7 @@ reactiveclass MapServer(50) {
 	int[1] getshipInfo(int index){
 		int i = 4*(index-1);
 		//NROFSHIPS
-		int[1] ri = {rloc[i+1]};
+		int[1] ri = {ship_loc_dir_vel[i+1]};
 		return ri;
 	}
 	
@@ -807,12 +825,12 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;map[9][18]=true;map[9][19]=true;map[9][20]=true;map[9][21]=true;map[9][22]=true;map[10][18]=true;map[10][19]=true;map[10][20]=true;map[10][21]=true;map[10][22]=true;map[11][18]=true;map[11][19]=true;map[11][20]=true;map[11][21]=true;map[11][22]=true;map[12][18]=true;map[12][19]=true;map[12][20]=true;map[12][21]=true;map[12][22]=true;map[13][18]=true;map[13][19]=true;map[13][20]=true;map[13][21]=true;map[13][22]=true;map[14][18]=true;map[14][19]=true;map[14][20]=true;map[14][21]=true;map[14][22]=true;map[15][18]=true;map[15][19]=true;map[15][20]=true;map[15][21]=true;map[15][22]=true;map[16][18]=true;map[16][19]=true;map[16][20]=true;map[16][21]=true;map[16][22]=true;map[17][18]=true;map[17][19]=true;map[17][20]=true;map[17][21]=true;map[17][22]=true;map[18][18]=true;map[18][19]=true;map[18][20]=true;map[18][21]=true;map[18][22]=true;map[19][18]=true;map[19][19]=true;map[19][20]=true;map[19][21]=true;map[19][22]=true;map[20][18]=true;map[20][19]=true;map[20][20]=true;map[20][21]=true;map[20][22]=true;map[21][18]=true;map[21][19]=true;map[21][20]=true;map[21][21]=true;map[21][22]=true;map[22][18]=true;map[22][19]=true;map[22][20]=true;map[22][21]=true;map[22][22]=true;map[23][18]=true;map[23][19]=true;map[23][20]=true;map[23][21]=true;map[23][22]=true;map[24][18]=true;map[24][19]=true;map[24][20]=true;map[24][21]=true;map[24][22]=true;map[25][18]=true;map[25][19]=true;map[25][20]=true;map[25][21]=true;map[25][22]=true;map[26][19]=true;map[26][20]=true;map[26][21]=true;map[30][33]=true;map[30][34]=true;map[30][35]=true;map[30][36]=true;map[30][37]=true;map[30][38]=true;map[30][39]=true;map[30][40]=true;map[30][41]=true;map[31][33]=true;map[31][34]=true;map[31][35]=true;map[31][36]=true;map[31][37]=true;map[31][38]=true;map[31][39]=true;map[31][40]=true;map[31][41]=true;map[32][33]=true;map[32][34]=true;map[32][35]=true;map[32][36]=true;map[32][37]=true;map[32][38]=true;map[32][39]=true;map[32][40]=true;map[32][41]=true;map[33][4]=true;map[33][5]=true;map[33][6]=true;map[33][7]=true;map[33][8]=true;map[33][9]=true;map[33][10]=true;map[33][33]=true;map[33][34]=true;map[33][35]=true;map[33][36]=true;map[33][37]=true;map[33][38]=true;map[33][39]=true;map[33][40]=true;map[33][41]=true;map[34][4]=true;map[34][5]=true;map[34][6]=true;map[34][7]=true;map[34][8]=true;map[34][9]=true;map[34][10]=true;map[34][11]=true;map[34][33]=true;map[34][34]=true;map[34][35]=true;map[34][36]=true;map[34][37]=true;map[34][38]=true;map[34][39]=true;map[34][40]=true;map[34][41]=true;map[35][4]=true;map[35][5]=true;map[35][6]=true;map[35][7]=true;map[35][8]=true;map[35][9]=true;map[35][10]=true;map[35][11]=true;map[36][4]=true;map[36][5]=true;map[36][6]=true;map[36][7]=true;map[36][8]=true;map[36][9]=true;map[36][10]=true;map[36][11]=true;map[37][4]=true;map[37][5]=true;map[37][6]=true;map[37][7]=true;map[37][8]=true;map[37][9]=true;map[37][10]=true;map[37][11]=true;map[37][23]=true;map[37][24]=true;map[38][4]=true;map[38][5]=true;map[38][6]=true;map[38][7]=true;map[38][8]=true;map[38][9]=true;map[38][10]=true;map[38][11]=true;map[38][22]=true;map[38][23]=true;map[38][24]=true;map[38][25]=true;map[39][21]=true;map[39][22]=true;map[39][23]=true;map[39][24]=true;map[39][25]=true;map[39][26]=true;map[40][21]=true;map[40][22]=true;map[40][23]=true;map[40][24]=true;map[40][25]=true;map[40][26]=true;map[41][21]=true;map[41][22]=true;map[41][23]=true;map[41][24]=true;map[41][25]=true;map[41][26]=true;map[42][22]=true;map[42][23]=true;map[42][24]=true;map[42][25]=true;
 		
 		
-		for (i=1;i<=rloc[0];i++){
+		for (i=1;i<=ship_loc_dir_vel[0];i++){
 			if (i!=rindex){
-				rx=rloc[4*(i-1)+1];
-				ry=rloc[4*(i-1)+2];
-				rspeed = rloc[4*(i-1)+3];
-				rdir = rloc[4*(i-1)+4];
+				rx=ship_loc_dir_vel[4*(i-1)+1];
+				ry=ship_loc_dir_vel[4*(i-1)+2];
+				rspeed = ship_loc_dir_vel[4*(i-1)+3];
+				rdir = ship_loc_dir_vel[4*(i-1)+4];
 				if (isInside(rx,ry)) map[rx][ry]=true;
 				/*
 				int[8][2] ns = getNeighbors(rx,ry);
@@ -830,9 +848,9 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		a[804]=201.0;a[805]=-0.9336;a[806]=-0.3584;a[807]=0.3839;a[808]=202.0;a[809]=-0.9272;a[810]=-0.3746;a[811]=0.4040;a[812]=203.0;a[813]=-0.9205;a[814]=-0.3907;a[815]=0.4245;a[816]=204.0;a[817]=-0.9135;a[818]=-0.4067;a[819]=0.4452;a[820]=205.0;a[821]=-0.9063;a[822]=-0.4226;a[823]=0.4663;a[824]=206.0;a[825]=-0.8988;a[826]=-0.4384;a[827]=0.4877;a[828]=207.0;a[829]=-0.8910;a[830]=-0.4540;a[831]=0.5095;a[832]=208.0;a[833]=-0.8829;a[834]=-0.4695;a[835]=0.5317;a[836]=209.0;a[837]=-0.8746;a[838]=-0.4848;a[839]=0.5543;a[840]=210.0;a[841]=-0.8660;a[842]=-0.5000;a[843]=0.5774;a[844]=211.0;a[845]=-0.8572;a[846]=-0.5150;a[847]=0.6009;a[848]=212.0;a[849]=-0.8480;a[850]=-0.5299;a[851]=0.6249;a[852]=213.0;a[853]=-0.8387;a[854]=-0.5446;a[855]=0.6494;a[856]=214.0;a[857]=-0.8290;a[858]=-0.5592;a[859]=0.6745;a[860]=215.0;a[861]=-0.8192;a[862]=-0.5736;a[863]=0.7002;a[864]=216.0;a[865]=-0.8090;a[866]=-0.5878;a[867]=0.7265;a[868]=217.0;a[869]=-0.7986;a[870]=-0.6018;a[871]=0.7536;a[872]=218.0;a[873]=-0.7880;a[874]=-0.6157;a[875]=0.7813;a[876]=219.0;a[877]=-0.7771;a[878]=-0.6293;a[879]=0.8098;a[880]=220.0;a[881]=-0.7660;a[882]=-0.6428;a[883]=0.8391;a[884]=221.0;a[885]=-0.7547;a[886]=-0.6561;a[887]=0.8693;a[888]=222.0;a[889]=-0.7431;a[890]=-0.6691;a[891]=0.9004;a[892]=223.0;a[893]=-0.7314;a[894]=-0.6820;a[895]=0.9325;a[896]=224.0;a[897]=-0.7193;a[898]=-0.6947;a[899]=0.9657;a[900]=225.0;a[901]=-0.7071;a[902]=-0.7071;a[903]=1.0000;a[904]=226.0;a[905]=-0.6947;a[906]=-0.7193;a[907]=1.0355;a[908]=227.0;a[909]=-0.6820;a[910]=-0.7314;a[911]=1.0724;a[912]=228.0;a[913]=-0.6691;a[914]=-0.7431;a[915]=1.1106;a[916]=229.0;a[917]=-0.6561;a[918]=-0.7547;a[919]=1.1504;a[920]=230.0;a[921]=-0.6428;a[922]=-0.7660;a[923]=1.1918;a[924]=231.0;a[925]=-0.6293;a[926]=-0.7771;a[927]=1.2349;a[928]=232.0;a[929]=-0.6157;a[930]=-0.7880;a[931]=1.2799;a[932]=233.0;a[933]=-0.6018;a[934]=-0.7986;a[935]=1.3270;a[936]=234.0;a[937]=-0.5878;a[938]=-0.8090;a[939]=1.3764;a[940]=235.0;a[941]=-0.5736;a[942]=-0.8192;a[943]=1.4281;a[944]=236.0;a[945]=-0.5592;a[946]=-0.8290;a[947]=1.4826;a[948]=237.0;a[949]=-0.5446;a[950]=-0.8387;a[951]=1.5399;a[952]=238.0;a[953]=-0.5299;a[954]=-0.8480;a[955]=1.6003;a[956]=239.0;a[957]=-0.5150;a[958]=-0.8572;a[959]=1.6643;a[960]=240.0;a[961]=-0.5000;a[962]=-0.8660;a[963]=1.7321;a[964]=241.0;a[965]=-0.4848;a[966]=-0.8746;a[967]=1.8040;a[968]=242.0;a[969]=-0.4695;a[970]=-0.8829;a[971]=1.8807;a[972]=243.0;a[973]=-0.4540;a[974]=-0.8910;a[975]=1.9626;a[976]=244.0;a[977]=-0.4384;a[978]=-0.8988;a[979]=2.0503;a[980]=245.0;a[981]=-0.4226;a[982]=-0.9063;a[983]=2.1445;a[984]=246.0;a[985]=-0.4067;a[986]=-0.9135;a[987]=2.2460;a[988]=247.0;a[989]=-0.3907;a[990]=-0.9205;a[991]=2.3559;a[992]=248.0;a[993]=-0.3746;a[994]=-0.9272;a[995]=2.4751;a[996]=249.0;a[997]=-0.3584;a[998]=-0.9336;a[999]=2.6051;a[1000]=250.0;a[1001]=-0.3420;a[1002]=-0.9397;a[1003]=2.7475;a[1004]=251.0;a[1005]=-0.3256;a[1006]=-0.9455;a[1007]=2.9042;a[1008]=252.0;a[1009]=-0.3090;a[1010]=-0.9511;a[1011]=3.0777;a[1012]=253.0;a[1013]=-0.2924;a[1014]=-0.9563;a[1015]=3.2709;a[1016]=254.0;a[1017]=-0.2756;a[1018]=-0.9613;a[1019]=3.4874;a[1020]=255.0;a[1021]=-0.2588;a[1022]=-0.9659;a[1023]=3.7321;a[1024]=256.0;a[1025]=-0.2419;a[1026]=-0.9703;a[1027]=4.0108;a[1028]=257.0;a[1029]=-0.2250;a[1030]=-0.9744;a[1031]=4.3315;a[1032]=258.0;a[1033]=-0.2079;a[1034]=-0.9781;a[1035]=4.7046;a[1036]=259.0;a[1037]=-0.1908;a[1038]=-0.9816;a[1039]=5.1446;a[1040]=260.0;a[1041]=-0.1736;a[1042]=-0.9848;a[1043]=5.6713;a[1044]=261.0;a[1045]=-0.1564;a[1046]=-0.9877;a[1047]=6.3138;a[1048]=262.0;a[1049]=-0.1392;a[1050]=-0.9903;a[1051]=7.1154;a[1052]=263.0;a[1053]=-0.1219;a[1054]=-0.9925;a[1055]=8.1443;a[1056]=264.0;a[1057]=-0.1045;a[1058]=-0.9945;a[1059]=9.5144;a[1060]=265.0;a[1061]=-0.0872;a[1062]=-0.9962;a[1063]=11.4301;a[1064]=266.0;a[1065]=-0.0698;a[1066]=-0.9976;a[1067]=14.3007;a[1068]=267.0;a[1069]=-0.0523;a[1070]=-0.9986;a[1071]=19.0811;a[1072]=268.0;a[1073]=-0.0349;a[1074]=-0.9994;a[1075]=28.6363;a[1076]=269.0;a[1077]=-0.0175;a[1078]=-0.9998;a[1079]=57.2900;a[1080]=270.0;a[1081]=0.0000;a[1082]=-1.0000;a[1083]=5443746451065123.0000;a[1084]=271.0;a[1085]=0.0175;a[1086]=-0.9998;a[1087]=-57.2900;a[1088]=272.0;a[1089]=0.0349;a[1090]=-0.9994;a[1091]=-28.6363;a[1092]=273.0;a[1093]=0.0523;a[1094]=-0.9986;a[1095]=-19.0811;a[1096]=274.0;a[1097]=0.0698;a[1098]=-0.9976;a[1099]=-14.3007;a[1100]=275.0;a[1101]=0.0872;a[1102]=-0.9962;a[1103]=-11.4301;a[1104]=276.0;a[1105]=0.1045;a[1106]=-0.9945;a[1107]=-9.5144;a[1108]=277.0;a[1109]=0.1219;a[1110]=-0.9925;a[1111]=-8.1443;a[1112]=278.0;a[1113]=0.1392;a[1114]=-0.9903;a[1115]=-7.1154;a[1116]=279.0;a[1117]=0.1564;a[1118]=-0.9877;a[1119]=-6.3138;a[1120]=280.0;a[1121]=0.1736;a[1122]=-0.9848;a[1123]=-5.6713;a[1124]=281.0;a[1125]=0.1908;a[1126]=-0.9816;a[1127]=-5.1446;a[1128]=282.0;a[1129]=0.2079;a[1130]=-0.9781;a[1131]=-4.7046;a[1132]=283.0;a[1133]=0.2250;a[1134]=-0.9744;a[1135]=-4.3315;a[1136]=284.0;a[1137]=0.2419;a[1138]=-0.9703;a[1139]=-4.0108;a[1140]=285.0;a[1141]=0.2588;a[1142]=-0.9659;a[1143]=-3.7321;a[1144]=286.0;a[1145]=0.2756;a[1146]=-0.9613;a[1147]=-3.4874;a[1148]=287.0;a[1149]=0.2924;a[1150]=-0.9563;a[1151]=-3.2709;a[1152]=288.0;a[1153]=0.3090;a[1154]=-0.9511;a[1155]=-3.0777;a[1156]=289.0;a[1157]=0.3256;a[1158]=-0.9455;a[1159]=-2.9042;a[1160]=290.0;a[1161]=0.3420;a[1162]=-0.9397;a[1163]=-2.7475;a[1164]=291.0;a[1165]=0.3584;a[1166]=-0.9336;a[1167]=-2.6051;a[1168]=292.0;a[1169]=0.3746;a[1170]=-0.9272;a[1171]=-2.4751;a[1172]=293.0;a[1173]=0.3907;a[1174]=-0.9205;a[1175]=-2.3559;a[1176]=294.0;a[1177]=0.4067;a[1178]=-0.9135;a[1179]=-2.2460;a[1180]=295.0;a[1181]=0.4226;a[1182]=-0.9063;a[1183]=-2.1445;a[1184]=296.0;a[1185]=0.4384;a[1186]=-0.8988;a[1187]=-2.0503;a[1188]=297.0;a[1189]=0.4540;a[1190]=-0.8910;a[1191]=-1.9626;a[1192]=298.0;a[1193]=0.4695;a[1194]=-0.8829;a[1195]=-1.8807;a[1196]=299.0;a[1197]=0.4848;a[1198]=-0.8746;a[1199]=-1.8040;a[1200]=300.0;a[1201]=0.5000;a[1202]=-0.8660;a[1203]=-1.7321;
 		a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[1209]=0.5299;a[1210]=-0.8480;a[1211]=-1.6003;a[1212]=303.0;a[1213]=0.5446;a[1214]=-0.8387;a[1215]=-1.5399;a[1216]=304.0;a[1217]=0.5592;a[1218]=-0.8290;a[1219]=-1.4826;a[1220]=305.0;a[1221]=0.5736;a[1222]=-0.8192;a[1223]=-1.4281;a[1224]=306.0;a[1225]=0.5878;a[1226]=-0.8090;a[1227]=-1.3764;a[1228]=307.0;a[1229]=0.6018;a[1230]=-0.7986;a[1231]=-1.3270;a[1232]=308.0;a[1233]=0.6157;a[1234]=-0.7880;a[1235]=-1.2799;a[1236]=309.0;a[1237]=0.6293;a[1238]=-0.7771;a[1239]=-1.2349;a[1240]=310.0;a[1241]=0.6428;a[1242]=-0.7660;a[1243]=-1.1918;a[1244]=311.0;a[1245]=0.6561;a[1246]=-0.7547;a[1247]=-1.1504;a[1248]=312.0;a[1249]=0.6691;a[1250]=-0.7431;a[1251]=-1.1106;a[1252]=313.0;a[1253]=0.6820;a[1254]=-0.7314;a[1255]=-1.0724;a[1256]=314.0;a[1257]=0.6947;a[1258]=-0.7193;a[1259]=-1.0355;a[1260]=315.0;a[1261]=0.7071;a[1262]=-0.7071;a[1263]=-1.0000;a[1264]=316.0;a[1265]=0.7193;a[1266]=-0.6947;a[1267]=-0.9657;a[1268]=317.0;a[1269]=0.7314;a[1270]=-0.6820;a[1271]=-0.9325;a[1272]=318.0;a[1273]=0.7431;a[1274]=-0.6691;a[1275]=-0.9004;a[1276]=319.0;a[1277]=0.7547;a[1278]=-0.6561;a[1279]=-0.8693;a[1280]=320.0;a[1281]=0.7660;a[1282]=-0.6428;a[1283]=-0.8391;a[1284]=321.0;a[1285]=0.7771;a[1286]=-0.6293;a[1287]=-0.8098;a[1288]=322.0;a[1289]=0.7880;a[1290]=-0.6157;a[1291]=-0.7813;a[1292]=323.0;a[1293]=0.7986;a[1294]=-0.6018;a[1295]=-0.7536;a[1296]=324.0;a[1297]=0.8090;a[1298]=-0.5878;a[1299]=-0.7265;a[1300]=325.0;a[1301]=0.8192;a[1302]=-0.5736;a[1303]=-0.7002;a[1304]=326.0;a[1305]=0.8290;a[1306]=-0.5592;a[1307]=-0.6745;a[1308]=327.0;a[1309]=0.8387;a[1310]=-0.5446;a[1311]=-0.6494;a[1312]=328.0;a[1313]=0.8480;a[1314]=-0.5299;a[1315]=-0.6249;a[1316]=329.0;a[1317]=0.8572;a[1318]=-0.5150;a[1319]=-0.6009;a[1320]=330.0;a[1321]=0.8660;a[1322]=-0.5000;a[1323]=-0.5774;a[1324]=331.0;a[1325]=0.8746;a[1326]=-0.4848;a[1327]=-0.5543;a[1328]=332.0;a[1329]=0.8829;a[1330]=-0.4695;a[1331]=-0.5317;a[1332]=333.0;a[1333]=0.8910;a[1334]=-0.4540;a[1335]=-0.5095;a[1336]=334.0;a[1337]=0.8988;a[1338]=-0.4384;a[1339]=-0.4877;a[1340]=335.0;a[1341]=0.9063;a[1342]=-0.4226;a[1343]=-0.4663;a[1344]=336.0;a[1345]=0.9135;a[1346]=-0.4067;a[1347]=-0.4452;a[1348]=337.0;a[1349]=0.9205;a[1350]=-0.3907;a[1351]=-0.4245;a[1352]=338.0;a[1353]=0.9272;a[1354]=-0.3746;a[1355]=-0.4040;a[1356]=339.0;a[1357]=0.9336;a[1358]=-0.3584;a[1359]=-0.3839;a[1360]=340.0;a[1361]=0.9397;a[1362]=-0.3420;a[1363]=-0.3640;a[1364]=341.0;a[1365]=0.9455;a[1366]=-0.3256;a[1367]=-0.3443;a[1368]=342.0;a[1369]=0.9511;a[1370]=-0.3090;a[1371]=-0.3249;a[1372]=343.0;a[1373]=0.9563;a[1374]=-0.2924;a[1375]=-0.3057;a[1376]=344.0;a[1377]=0.9613;a[1378]=-0.2756;a[1379]=-0.2867;a[1380]=345.0;a[1381]=0.9659;a[1382]=-0.2588;a[1383]=-0.2679;a[1384]=346.0;a[1385]=0.9703;a[1386]=-0.2419;a[1387]=-0.2493;a[1388]=347.0;a[1389]=0.9744;a[1390]=-0.2250;a[1391]=-0.2309;a[1392]=348.0;a[1393]=0.9781;a[1394]=-0.2079;a[1395]=-0.2126;a[1396]=349.0;a[1397]=0.9816;a[1398]=-0.1908;a[1399]=-0.1944;a[1400]=350.0;a[1401]=0.9848;a[1402]=-0.1736;a[1403]=-0.1763;a[1404]=351.0;a[1405]=0.9877;a[1406]=-0.1564;a[1407]=-0.1584;a[1408]=352.0;a[1409]=0.9903;a[1410]=-0.1392;a[1411]=-0.1405;a[1412]=353.0;a[1413]=0.9925;a[1414]=-0.1219;a[1415]=-0.1228;a[1416]=354.0;a[1417]=0.9945;a[1418]=-0.1045;a[1419]=-0.1051;a[1420]=355.0;a[1421]=0.9962;a[1422]=-0.0872;a[1423]=-0.0875;a[1424]=356.0;a[1425]=0.9976;a[1426]=-0.0698;a[1427]=-0.0699;a[1428]=357.0;a[1429]=0.9986;a[1430]=-0.0523;a[1431]=-0.0524;a[1432]=358.0;a[1433]=0.9994;a[1434]=-0.0349;a[1435]=-0.0349;a[1436]=359.0;a[1437]=0.9998;a[1438]=-0.0175;a[1439]=-0.0175;a[1440]=360.0;a[1441]=1.0000;a[1442]=0.0000;a[1443]=0.0000;
 
-		rx = rloc[4*(rindex-1)+1];
-		ry = rloc[4*(rindex-1)+2];
-		rdir = rloc[4*(rindex-1)+3];
+		rx = ship_loc_dir_vel[4*(rindex-1)+1];
+		ry = ship_loc_dir_vel[4*(rindex-1)+2];
+		rdir = ship_loc_dir_vel[4*(rindex-1)+3];
 		
 		int angleship = getAngleFromDir(rdir);	
 		int half_fov = round((double)fov/2.0);
@@ -945,10 +963,10 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 	msgsrv updateShipLocation(int idx, int rx, int ry, int rdir,int velocity, int ship_length, int ship_width){
 		int i = (idx-1)*4;
 		
-		rloc[i+1] = rx;
-		rloc[i+2] = ry;
-		rloc[i+3] = rdir;
-		rloc[i+4] = velocity;
+		ship_loc_dir_vel[i+1] = rx;
+		ship_loc_dir_vel[i+2] = ry;
+		ship_loc_dir_vel[i+3] = rdir;
+		ship_loc_dir_vel[i+4] = velocity;
 		
 		//collision check
 		double xmax = ship_length/2 + COLLISION_MARGIN;
@@ -969,19 +987,19 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		//double min_dist = 2*COLLISION_RADIUS + COLLISION_MARGIN;
 		//min_dist *= min_dist;
 				
-		for(i=1;i<=rloc[0];i++){
+		for(i=1;i<=ship_loc_dir_vel[0];i++){
 			if (i!=idx){
-				int dir = rloc[4*(i-1)+3];
-				a = (rloc[4*(i-1)+1] + 0.5) * MAP_RESOL;
-				b = (rloc[4*(i-1)+2] + 0.5) * MAP_RESOL;
+				int dir = ship_loc_dir_vel[4*(i-1)+3];
+				a = (ship_loc_dir_vel[4*(i-1)+1] + 0.5) * MAP_RESOL;
+				b = (ship_loc_dir_vel[4*(i-1)+2] + 0.5) * MAP_RESOL;
 				p1 = ship2map(xmax,ymax,a,b,dir);
 				p2 = ship2map(-xmax,-ymax,a,b,dir);
 				rs2[0] = min(p1[0],p2[0]); rs2[1] = max(p1[0],p2[0]); 
 				rs2[2] = min(p1[1],p2[1]); rs2[3] = max(p1[1],p2[1]); 			
 				boolean collided = isRectIntersect(rs1,rs2);
 			/*
-				int dx = rx-rloc[4*(i-1)+1];
-				int dy = ry-rloc[4*(i-1)+2];
+				int dx = rx-ship_loc_dir_vel[4*(i-1)+1];
+				int dy = ry-ship_loc_dir_vel[4*(i-1)+2];
 				double d = dx*dx + dy*dy;//to avoid using sqrt()
 				d*=MAP_RESOL;
 				d*=MAP_RESOL;
@@ -1029,6 +1047,8 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		return ret;
 	}
 	
+	// Expand a obstacle (existing on a tile) to also cover the neighbours 
+	// (both horizontally, vertical, diagonally) to have margin for path calculation
 	boolean[50/*MAP_HEIGHT*/][50/*MAP_WIDTH*/] expandObstacles(boolean[50/*MAP_HEIGHT*/][50/*MAP_WIDTH*/] map){
 		boolean[50/*MAP_HEIGHT*/][50/*MAP_WIDTH*/] map2;
 		int[8][2] neighbors = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
@@ -1080,26 +1100,30 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 			
 		int i,j;		
 		boolean[50/*MAP_HEIGHT*/][50/*MAP_WIDTH*/] map;
+		// Set obstacles on map (true == obstacle)
 		for(i=0;i<MAP_WIDTH;i++)for(j=0;j<MAP_HEIGHT;j++)map[i][j]=false;		
 map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;map[9][18]=true;map[9][19]=true;map[9][20]=true;map[9][21]=true;map[9][22]=true;map[10][18]=true;map[10][19]=true;map[10][20]=true;map[10][21]=true;map[10][22]=true;map[11][18]=true;map[11][19]=true;map[11][20]=true;map[11][21]=true;map[11][22]=true;map[12][18]=true;map[12][19]=true;map[12][20]=true;map[12][21]=true;map[12][22]=true;map[13][18]=true;map[13][19]=true;map[13][20]=true;map[13][21]=true;map[13][22]=true;map[14][18]=true;map[14][19]=true;map[14][20]=true;map[14][21]=true;map[14][22]=true;map[15][18]=true;map[15][19]=true;map[15][20]=true;map[15][21]=true;map[15][22]=true;map[16][18]=true;map[16][19]=true;map[16][20]=true;map[16][21]=true;map[16][22]=true;map[17][18]=true;map[17][19]=true;map[17][20]=true;map[17][21]=true;map[17][22]=true;map[18][18]=true;map[18][19]=true;map[18][20]=true;map[18][21]=true;map[18][22]=true;map[19][18]=true;map[19][19]=true;map[19][20]=true;map[19][21]=true;map[19][22]=true;map[20][18]=true;map[20][19]=true;map[20][20]=true;map[20][21]=true;map[20][22]=true;map[21][18]=true;map[21][19]=true;map[21][20]=true;map[21][21]=true;map[21][22]=true;map[22][18]=true;map[22][19]=true;map[22][20]=true;map[22][21]=true;map[22][22]=true;map[23][18]=true;map[23][19]=true;map[23][20]=true;map[23][21]=true;map[23][22]=true;map[24][18]=true;map[24][19]=true;map[24][20]=true;map[24][21]=true;map[24][22]=true;map[25][18]=true;map[25][19]=true;map[25][20]=true;map[25][21]=true;map[25][22]=true;map[26][19]=true;map[26][20]=true;map[26][21]=true;map[30][33]=true;map[30][34]=true;map[30][35]=true;map[30][36]=true;map[30][37]=true;map[30][38]=true;map[30][39]=true;map[30][40]=true;map[30][41]=true;map[31][33]=true;map[31][34]=true;map[31][35]=true;map[31][36]=true;map[31][37]=true;map[31][38]=true;map[31][39]=true;map[31][40]=true;map[31][41]=true;map[32][33]=true;map[32][34]=true;map[32][35]=true;map[32][36]=true;map[32][37]=true;map[32][38]=true;map[32][39]=true;map[32][40]=true;map[32][41]=true;map[33][4]=true;map[33][5]=true;map[33][6]=true;map[33][7]=true;map[33][8]=true;map[33][9]=true;map[33][10]=true;map[33][33]=true;map[33][34]=true;map[33][35]=true;map[33][36]=true;map[33][37]=true;map[33][38]=true;map[33][39]=true;map[33][40]=true;map[33][41]=true;map[34][4]=true;map[34][5]=true;map[34][6]=true;map[34][7]=true;map[34][8]=true;map[34][9]=true;map[34][10]=true;map[34][11]=true;map[34][33]=true;map[34][34]=true;map[34][35]=true;map[34][36]=true;map[34][37]=true;map[34][38]=true;map[34][39]=true;map[34][40]=true;map[34][41]=true;map[35][4]=true;map[35][5]=true;map[35][6]=true;map[35][7]=true;map[35][8]=true;map[35][9]=true;map[35][10]=true;map[35][11]=true;map[36][4]=true;map[36][5]=true;map[36][6]=true;map[36][7]=true;map[36][8]=true;map[36][9]=true;map[36][10]=true;map[36][11]=true;map[37][4]=true;map[37][5]=true;map[37][6]=true;map[37][7]=true;map[37][8]=true;map[37][9]=true;map[37][10]=true;map[37][11]=true;map[37][23]=true;map[37][24]=true;map[38][4]=true;map[38][5]=true;map[38][6]=true;map[38][7]=true;map[38][8]=true;map[38][9]=true;map[38][10]=true;map[38][11]=true;map[38][22]=true;map[38][23]=true;map[38][24]=true;map[38][25]=true;map[39][21]=true;map[39][22]=true;map[39][23]=true;map[39][24]=true;map[39][25]=true;map[39][26]=true;map[40][21]=true;map[40][22]=true;map[40][23]=true;map[40][24]=true;map[40][25]=true;map[40][26]=true;map[41][21]=true;map[41][22]=true;map[41][23]=true;map[41][24]=true;map[41][25]=true;map[41][26]=true;map[42][22]=true;map[42][23]=true;map[42][24]=true;map[42][25]=true;
 
+		// Original map, copy to preserve original states from map
 		boolean[50/*MAP_HEIGHT*/][50/*MAP_WIDTH*/] omap;
 		for(i=0;i<MAP_HEIGHT;i++)for(j=0;j<MAP_WIDTH;j++) omap[i][j]=map[i][j];	
 		
-		//expand obstacles by 1 cell around it to avoid collision
+		//expand obstacles by 1 cell around it to avoid collision when calculating path
 		map = expandObstacles(map);
 		//expand more if required
 		int max_expands = round( (SAFE_MARGIN + ship_width/2.0) / MAP_RESOL );			
 		for(i=1;i<max_expands;i++){	
 			map = expandObstacles(map);
 		}
-				
+		
+		// Minimum safe gap needed between obstacle and map border or two obstacles
+		// to be able to safely pass
 		int min_gap = round((ship_width + 2*SAFE_MARGIN) / MAP_RESOL);
 				
-		for (i=0;i<rloc[0];i++){
+		for (i=0;i<ship_loc_dir_vel[0];i++){
 			if ((i+1)==ship_index) continue;
-			int rx=rloc[4*i+1];
-			int ry=rloc[4*i+2];
+			int rx=ship_loc_dir_vel[4*i+1];
+			int ry=ship_loc_dir_vel[4*i+2];
 			if (isInside(rx,ry)) map[rx][ry]=true;
 			 //block narrow gap between ship and borders if there is
 		    int gapleft = ry;
@@ -1114,8 +1138,8 @@ map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;
 		    else if (gapbottom<min_gap) for(int x=rx+1;x<MAP_HEIGHT;x++) map[x][ry]=true;	
 			
 			//if ship is moving, mark next cells in its moving direction as occupied (in the future)
-			int rdir = rloc[4*i+3];
-			int rspeed = rloc[4*i+4];
+			int rdir = ship_loc_dir_vel[4*i+3];
+			int rspeed = ship_loc_dir_vel[4*i+4];
 			if (rspeed != 0){
 				int stop_cells = round(0.2*rspeed);//cells that it can move in 200 miliseconds
 				//int stop_cells = 2;
