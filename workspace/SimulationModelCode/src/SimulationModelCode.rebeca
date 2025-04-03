@@ -80,7 +80,7 @@ reactiveclass Ship(50) {
 	statevars{
 		byte ship_index;	//numerical index of the ship, starting from 1
 		int targetX, targetY;  // target goal coordinates ??
-		int rx, ry, ship_dir, velocity; //coordinats, direction and speed for ship
+		int ship_x, ship_y, ship_dir, velocity; //coordinats, direction and speed for ship
 		int distance2target;  // distance from ship to target
 		int target_tolerance;
 		int[101] obstacles;	//nearest obstacles in 8 possible directions
@@ -118,7 +118,7 @@ reactiveclass Ship(50) {
 		int[2] p1 = {x,y};  // Ship's current xy-coordinate??
 		int[2] p2 = {tx,ty};	// Ship's target xy-coordinate??
 		// Ship's current x and y coordinates, direction, and target x y coordinates
-		rx = p1[0]; ry = p1[1]; ship_dir = DIR_N; targetX = p2[0]; targetY = p2[1]; 
+		ship_x = p1[0]; ship_y = p1[1]; ship_dir = DIR_N; targetX = p2[0]; targetY = p2[1]; 
 		distance2target = (int)INFINITY; 
 		target_tolerance = tolerance;  // Assigning from constructor value
 		default_velocity = round(real_velocity / MAP_RESOL); //velocity as cells per second
@@ -279,14 +279,14 @@ reactiveclass Ship(50) {
 			targets[0]++;
 			targets[targets[0]] = code;
 		}
-		theMap.generatePath(self,ship_index,rx,ry,x,y,ship_length,ship_width);
+		theMap.generatePath(self,ship_index,ship_x,ship_y,x,y,ship_length,ship_width);
 	}	
 
 	int getNextDir(){
 		if (moveidx>=moves[0]) return ship_dir;
 		int[2] nxt = idx2xy(moves[moveidx+1]);
-		int dx = nxt[0] - rx;
-		int dy = nxt[1] - ry;
+		int dx = nxt[0] - ship_x;
+		int dy = nxt[1] - ship_y;
 		int dir=0;
 		if (dx==0) dir = dy>0?2:6;
 		else if (dy==0) dir = dx>0?0:4;
@@ -297,8 +297,8 @@ reactiveclass Ship(50) {
 	}
 	
 	int getTargetDir(){
-		int dx = cmp(targetX,rx);
-		int dy = cmp(targetY,ry);
+		int dx = cmp(targetX,ship_x);
+		int dy = cmp(targetY,ship_y);
 		int dir;
 		if (dx==0) dir = dy>0?2:6;
 		else if (dy==0) dir = dx>0?0:4;
@@ -307,15 +307,15 @@ reactiveclass Ship(50) {
 		return dir;
 	}
 		
-	int[2] getCellAtDir(int x, int y, int dir,int steps){
+	int[2] getTileAtDir(int x, int y, int dir,int steps){
 		//neighboring cells in 8 directions: e, ne, n, nw, w, sw, s, se
 		int[8][2] nxt = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
 		dir%=8;
 		if (dir<0)dir+=8;
-		int[2] p ;
-		p[0] = x + steps*nxt[dir][0];
-		p[1] = y + steps*nxt[dir][1];
-		return p;	
+		int[2] coordinate ;
+		coordinate[0] = x + steps*nxt[dir][0];
+		coordinate[1] = y + steps*nxt[dir][1];
+		return coordinate;	
 	}
 	
 	int[8][2] getneighbours(int x, int y){
@@ -336,14 +336,14 @@ reactiveclass Ship(50) {
 		int[8][2] offsets = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
 		int dx = offsets[dir][0] * steps;
 		int dy = offsets[dir][1] * steps;
-		int x = rx + dx;
-		int y = ry + dy;
+		int x = ship_x + dx;
+		int y = ship_y + dy;
 		boolean moved = false;
 		if (isInside(x,y)){
-			ship_dir=dir;rx=x;ry=y; 
+			ship_dir=dir;ship_x=x;ship_y=y; 
 			moved=true;		
-			theMap.updateShipLocation(ship_index,rx,ry,ship_dir,velocity,ship_length,ship_width);
-			distance2target = round( odistance(rx,ry,targetX,targetY) );
+			theMap.updateShipLocation(ship_index,ship_x,ship_y,ship_dir,velocity,ship_length,ship_width);
+			distance2target = round( odistance(ship_x,ship_y,targetX,targetY) );
 			if (stop) stop(false);
 		}
 		return moved;
@@ -441,32 +441,29 @@ reactiveclass Ship(50) {
 		return p;
 	}	
 	
-	//heuristic to estimate distance to nearest blocking obstacle in a direction
+	//heuristic to estimate distance to nearest blocking obstacle in a specific direction
 	double getObstacleAtDir(int dir, boolean stepwise){
 		double nearest = INFINITY;
 		double steplen = dir %2 > 0? CELL_DIAG:CELL_WIDTH;
-		//int ymax = round(ship_width/2 + SAFE_MARGIN);
-		//int ymin = 1;
+
 		double ymax = ship_width/2 + SAFE_MARGIN;
 		double ymin = steplen/2 + SAFE_MARGIN;
 		if (ymax<ymin) ymax=ymin;
 		double offset = 0.5;
-		double a = (rx + offset) * MAP_RESOL;
-		double b = (ry + offset) * MAP_RESOL;
+		double a = (ship_x + offset) * MAP_RESOL;
+		double b = (ship_y + offset) * MAP_RESOL;
 		int mini=0;
 		for(int i=1;i<=obstacles[0];i++){
-			int[2] o = idx2xy(obstacles[i]);
-			double[2] p = map2ship((o[0]+offset)*MAP_RESOL,(o[1]+offset)*MAP_RESOL,a,b,dir);
-			//int y = round(p[1]);
+			int[2] obstacle = idx2xy(obstacles[i]);
+			double[2] p = map2ship((obstacle[0]+offset)*MAP_RESOL,(obstacle[1]+offset)*MAP_RESOL,a,b,dir);
+
 			if (p[0]>0 && p[1]<=ymax && p[1]>=-ymax){
-				if (p[0]<nearest) nearest = p[0];
+				if (p[0]<nearest) {
+				 nearest = p[0];
+				}
 			}		
 		}
-		/*
-		if (nearest < INFINITY){
-			nearest -= steplen;
-		}
-		*/		
+
 		if (stepwise) nearest = nearest < INFINITY ? (int)(nearest / steplen) : INFINITY;
 		return nearest;
 	}
@@ -497,39 +494,25 @@ reactiveclass Ship(50) {
 	//get the direction with farthest obstacle (depends on what the ship sees from laser scan)
 	//return {direction, distance}
 	int[2] getDirWithoutObstacle(int random,int mind){
-		int maxdir = ship_dir;
-		int maxd = 0;
-		/*
-		int[8] dirs;
+		int best_dir = ship_dir;
+		int max_distance = 0;
+		int[8] directions;
+		// Check all directions for nearest obstacle in each direction
 		for(int dir=0;dir<8;dir++){
-			dirs[dir]=0;
-		}
-		int[3] backdirs = {normalizeDir(ship_dir+4),normalizeDir(ship_dir+3),normalizeDir(ship_dir+5)};
-		for(int i=0;i<3;i++){
-			int dir = backdirs[i];
-			int d = (int)(getObstacleAtDir(dir,true));	
-			if (d > maxd){
-				maxdir = dir;
-				maxd = d;
+			directions[dir]=0;
+			int distance = (int)(getObstacleAtDir(dir,true));	
+			// If distance in last check is longer than current best distance,
+			// update best direction and max distance
+			if (distance > max_distance){
+				best_dir = dir;
+				max_distance = distance;
 			}
-			dirs[dir] = xy2idx(dir,d);
+			directions[dir] = xy2idx(dir,distance);
 		}
-		*/		
-		int[8] dirs;
-		for(int dir=0;dir<8;dir++){
-			dirs[dir]=0;
-			int d = (int)(getObstacleAtDir(dir,true));	
-			if (d > maxd){
-				maxdir = dir;
-				maxd = d;
-			}
-			dirs[dir] = xy2idx(dir,d);
-			//if (d>mind) {dirs[dir] = d;}
-		}
-		dirs = sort8(dirs,false);
-		int[2] p = idx2xy(dirs[random]);//0=dir,1=distance
-		//int[2] p; p[0] = maxdir; p[1] = maxd;
-		return p;
+		directions = sort8(directions,false);
+		// Choose a "random" direction from the four best directions to avoid repeating behaviour
+		int[2] dir_and_dist = idx2xy(directions[random]);//0=dir,1=distance
+		return dir_and_dist;
 	}
 	
 	// Function for Selection sort
@@ -564,7 +547,7 @@ reactiveclass Ship(50) {
 			stop(false);
 			boolean reached = false;
 			if (targets[0]>1)
-				reached = xy2idx(rx,ry) == targets[targets[0]];
+				reached = xy2idx(ship_x,ship_y) == targets[targets[0]];
 			else
 				reached = distance2target<=target_tolerance;
 				
@@ -575,7 +558,7 @@ reactiveclass Ship(50) {
 			if (targets[0]>0){
 				stop(true);
 				int[2]t = idx2xy(targets[targets[0]]);
-				theMap.generatePath(self,ship_index,rx,ry,t[0],t[1],ship_length,ship_width);
+				theMap.generatePath(self,ship_index,ship_x,ship_y,t[0],t[1],ship_length,ship_width);
 			}
 		} else {
 			int ndir = getNextDir();
@@ -586,7 +569,7 @@ reactiveclass Ship(50) {
 				if (delta<0) delta = -delta;
 				time_to_rotate = round(1000.0*45*delta / ship_ANGULAR_VELOCITY);
 				ship_dir = ndir; //rotate the ship to the next direction		
-				theMap.updateShipLocation(ship_index,rx,ry,ship_dir,velocity,ship_length,ship_width);
+				theMap.updateShipLocation(ship_index,ship_x,ship_y,ship_dir,velocity,ship_length,ship_width);
 			} 			
 			if (time_to_rotate>0){
 				updateMovingStatus(moveNext) after(time_to_rotate);
@@ -600,7 +583,7 @@ reactiveclass Ship(50) {
 				if (distance > expected_distance){
 					if (velocity <= 0 ) velocity = default_velocity;
 					move(ship_dir,1,moveidx==moves[0]);	//always just move 1 step
-					if (xy2idx(rx,ry) == moves[moveidx+1]) moveidx++;
+					if (xy2idx(ship_x,ship_y) == moves[moveidx+1]) moveidx++;
 					waits = 0; isWaiting = false;
 					if (moveNext) updateMovingStatus(moveNext) after(stepwait);
 				} else {
@@ -614,10 +597,12 @@ reactiveclass Ship(50) {
 						int odir = ship_dir;
 						//int redir = (ship_dir+4) % 8;
 						//int maxback = (int)getObstacleAtDir(redir,true);
-						int[2] od = getDirWithoutObstacle(?(0,1,2,3),5); int redir = od[0]; int maxback = od[1];				
+						int[2] od = getDirWithoutObstacle(?(0,1,2,3),5); 
+						int redir = od[0]; 
+						int maxback = od[1];				
 						int backsteps = ?(4,6,8,10,12);
 						while (backsteps > maxback) backsteps--;
-						int[2] backpoint = getCellAtDir(rx,ry,redir,backsteps);
+						int[2] backpoint = getTileAtDir(ship_x,ship_y,redir,backsteps);
 						setTarget(backpoint[0],backpoint[1]);
 					} else {
 						//continue waiting
@@ -631,26 +616,36 @@ reactiveclass Ship(50) {
 	@priority(10)
 	msgsrv onNewPath(int[101/*BUFFER_SIZE*/] path){
 		stop(true);
+		// path[0] > 0 means there are steps left in the path
 		if (path[0]>0){
 			if (failures>0) failures--;
-			for(int i=0;i<BUFFER_SIZE;i++) moves[i] = path[i];
+			for(int i=0;i<BUFFER_SIZE;i++) {
+				moves[i] = path[i];
+			}
 			//start moving
-			//ship_dir = getNextDir();
 			velocity = default_velocity;
-			if (!scan_before_move) updateMovingStatus(!scan_before_move);
+			if (!scan_before_move) {
+				updateMovingStatus(!scan_before_move);
+			}
 		} else {
-			//path not found, what to do next???
+			// If path not found, what to do next???
 			failures++;
 			if (failures>2){
 				assertion(false,"the ship seems to get stuck");
 			} else {
 				int odir = ship_dir;
-				//int redir = (ship_dir+4) % 8;
-				//int maxback = (int)getObstacleAtDir(redir,true);
-				int[2] od = getDirWithoutObstacle(?(0,1,2,3),5); int redir = od[0]; int maxback = od[1];				
+
+
+				// Get the direction with farthest obstacle 
+				// (depends on what the ship sees from laser scan)
+				int[2] dir_and_dist = getDirWithoutObstacle(?(0,1,2,3),5);
+				int new_dir = dir_and_dist[0];
+				int maxback = dir_and_dist[1];				
 				int backsteps = ?(4,6,8,10,12);
-				while (backsteps > maxback) backsteps--;
-				int[2] backpoint = getCellAtDir(rx,ry,redir,backsteps);
+				while (backsteps > maxback){
+					backsteps--;
+				}
+				int[2] backpoint = getTileAtDir(ship_x,ship_y,new_dir,backsteps);
 				setTarget(backpoint[0],backpoint[1]);
 			}
 		}
@@ -817,7 +812,7 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 	msgsrv scanObstacles(Ship ship,int ship_index,int rate,int fov,int max_distance){	
 		// nxt contains the offset to access neighbours
 		int[8][2] nxt = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
-		int i,j,k,rx,ry,ship_dir,ship_velocity;
+		int i,j,k,ship_x,ship_y,ship_dir,ship_velocity;
 		
 		//prepare scan data here --> list of nearest obstacles around the ship, return (X,Y) coordinates to the ship's axises
 		int[101] scandata;
@@ -833,13 +828,13 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		
 		for (i=1;i<=ship_loc_dir_vel[0];i++){
 			if (i!=ship_index){
-				rx=ship_loc_dir_vel[4*(i-1)+1];
-				ry=ship_loc_dir_vel[4*(i-1)+2];
+				ship_x=ship_loc_dir_vel[4*(i-1)+1];
+				ship_y=ship_loc_dir_vel[4*(i-1)+2];
 				ship_velocity = ship_loc_dir_vel[4*(i-1)+3];
 				ship_dir = ship_loc_dir_vel[4*(i-1)+4];
-				if (isInside(rx,ry)) map[rx][ry]=true;
+				if (isInside(ship_x,ship_y)) map[ship_x][ship_y]=true;
 				/*
-				int[8][2] ns = getneighbours(rx,ry);
+				int[8][2] ns = getneighbours(ship_x,ship_y);
 				for(int ii=0;ii<8;ii++){
 					if (isInside(ns[i][0],ns[i][1])) map[ns[i][0]][ns[i][1]]=true;
 				}
@@ -854,8 +849,8 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		a[804]=201.0;a[805]=-0.9336;a[806]=-0.3584;a[807]=0.3839;a[808]=202.0;a[809]=-0.9272;a[810]=-0.3746;a[811]=0.4040;a[812]=203.0;a[813]=-0.9205;a[814]=-0.3907;a[815]=0.4245;a[816]=204.0;a[817]=-0.9135;a[818]=-0.4067;a[819]=0.4452;a[820]=205.0;a[821]=-0.9063;a[822]=-0.4226;a[823]=0.4663;a[824]=206.0;a[825]=-0.8988;a[826]=-0.4384;a[827]=0.4877;a[828]=207.0;a[829]=-0.8910;a[830]=-0.4540;a[831]=0.5095;a[832]=208.0;a[833]=-0.8829;a[834]=-0.4695;a[835]=0.5317;a[836]=209.0;a[837]=-0.8746;a[838]=-0.4848;a[839]=0.5543;a[840]=210.0;a[841]=-0.8660;a[842]=-0.5000;a[843]=0.5774;a[844]=211.0;a[845]=-0.8572;a[846]=-0.5150;a[847]=0.6009;a[848]=212.0;a[849]=-0.8480;a[850]=-0.5299;a[851]=0.6249;a[852]=213.0;a[853]=-0.8387;a[854]=-0.5446;a[855]=0.6494;a[856]=214.0;a[857]=-0.8290;a[858]=-0.5592;a[859]=0.6745;a[860]=215.0;a[861]=-0.8192;a[862]=-0.5736;a[863]=0.7002;a[864]=216.0;a[865]=-0.8090;a[866]=-0.5878;a[867]=0.7265;a[868]=217.0;a[869]=-0.7986;a[870]=-0.6018;a[871]=0.7536;a[872]=218.0;a[873]=-0.7880;a[874]=-0.6157;a[875]=0.7813;a[876]=219.0;a[877]=-0.7771;a[878]=-0.6293;a[879]=0.8098;a[880]=220.0;a[881]=-0.7660;a[882]=-0.6428;a[883]=0.8391;a[884]=221.0;a[885]=-0.7547;a[886]=-0.6561;a[887]=0.8693;a[888]=222.0;a[889]=-0.7431;a[890]=-0.6691;a[891]=0.9004;a[892]=223.0;a[893]=-0.7314;a[894]=-0.6820;a[895]=0.9325;a[896]=224.0;a[897]=-0.7193;a[898]=-0.6947;a[899]=0.9657;a[900]=225.0;a[901]=-0.7071;a[902]=-0.7071;a[903]=1.0000;a[904]=226.0;a[905]=-0.6947;a[906]=-0.7193;a[907]=1.0355;a[908]=227.0;a[909]=-0.6820;a[910]=-0.7314;a[911]=1.0724;a[912]=228.0;a[913]=-0.6691;a[914]=-0.7431;a[915]=1.1106;a[916]=229.0;a[917]=-0.6561;a[918]=-0.7547;a[919]=1.1504;a[920]=230.0;a[921]=-0.6428;a[922]=-0.7660;a[923]=1.1918;a[924]=231.0;a[925]=-0.6293;a[926]=-0.7771;a[927]=1.2349;a[928]=232.0;a[929]=-0.6157;a[930]=-0.7880;a[931]=1.2799;a[932]=233.0;a[933]=-0.6018;a[934]=-0.7986;a[935]=1.3270;a[936]=234.0;a[937]=-0.5878;a[938]=-0.8090;a[939]=1.3764;a[940]=235.0;a[941]=-0.5736;a[942]=-0.8192;a[943]=1.4281;a[944]=236.0;a[945]=-0.5592;a[946]=-0.8290;a[947]=1.4826;a[948]=237.0;a[949]=-0.5446;a[950]=-0.8387;a[951]=1.5399;a[952]=238.0;a[953]=-0.5299;a[954]=-0.8480;a[955]=1.6003;a[956]=239.0;a[957]=-0.5150;a[958]=-0.8572;a[959]=1.6643;a[960]=240.0;a[961]=-0.5000;a[962]=-0.8660;a[963]=1.7321;a[964]=241.0;a[965]=-0.4848;a[966]=-0.8746;a[967]=1.8040;a[968]=242.0;a[969]=-0.4695;a[970]=-0.8829;a[971]=1.8807;a[972]=243.0;a[973]=-0.4540;a[974]=-0.8910;a[975]=1.9626;a[976]=244.0;a[977]=-0.4384;a[978]=-0.8988;a[979]=2.0503;a[980]=245.0;a[981]=-0.4226;a[982]=-0.9063;a[983]=2.1445;a[984]=246.0;a[985]=-0.4067;a[986]=-0.9135;a[987]=2.2460;a[988]=247.0;a[989]=-0.3907;a[990]=-0.9205;a[991]=2.3559;a[992]=248.0;a[993]=-0.3746;a[994]=-0.9272;a[995]=2.4751;a[996]=249.0;a[997]=-0.3584;a[998]=-0.9336;a[999]=2.6051;a[1000]=250.0;a[1001]=-0.3420;a[1002]=-0.9397;a[1003]=2.7475;a[1004]=251.0;a[1005]=-0.3256;a[1006]=-0.9455;a[1007]=2.9042;a[1008]=252.0;a[1009]=-0.3090;a[1010]=-0.9511;a[1011]=3.0777;a[1012]=253.0;a[1013]=-0.2924;a[1014]=-0.9563;a[1015]=3.2709;a[1016]=254.0;a[1017]=-0.2756;a[1018]=-0.9613;a[1019]=3.4874;a[1020]=255.0;a[1021]=-0.2588;a[1022]=-0.9659;a[1023]=3.7321;a[1024]=256.0;a[1025]=-0.2419;a[1026]=-0.9703;a[1027]=4.0108;a[1028]=257.0;a[1029]=-0.2250;a[1030]=-0.9744;a[1031]=4.3315;a[1032]=258.0;a[1033]=-0.2079;a[1034]=-0.9781;a[1035]=4.7046;a[1036]=259.0;a[1037]=-0.1908;a[1038]=-0.9816;a[1039]=5.1446;a[1040]=260.0;a[1041]=-0.1736;a[1042]=-0.9848;a[1043]=5.6713;a[1044]=261.0;a[1045]=-0.1564;a[1046]=-0.9877;a[1047]=6.3138;a[1048]=262.0;a[1049]=-0.1392;a[1050]=-0.9903;a[1051]=7.1154;a[1052]=263.0;a[1053]=-0.1219;a[1054]=-0.9925;a[1055]=8.1443;a[1056]=264.0;a[1057]=-0.1045;a[1058]=-0.9945;a[1059]=9.5144;a[1060]=265.0;a[1061]=-0.0872;a[1062]=-0.9962;a[1063]=11.4301;a[1064]=266.0;a[1065]=-0.0698;a[1066]=-0.9976;a[1067]=14.3007;a[1068]=267.0;a[1069]=-0.0523;a[1070]=-0.9986;a[1071]=19.0811;a[1072]=268.0;a[1073]=-0.0349;a[1074]=-0.9994;a[1075]=28.6363;a[1076]=269.0;a[1077]=-0.0175;a[1078]=-0.9998;a[1079]=57.2900;a[1080]=270.0;a[1081]=0.0000;a[1082]=-1.0000;a[1083]=5443746451065123.0000;a[1084]=271.0;a[1085]=0.0175;a[1086]=-0.9998;a[1087]=-57.2900;a[1088]=272.0;a[1089]=0.0349;a[1090]=-0.9994;a[1091]=-28.6363;a[1092]=273.0;a[1093]=0.0523;a[1094]=-0.9986;a[1095]=-19.0811;a[1096]=274.0;a[1097]=0.0698;a[1098]=-0.9976;a[1099]=-14.3007;a[1100]=275.0;a[1101]=0.0872;a[1102]=-0.9962;a[1103]=-11.4301;a[1104]=276.0;a[1105]=0.1045;a[1106]=-0.9945;a[1107]=-9.5144;a[1108]=277.0;a[1109]=0.1219;a[1110]=-0.9925;a[1111]=-8.1443;a[1112]=278.0;a[1113]=0.1392;a[1114]=-0.9903;a[1115]=-7.1154;a[1116]=279.0;a[1117]=0.1564;a[1118]=-0.9877;a[1119]=-6.3138;a[1120]=280.0;a[1121]=0.1736;a[1122]=-0.9848;a[1123]=-5.6713;a[1124]=281.0;a[1125]=0.1908;a[1126]=-0.9816;a[1127]=-5.1446;a[1128]=282.0;a[1129]=0.2079;a[1130]=-0.9781;a[1131]=-4.7046;a[1132]=283.0;a[1133]=0.2250;a[1134]=-0.9744;a[1135]=-4.3315;a[1136]=284.0;a[1137]=0.2419;a[1138]=-0.9703;a[1139]=-4.0108;a[1140]=285.0;a[1141]=0.2588;a[1142]=-0.9659;a[1143]=-3.7321;a[1144]=286.0;a[1145]=0.2756;a[1146]=-0.9613;a[1147]=-3.4874;a[1148]=287.0;a[1149]=0.2924;a[1150]=-0.9563;a[1151]=-3.2709;a[1152]=288.0;a[1153]=0.3090;a[1154]=-0.9511;a[1155]=-3.0777;a[1156]=289.0;a[1157]=0.3256;a[1158]=-0.9455;a[1159]=-2.9042;a[1160]=290.0;a[1161]=0.3420;a[1162]=-0.9397;a[1163]=-2.7475;a[1164]=291.0;a[1165]=0.3584;a[1166]=-0.9336;a[1167]=-2.6051;a[1168]=292.0;a[1169]=0.3746;a[1170]=-0.9272;a[1171]=-2.4751;a[1172]=293.0;a[1173]=0.3907;a[1174]=-0.9205;a[1175]=-2.3559;a[1176]=294.0;a[1177]=0.4067;a[1178]=-0.9135;a[1179]=-2.2460;a[1180]=295.0;a[1181]=0.4226;a[1182]=-0.9063;a[1183]=-2.1445;a[1184]=296.0;a[1185]=0.4384;a[1186]=-0.8988;a[1187]=-2.0503;a[1188]=297.0;a[1189]=0.4540;a[1190]=-0.8910;a[1191]=-1.9626;a[1192]=298.0;a[1193]=0.4695;a[1194]=-0.8829;a[1195]=-1.8807;a[1196]=299.0;a[1197]=0.4848;a[1198]=-0.8746;a[1199]=-1.8040;a[1200]=300.0;a[1201]=0.5000;a[1202]=-0.8660;a[1203]=-1.7321;
 		a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[1209]=0.5299;a[1210]=-0.8480;a[1211]=-1.6003;a[1212]=303.0;a[1213]=0.5446;a[1214]=-0.8387;a[1215]=-1.5399;a[1216]=304.0;a[1217]=0.5592;a[1218]=-0.8290;a[1219]=-1.4826;a[1220]=305.0;a[1221]=0.5736;a[1222]=-0.8192;a[1223]=-1.4281;a[1224]=306.0;a[1225]=0.5878;a[1226]=-0.8090;a[1227]=-1.3764;a[1228]=307.0;a[1229]=0.6018;a[1230]=-0.7986;a[1231]=-1.3270;a[1232]=308.0;a[1233]=0.6157;a[1234]=-0.7880;a[1235]=-1.2799;a[1236]=309.0;a[1237]=0.6293;a[1238]=-0.7771;a[1239]=-1.2349;a[1240]=310.0;a[1241]=0.6428;a[1242]=-0.7660;a[1243]=-1.1918;a[1244]=311.0;a[1245]=0.6561;a[1246]=-0.7547;a[1247]=-1.1504;a[1248]=312.0;a[1249]=0.6691;a[1250]=-0.7431;a[1251]=-1.1106;a[1252]=313.0;a[1253]=0.6820;a[1254]=-0.7314;a[1255]=-1.0724;a[1256]=314.0;a[1257]=0.6947;a[1258]=-0.7193;a[1259]=-1.0355;a[1260]=315.0;a[1261]=0.7071;a[1262]=-0.7071;a[1263]=-1.0000;a[1264]=316.0;a[1265]=0.7193;a[1266]=-0.6947;a[1267]=-0.9657;a[1268]=317.0;a[1269]=0.7314;a[1270]=-0.6820;a[1271]=-0.9325;a[1272]=318.0;a[1273]=0.7431;a[1274]=-0.6691;a[1275]=-0.9004;a[1276]=319.0;a[1277]=0.7547;a[1278]=-0.6561;a[1279]=-0.8693;a[1280]=320.0;a[1281]=0.7660;a[1282]=-0.6428;a[1283]=-0.8391;a[1284]=321.0;a[1285]=0.7771;a[1286]=-0.6293;a[1287]=-0.8098;a[1288]=322.0;a[1289]=0.7880;a[1290]=-0.6157;a[1291]=-0.7813;a[1292]=323.0;a[1293]=0.7986;a[1294]=-0.6018;a[1295]=-0.7536;a[1296]=324.0;a[1297]=0.8090;a[1298]=-0.5878;a[1299]=-0.7265;a[1300]=325.0;a[1301]=0.8192;a[1302]=-0.5736;a[1303]=-0.7002;a[1304]=326.0;a[1305]=0.8290;a[1306]=-0.5592;a[1307]=-0.6745;a[1308]=327.0;a[1309]=0.8387;a[1310]=-0.5446;a[1311]=-0.6494;a[1312]=328.0;a[1313]=0.8480;a[1314]=-0.5299;a[1315]=-0.6249;a[1316]=329.0;a[1317]=0.8572;a[1318]=-0.5150;a[1319]=-0.6009;a[1320]=330.0;a[1321]=0.8660;a[1322]=-0.5000;a[1323]=-0.5774;a[1324]=331.0;a[1325]=0.8746;a[1326]=-0.4848;a[1327]=-0.5543;a[1328]=332.0;a[1329]=0.8829;a[1330]=-0.4695;a[1331]=-0.5317;a[1332]=333.0;a[1333]=0.8910;a[1334]=-0.4540;a[1335]=-0.5095;a[1336]=334.0;a[1337]=0.8988;a[1338]=-0.4384;a[1339]=-0.4877;a[1340]=335.0;a[1341]=0.9063;a[1342]=-0.4226;a[1343]=-0.4663;a[1344]=336.0;a[1345]=0.9135;a[1346]=-0.4067;a[1347]=-0.4452;a[1348]=337.0;a[1349]=0.9205;a[1350]=-0.3907;a[1351]=-0.4245;a[1352]=338.0;a[1353]=0.9272;a[1354]=-0.3746;a[1355]=-0.4040;a[1356]=339.0;a[1357]=0.9336;a[1358]=-0.3584;a[1359]=-0.3839;a[1360]=340.0;a[1361]=0.9397;a[1362]=-0.3420;a[1363]=-0.3640;a[1364]=341.0;a[1365]=0.9455;a[1366]=-0.3256;a[1367]=-0.3443;a[1368]=342.0;a[1369]=0.9511;a[1370]=-0.3090;a[1371]=-0.3249;a[1372]=343.0;a[1373]=0.9563;a[1374]=-0.2924;a[1375]=-0.3057;a[1376]=344.0;a[1377]=0.9613;a[1378]=-0.2756;a[1379]=-0.2867;a[1380]=345.0;a[1381]=0.9659;a[1382]=-0.2588;a[1383]=-0.2679;a[1384]=346.0;a[1385]=0.9703;a[1386]=-0.2419;a[1387]=-0.2493;a[1388]=347.0;a[1389]=0.9744;a[1390]=-0.2250;a[1391]=-0.2309;a[1392]=348.0;a[1393]=0.9781;a[1394]=-0.2079;a[1395]=-0.2126;a[1396]=349.0;a[1397]=0.9816;a[1398]=-0.1908;a[1399]=-0.1944;a[1400]=350.0;a[1401]=0.9848;a[1402]=-0.1736;a[1403]=-0.1763;a[1404]=351.0;a[1405]=0.9877;a[1406]=-0.1564;a[1407]=-0.1584;a[1408]=352.0;a[1409]=0.9903;a[1410]=-0.1392;a[1411]=-0.1405;a[1412]=353.0;a[1413]=0.9925;a[1414]=-0.1219;a[1415]=-0.1228;a[1416]=354.0;a[1417]=0.9945;a[1418]=-0.1045;a[1419]=-0.1051;a[1420]=355.0;a[1421]=0.9962;a[1422]=-0.0872;a[1423]=-0.0875;a[1424]=356.0;a[1425]=0.9976;a[1426]=-0.0698;a[1427]=-0.0699;a[1428]=357.0;a[1429]=0.9986;a[1430]=-0.0523;a[1431]=-0.0524;a[1432]=358.0;a[1433]=0.9994;a[1434]=-0.0349;a[1435]=-0.0349;a[1436]=359.0;a[1437]=0.9998;a[1438]=-0.0175;a[1439]=-0.0175;a[1440]=360.0;a[1441]=1.0000;a[1442]=0.0000;a[1443]=0.0000;
 
-		rx = ship_loc_dir_vel[4*(ship_index-1)+1];
-		ry = ship_loc_dir_vel[4*(ship_index-1)+2];
+		ship_x = ship_loc_dir_vel[4*(ship_index-1)+1];
+		ship_y = ship_loc_dir_vel[4*(ship_index-1)+2];
 		ship_dir = ship_loc_dir_vel[4*(ship_index-1)+3];
 		
 		int angleship = getAngleFromDir(ship_dir);	
@@ -882,13 +877,13 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 			// Iterate over each step along the current ray
 			for (double d = step; d < max_distance; d += step) {
 				// Calculate the current position along the ray
-				x = (int)(rx + d * cosa);
-				y = (int)(ry + d * sina);
+				x = (int)(ship_x + d * cosa);
+				y = (int)(ship_y + d * sina);
 				// Check if the current position is within the grid
 				if (self.isInside(x,y)){  
 					if(map[x][y]) {
 						// Update the range for this angle
-						range = d;	//edistance(rx,ry,x,y)?
+						range = d;	//edistance(ship_x,ship_y,x,y)?
 						// Store the range for this angle in the ranges array
 						int code = xy2idx(x,y);
 						//only add new obstacles
@@ -966,11 +961,11 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 	
 	//a ship calls this msgsrv to tell the map server to keep track of its new location
 	@priority(5)
-	msgsrv updateShipLocation(int idx, int rx, int ry, int ship_dir,int velocity, int ship_length, int ship_width){
+	msgsrv updateShipLocation(int idx, int ship_x, int ship_y, int ship_dir,int velocity, int ship_length, int ship_width){
 		int i = (idx-1)*4;
 		
-		ship_loc_dir_vel[i+1] = rx;
-		ship_loc_dir_vel[i+2] = ry;
+		ship_loc_dir_vel[i+1] = ship_x;
+		ship_loc_dir_vel[i+2] = ship_y;
 		ship_loc_dir_vel[i+3] = ship_dir;
 		ship_loc_dir_vel[i+4] = velocity;
 		
@@ -978,8 +973,8 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		double xmax = ship_length/2 + COLLISION_MARGIN;
 		double ymax = ship_width/2 + COLLISION_MARGIN;
 		
-		double a = (rx+0.5) * MAP_RESOL;
-		double b = (ry+0.5) * MAP_RESOL;
+		double a = (ship_x+0.5) * MAP_RESOL;
+		double b = (ship_y+0.5) * MAP_RESOL;
 		
 		double[2] p1,p2,p3,p4;
 		p1 = ship2map(xmax,ymax,a,b,ship_dir);
@@ -1004,8 +999,8 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 				rs2[2] = min(p1[1],p2[1]); rs2[3] = max(p1[1],p2[1]); 			
 				boolean collided = isRectIntersect(rs1,rs2);
 			/*
-				int dx = rx-ship_loc_dir_vel[4*(i-1)+1];
-				int dy = ry-ship_loc_dir_vel[4*(i-1)+2];
+				int dx = ship_x-ship_loc_dir_vel[4*(i-1)+1];
+				int dy = ship_y-ship_loc_dir_vel[4*(i-1)+2];
 				double d = dx*dx + dy*dy;//to avoid using sqrt()
 				d*=MAP_RESOL;
 				d*=MAP_RESOL;
@@ -1132,24 +1127,24 @@ map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;
 			// ship_index is current ship, do not calculate itself as obstacle
 			if ((i+1)==ship_index) continue;
 			// Get x and y for other ships
-			int rx=ship_loc_dir_vel[4*i+1];
-			int ry=ship_loc_dir_vel[4*i+2];
+			int ship_x=ship_loc_dir_vel[4*i+1];
+			int ship_y=ship_loc_dir_vel[4*i+2];
 			// Check that ship coordinates are inside map boundaries
-			if (isInside(rx,ry)) map[rx][ry]=true;
+			if (isInside(ship_x,ship_y)) map[ship_x][ship_y]=true;
 			 // Block narrow gap between ship and borders
 			 // if there is too little space to safely pass
-		    int gapleft = ry;
-		    int gapright = MAP_WIDTH - ry;
-		    int gaptop = rx;
-		    int gapbottom = MAP_HEIGHT - rx;
+		    int gapleft = ship_y;
+		    int gapright = MAP_WIDTH - ship_y;
+		    int gaptop = ship_x;
+		    int gapbottom = MAP_HEIGHT - ship_x;
 		    
 			// Check gap size compared to mininum required gap
 			// If gap is too small, set map tile to true (obstacle)
-		    if (gapleft<min_gap) for(int y=0;y<ry;y++) map[rx][y]=true;
-		    else if (gapright<min_gap) for(int y=ry+1;y<MAP_WIDTH;y++) map[rx][y]=true;
+		    if (gapleft<min_gap) for(int y=0;y<ship_y;y++) map[ship_x][y]=true;
+		    else if (gapright<min_gap) for(int y=ship_y+1;y<MAP_WIDTH;y++) map[ship_x][y]=true;
 		    
-		    if (gaptop<min_gap) for(int x=0;x<rx;x++) map[x][ry]=true;
-		    else if (gapbottom<min_gap) for(int x=rx+1;x<MAP_HEIGHT;x++) map[x][ry]=true;	
+		    if (gaptop<min_gap) for(int x=0;x<ship_x;x++) map[x][ship_y]=true;
+		    else if (gapbottom<min_gap) for(int x=ship_x+1;x<MAP_HEIGHT;x++) map[x][ship_y]=true;	
 			
 			// If ship is moving, mark next cells in its moving direction as occupied (in the future)
 			int ship_dir = ship_loc_dir_vel[4*i+3];
@@ -1162,8 +1157,8 @@ map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;
 				if (potential_occupied_cells < 2) potential_occupied_cells = 2;
 				
 				for (j=1;j<=potential_occupied_cells;j++){
-					int[2] p = {rx + j*nxt[ship_dir][0], ry + j*nxt[ship_dir][1]};
-					//getNeighborAtDir(rx,ry,ship_dir);
+					int[2] p = {ship_x + j*nxt[ship_dir][0], ship_y + j*nxt[ship_dir][1]};
+					//getNeighborAtDir(ship_x,ship_y,ship_dir);
 					// Check that coordinates are inside map boundary
 					if (isInside(p[0],p[1])) {
 						map[p[0]][p[1]]=true;						
