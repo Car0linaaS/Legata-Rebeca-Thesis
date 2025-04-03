@@ -33,7 +33,9 @@ env int FIELD_OF_VIEW = 180;		//field of view (LIDAR sensor)
 env int LASERSCAN_RATE = 100;	//7Hz
 env double LASERSCAN_MAX_DISTANCE = 10.0;	//= max range in meters
 
-// ??
+// If path goes from starting tile to one up, one left, it will try and combine
+// those steps to one diagonal up-left, but does not account for cases
+// when the path was chosen to avoid obstacle corners
 env boolean COMBINE_ZICZAC = true;
 
 // Used for path??
@@ -76,7 +78,7 @@ reactiveclass Ship(50) {
 		MapServer theMap;
 	}
 	statevars{
-		byte rindex;	//numerical index of the ship, starting from 1
+		byte ship_index;	//numerical index of the ship, starting from 1
 		int targetX, targetY;  // target goal coordinates ??
 		int rx, ry, ship_dir, velocity; //coordinats, direction and speed for ship
 		int distance2target;  // distance from ship to target
@@ -112,7 +114,7 @@ reactiveclass Ship(50) {
 		ship_draught = s_draught;
 		vis_range = VISRANGEOK;
 		
-		rindex = idx;  // Assigning ship index from constructor value
+		ship_index = idx;  // Assigning ship index from constructor value
 		int[2] p1 = {x,y};  // Ship's current xy-coordinate??
 		int[2] p2 = {tx,ty};	// Ship's target xy-coordinate??
 		// Ship's current x and y coordinates, direction, and target x y coordinates
@@ -277,7 +279,7 @@ reactiveclass Ship(50) {
 			targets[0]++;
 			targets[targets[0]] = code;
 		}
-		theMap.generatePath(self,rindex,rx,ry,x,y,ship_length,ship_width);
+		theMap.generatePath(self,ship_index,rx,ry,x,y,ship_length,ship_width);
 	}	
 
 	int getNextDir(){
@@ -340,7 +342,7 @@ reactiveclass Ship(50) {
 		if (isInside(x,y)){
 			ship_dir=dir;rx=x;ry=y; 
 			moved=true;		
-			theMap.updateShipLocation(rindex,rx,ry,ship_dir,velocity,ship_length,ship_width);
+			theMap.updateShipLocation(ship_index,rx,ry,ship_dir,velocity,ship_length,ship_width);
 			distance2target = round( odistance(rx,ry,targetX,targetY) );
 			if (stop) stop(false);
 		}
@@ -573,7 +575,7 @@ reactiveclass Ship(50) {
 			if (targets[0]>0){
 				stop(true);
 				int[2]t = idx2xy(targets[targets[0]]);
-				theMap.generatePath(self,rindex,rx,ry,t[0],t[1],ship_length,ship_width);
+				theMap.generatePath(self,ship_index,rx,ry,t[0],t[1],ship_length,ship_width);
 			}
 		} else {
 			int ndir = getNextDir();
@@ -584,7 +586,7 @@ reactiveclass Ship(50) {
 				if (delta<0) delta = -delta;
 				time_to_rotate = round(1000.0*45*delta / ship_ANGULAR_VELOCITY);
 				ship_dir = ndir; //rotate the ship to the next direction		
-				theMap.updateShipLocation(rindex,rx,ry,ship_dir,velocity,ship_length,ship_width);
+				theMap.updateShipLocation(ship_index,rx,ry,ship_dir,velocity,ship_length,ship_width);
 			} 			
 			if (time_to_rotate>0){
 				updateMovingStatus(moveNext) after(time_to_rotate);
@@ -812,7 +814,8 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 			
 	//modelling obstacle detection with laser beams	
 	@priority(1)
-	msgsrv scanObstacles(Ship ship,int rindex,int rate,int fov,int max_distance){	
+	msgsrv scanObstacles(Ship ship,int ship_index,int rate,int fov,int max_distance){	
+		// nxt contains the offset to access neighbours
 		int[8][2] nxt = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
 		int i,j,k,rx,ry,ship_dir,ship_velocity;
 		
@@ -829,7 +832,7 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		
 		
 		for (i=1;i<=ship_loc_dir_vel[0];i++){
-			if (i!=rindex){
+			if (i!=ship_index){
 				rx=ship_loc_dir_vel[4*(i-1)+1];
 				ry=ship_loc_dir_vel[4*(i-1)+2];
 				ship_velocity = ship_loc_dir_vel[4*(i-1)+3];
@@ -851,9 +854,9 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		a[804]=201.0;a[805]=-0.9336;a[806]=-0.3584;a[807]=0.3839;a[808]=202.0;a[809]=-0.9272;a[810]=-0.3746;a[811]=0.4040;a[812]=203.0;a[813]=-0.9205;a[814]=-0.3907;a[815]=0.4245;a[816]=204.0;a[817]=-0.9135;a[818]=-0.4067;a[819]=0.4452;a[820]=205.0;a[821]=-0.9063;a[822]=-0.4226;a[823]=0.4663;a[824]=206.0;a[825]=-0.8988;a[826]=-0.4384;a[827]=0.4877;a[828]=207.0;a[829]=-0.8910;a[830]=-0.4540;a[831]=0.5095;a[832]=208.0;a[833]=-0.8829;a[834]=-0.4695;a[835]=0.5317;a[836]=209.0;a[837]=-0.8746;a[838]=-0.4848;a[839]=0.5543;a[840]=210.0;a[841]=-0.8660;a[842]=-0.5000;a[843]=0.5774;a[844]=211.0;a[845]=-0.8572;a[846]=-0.5150;a[847]=0.6009;a[848]=212.0;a[849]=-0.8480;a[850]=-0.5299;a[851]=0.6249;a[852]=213.0;a[853]=-0.8387;a[854]=-0.5446;a[855]=0.6494;a[856]=214.0;a[857]=-0.8290;a[858]=-0.5592;a[859]=0.6745;a[860]=215.0;a[861]=-0.8192;a[862]=-0.5736;a[863]=0.7002;a[864]=216.0;a[865]=-0.8090;a[866]=-0.5878;a[867]=0.7265;a[868]=217.0;a[869]=-0.7986;a[870]=-0.6018;a[871]=0.7536;a[872]=218.0;a[873]=-0.7880;a[874]=-0.6157;a[875]=0.7813;a[876]=219.0;a[877]=-0.7771;a[878]=-0.6293;a[879]=0.8098;a[880]=220.0;a[881]=-0.7660;a[882]=-0.6428;a[883]=0.8391;a[884]=221.0;a[885]=-0.7547;a[886]=-0.6561;a[887]=0.8693;a[888]=222.0;a[889]=-0.7431;a[890]=-0.6691;a[891]=0.9004;a[892]=223.0;a[893]=-0.7314;a[894]=-0.6820;a[895]=0.9325;a[896]=224.0;a[897]=-0.7193;a[898]=-0.6947;a[899]=0.9657;a[900]=225.0;a[901]=-0.7071;a[902]=-0.7071;a[903]=1.0000;a[904]=226.0;a[905]=-0.6947;a[906]=-0.7193;a[907]=1.0355;a[908]=227.0;a[909]=-0.6820;a[910]=-0.7314;a[911]=1.0724;a[912]=228.0;a[913]=-0.6691;a[914]=-0.7431;a[915]=1.1106;a[916]=229.0;a[917]=-0.6561;a[918]=-0.7547;a[919]=1.1504;a[920]=230.0;a[921]=-0.6428;a[922]=-0.7660;a[923]=1.1918;a[924]=231.0;a[925]=-0.6293;a[926]=-0.7771;a[927]=1.2349;a[928]=232.0;a[929]=-0.6157;a[930]=-0.7880;a[931]=1.2799;a[932]=233.0;a[933]=-0.6018;a[934]=-0.7986;a[935]=1.3270;a[936]=234.0;a[937]=-0.5878;a[938]=-0.8090;a[939]=1.3764;a[940]=235.0;a[941]=-0.5736;a[942]=-0.8192;a[943]=1.4281;a[944]=236.0;a[945]=-0.5592;a[946]=-0.8290;a[947]=1.4826;a[948]=237.0;a[949]=-0.5446;a[950]=-0.8387;a[951]=1.5399;a[952]=238.0;a[953]=-0.5299;a[954]=-0.8480;a[955]=1.6003;a[956]=239.0;a[957]=-0.5150;a[958]=-0.8572;a[959]=1.6643;a[960]=240.0;a[961]=-0.5000;a[962]=-0.8660;a[963]=1.7321;a[964]=241.0;a[965]=-0.4848;a[966]=-0.8746;a[967]=1.8040;a[968]=242.0;a[969]=-0.4695;a[970]=-0.8829;a[971]=1.8807;a[972]=243.0;a[973]=-0.4540;a[974]=-0.8910;a[975]=1.9626;a[976]=244.0;a[977]=-0.4384;a[978]=-0.8988;a[979]=2.0503;a[980]=245.0;a[981]=-0.4226;a[982]=-0.9063;a[983]=2.1445;a[984]=246.0;a[985]=-0.4067;a[986]=-0.9135;a[987]=2.2460;a[988]=247.0;a[989]=-0.3907;a[990]=-0.9205;a[991]=2.3559;a[992]=248.0;a[993]=-0.3746;a[994]=-0.9272;a[995]=2.4751;a[996]=249.0;a[997]=-0.3584;a[998]=-0.9336;a[999]=2.6051;a[1000]=250.0;a[1001]=-0.3420;a[1002]=-0.9397;a[1003]=2.7475;a[1004]=251.0;a[1005]=-0.3256;a[1006]=-0.9455;a[1007]=2.9042;a[1008]=252.0;a[1009]=-0.3090;a[1010]=-0.9511;a[1011]=3.0777;a[1012]=253.0;a[1013]=-0.2924;a[1014]=-0.9563;a[1015]=3.2709;a[1016]=254.0;a[1017]=-0.2756;a[1018]=-0.9613;a[1019]=3.4874;a[1020]=255.0;a[1021]=-0.2588;a[1022]=-0.9659;a[1023]=3.7321;a[1024]=256.0;a[1025]=-0.2419;a[1026]=-0.9703;a[1027]=4.0108;a[1028]=257.0;a[1029]=-0.2250;a[1030]=-0.9744;a[1031]=4.3315;a[1032]=258.0;a[1033]=-0.2079;a[1034]=-0.9781;a[1035]=4.7046;a[1036]=259.0;a[1037]=-0.1908;a[1038]=-0.9816;a[1039]=5.1446;a[1040]=260.0;a[1041]=-0.1736;a[1042]=-0.9848;a[1043]=5.6713;a[1044]=261.0;a[1045]=-0.1564;a[1046]=-0.9877;a[1047]=6.3138;a[1048]=262.0;a[1049]=-0.1392;a[1050]=-0.9903;a[1051]=7.1154;a[1052]=263.0;a[1053]=-0.1219;a[1054]=-0.9925;a[1055]=8.1443;a[1056]=264.0;a[1057]=-0.1045;a[1058]=-0.9945;a[1059]=9.5144;a[1060]=265.0;a[1061]=-0.0872;a[1062]=-0.9962;a[1063]=11.4301;a[1064]=266.0;a[1065]=-0.0698;a[1066]=-0.9976;a[1067]=14.3007;a[1068]=267.0;a[1069]=-0.0523;a[1070]=-0.9986;a[1071]=19.0811;a[1072]=268.0;a[1073]=-0.0349;a[1074]=-0.9994;a[1075]=28.6363;a[1076]=269.0;a[1077]=-0.0175;a[1078]=-0.9998;a[1079]=57.2900;a[1080]=270.0;a[1081]=0.0000;a[1082]=-1.0000;a[1083]=5443746451065123.0000;a[1084]=271.0;a[1085]=0.0175;a[1086]=-0.9998;a[1087]=-57.2900;a[1088]=272.0;a[1089]=0.0349;a[1090]=-0.9994;a[1091]=-28.6363;a[1092]=273.0;a[1093]=0.0523;a[1094]=-0.9986;a[1095]=-19.0811;a[1096]=274.0;a[1097]=0.0698;a[1098]=-0.9976;a[1099]=-14.3007;a[1100]=275.0;a[1101]=0.0872;a[1102]=-0.9962;a[1103]=-11.4301;a[1104]=276.0;a[1105]=0.1045;a[1106]=-0.9945;a[1107]=-9.5144;a[1108]=277.0;a[1109]=0.1219;a[1110]=-0.9925;a[1111]=-8.1443;a[1112]=278.0;a[1113]=0.1392;a[1114]=-0.9903;a[1115]=-7.1154;a[1116]=279.0;a[1117]=0.1564;a[1118]=-0.9877;a[1119]=-6.3138;a[1120]=280.0;a[1121]=0.1736;a[1122]=-0.9848;a[1123]=-5.6713;a[1124]=281.0;a[1125]=0.1908;a[1126]=-0.9816;a[1127]=-5.1446;a[1128]=282.0;a[1129]=0.2079;a[1130]=-0.9781;a[1131]=-4.7046;a[1132]=283.0;a[1133]=0.2250;a[1134]=-0.9744;a[1135]=-4.3315;a[1136]=284.0;a[1137]=0.2419;a[1138]=-0.9703;a[1139]=-4.0108;a[1140]=285.0;a[1141]=0.2588;a[1142]=-0.9659;a[1143]=-3.7321;a[1144]=286.0;a[1145]=0.2756;a[1146]=-0.9613;a[1147]=-3.4874;a[1148]=287.0;a[1149]=0.2924;a[1150]=-0.9563;a[1151]=-3.2709;a[1152]=288.0;a[1153]=0.3090;a[1154]=-0.9511;a[1155]=-3.0777;a[1156]=289.0;a[1157]=0.3256;a[1158]=-0.9455;a[1159]=-2.9042;a[1160]=290.0;a[1161]=0.3420;a[1162]=-0.9397;a[1163]=-2.7475;a[1164]=291.0;a[1165]=0.3584;a[1166]=-0.9336;a[1167]=-2.6051;a[1168]=292.0;a[1169]=0.3746;a[1170]=-0.9272;a[1171]=-2.4751;a[1172]=293.0;a[1173]=0.3907;a[1174]=-0.9205;a[1175]=-2.3559;a[1176]=294.0;a[1177]=0.4067;a[1178]=-0.9135;a[1179]=-2.2460;a[1180]=295.0;a[1181]=0.4226;a[1182]=-0.9063;a[1183]=-2.1445;a[1184]=296.0;a[1185]=0.4384;a[1186]=-0.8988;a[1187]=-2.0503;a[1188]=297.0;a[1189]=0.4540;a[1190]=-0.8910;a[1191]=-1.9626;a[1192]=298.0;a[1193]=0.4695;a[1194]=-0.8829;a[1195]=-1.8807;a[1196]=299.0;a[1197]=0.4848;a[1198]=-0.8746;a[1199]=-1.8040;a[1200]=300.0;a[1201]=0.5000;a[1202]=-0.8660;a[1203]=-1.7321;
 		a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[1209]=0.5299;a[1210]=-0.8480;a[1211]=-1.6003;a[1212]=303.0;a[1213]=0.5446;a[1214]=-0.8387;a[1215]=-1.5399;a[1216]=304.0;a[1217]=0.5592;a[1218]=-0.8290;a[1219]=-1.4826;a[1220]=305.0;a[1221]=0.5736;a[1222]=-0.8192;a[1223]=-1.4281;a[1224]=306.0;a[1225]=0.5878;a[1226]=-0.8090;a[1227]=-1.3764;a[1228]=307.0;a[1229]=0.6018;a[1230]=-0.7986;a[1231]=-1.3270;a[1232]=308.0;a[1233]=0.6157;a[1234]=-0.7880;a[1235]=-1.2799;a[1236]=309.0;a[1237]=0.6293;a[1238]=-0.7771;a[1239]=-1.2349;a[1240]=310.0;a[1241]=0.6428;a[1242]=-0.7660;a[1243]=-1.1918;a[1244]=311.0;a[1245]=0.6561;a[1246]=-0.7547;a[1247]=-1.1504;a[1248]=312.0;a[1249]=0.6691;a[1250]=-0.7431;a[1251]=-1.1106;a[1252]=313.0;a[1253]=0.6820;a[1254]=-0.7314;a[1255]=-1.0724;a[1256]=314.0;a[1257]=0.6947;a[1258]=-0.7193;a[1259]=-1.0355;a[1260]=315.0;a[1261]=0.7071;a[1262]=-0.7071;a[1263]=-1.0000;a[1264]=316.0;a[1265]=0.7193;a[1266]=-0.6947;a[1267]=-0.9657;a[1268]=317.0;a[1269]=0.7314;a[1270]=-0.6820;a[1271]=-0.9325;a[1272]=318.0;a[1273]=0.7431;a[1274]=-0.6691;a[1275]=-0.9004;a[1276]=319.0;a[1277]=0.7547;a[1278]=-0.6561;a[1279]=-0.8693;a[1280]=320.0;a[1281]=0.7660;a[1282]=-0.6428;a[1283]=-0.8391;a[1284]=321.0;a[1285]=0.7771;a[1286]=-0.6293;a[1287]=-0.8098;a[1288]=322.0;a[1289]=0.7880;a[1290]=-0.6157;a[1291]=-0.7813;a[1292]=323.0;a[1293]=0.7986;a[1294]=-0.6018;a[1295]=-0.7536;a[1296]=324.0;a[1297]=0.8090;a[1298]=-0.5878;a[1299]=-0.7265;a[1300]=325.0;a[1301]=0.8192;a[1302]=-0.5736;a[1303]=-0.7002;a[1304]=326.0;a[1305]=0.8290;a[1306]=-0.5592;a[1307]=-0.6745;a[1308]=327.0;a[1309]=0.8387;a[1310]=-0.5446;a[1311]=-0.6494;a[1312]=328.0;a[1313]=0.8480;a[1314]=-0.5299;a[1315]=-0.6249;a[1316]=329.0;a[1317]=0.8572;a[1318]=-0.5150;a[1319]=-0.6009;a[1320]=330.0;a[1321]=0.8660;a[1322]=-0.5000;a[1323]=-0.5774;a[1324]=331.0;a[1325]=0.8746;a[1326]=-0.4848;a[1327]=-0.5543;a[1328]=332.0;a[1329]=0.8829;a[1330]=-0.4695;a[1331]=-0.5317;a[1332]=333.0;a[1333]=0.8910;a[1334]=-0.4540;a[1335]=-0.5095;a[1336]=334.0;a[1337]=0.8988;a[1338]=-0.4384;a[1339]=-0.4877;a[1340]=335.0;a[1341]=0.9063;a[1342]=-0.4226;a[1343]=-0.4663;a[1344]=336.0;a[1345]=0.9135;a[1346]=-0.4067;a[1347]=-0.4452;a[1348]=337.0;a[1349]=0.9205;a[1350]=-0.3907;a[1351]=-0.4245;a[1352]=338.0;a[1353]=0.9272;a[1354]=-0.3746;a[1355]=-0.4040;a[1356]=339.0;a[1357]=0.9336;a[1358]=-0.3584;a[1359]=-0.3839;a[1360]=340.0;a[1361]=0.9397;a[1362]=-0.3420;a[1363]=-0.3640;a[1364]=341.0;a[1365]=0.9455;a[1366]=-0.3256;a[1367]=-0.3443;a[1368]=342.0;a[1369]=0.9511;a[1370]=-0.3090;a[1371]=-0.3249;a[1372]=343.0;a[1373]=0.9563;a[1374]=-0.2924;a[1375]=-0.3057;a[1376]=344.0;a[1377]=0.9613;a[1378]=-0.2756;a[1379]=-0.2867;a[1380]=345.0;a[1381]=0.9659;a[1382]=-0.2588;a[1383]=-0.2679;a[1384]=346.0;a[1385]=0.9703;a[1386]=-0.2419;a[1387]=-0.2493;a[1388]=347.0;a[1389]=0.9744;a[1390]=-0.2250;a[1391]=-0.2309;a[1392]=348.0;a[1393]=0.9781;a[1394]=-0.2079;a[1395]=-0.2126;a[1396]=349.0;a[1397]=0.9816;a[1398]=-0.1908;a[1399]=-0.1944;a[1400]=350.0;a[1401]=0.9848;a[1402]=-0.1736;a[1403]=-0.1763;a[1404]=351.0;a[1405]=0.9877;a[1406]=-0.1564;a[1407]=-0.1584;a[1408]=352.0;a[1409]=0.9903;a[1410]=-0.1392;a[1411]=-0.1405;a[1412]=353.0;a[1413]=0.9925;a[1414]=-0.1219;a[1415]=-0.1228;a[1416]=354.0;a[1417]=0.9945;a[1418]=-0.1045;a[1419]=-0.1051;a[1420]=355.0;a[1421]=0.9962;a[1422]=-0.0872;a[1423]=-0.0875;a[1424]=356.0;a[1425]=0.9976;a[1426]=-0.0698;a[1427]=-0.0699;a[1428]=357.0;a[1429]=0.9986;a[1430]=-0.0523;a[1431]=-0.0524;a[1432]=358.0;a[1433]=0.9994;a[1434]=-0.0349;a[1435]=-0.0349;a[1436]=359.0;a[1437]=0.9998;a[1438]=-0.0175;a[1439]=-0.0175;a[1440]=360.0;a[1441]=1.0000;a[1442]=0.0000;a[1443]=0.0000;
 
-		rx = ship_loc_dir_vel[4*(rindex-1)+1];
-		ry = ship_loc_dir_vel[4*(rindex-1)+2];
-		ship_dir = ship_loc_dir_vel[4*(rindex-1)+3];
+		rx = ship_loc_dir_vel[4*(ship_index-1)+1];
+		ry = ship_loc_dir_vel[4*(ship_index-1)+2];
+		ship_dir = ship_loc_dir_vel[4*(ship_index-1)+3];
 		
 		int angleship = getAngleFromDir(ship_dir);	
 		int half_fov = round((double)fov/2.0);
@@ -907,7 +910,7 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
   			//ranges[ranges[0]]=range;
  		}
 		ship.onLaserScan(scandata, angles) deadline(rate+5);	
-		scanObstacles(ship,rindex,rate,fov,max_distance) after(rate);
+		scanObstacles(ship,ship_index,rate,fov,max_distance) after(rate);
 	}
 	
 	//convert a point(x,y) in ship's coordinates to map coordinates. The ship is at (a,b) in map.
@@ -1094,7 +1097,7 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		return p;	
 	}
 	
-	//generate a path from (x,y) to (targetX,targetY) using a selected algorithm
+	//generate a path from (x,y) to (targetX,targetY) using a selected algorithm (A*?)
 	@priority(3)
 	msgsrv generatePath(Ship ship,int ship_index,int startX, int startY, int targetX, int targetY, int ship_length, int ship_width){		
 		//prepare occupancy grid with static obstacles and mobile obstacles
@@ -1214,6 +1217,10 @@ map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;
 		// "found" is a variable to flag that the path algorithm has arrived at target destination
 		boolean found=false;
 
+		// lowest_f_cost is the lowest f cost calculated so far
+		// lowest_f_cost_x is the x-coordinate for the most promising node this iteration
+		// lowest_f_cost_y is the y-coordinate for the most promising node this iteration
+		// lowest_f_cost_open_index is the open[] index for the most promising node this iteration
 		while (true){
 			double lowest_f_cost=INFINITY;
 			lowest_f_cost_open_index=-1; lowest_f_cost_x=-1; lowest_f_cost_y=-1;
@@ -1255,6 +1262,9 @@ map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;
 				}
 			}
 			
+			// This loop is the heart of the A* expansion step—it evaluates neighboring 
+			// cells of the current best (lowest f-cost) node and decides which ones to 
+			// add to the open list for future consideration.
 			for(k=0;k<7;k++){
 				int nx = lowest_f_cost_x + nxt[k][0];
 				int ny = lowest_f_cost_y + nxt[k][1];
@@ -1285,7 +1295,7 @@ map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;
 		for(i=0;i<BUFFER_SIZE;i++){ path[i]=0; rpath[i]=0; }
 		
 		if (found){
-			//construct the path based on traceback graph 
+			//construct the path based on traceback graph (walk backwards) 
 			i=targetX;j=targetY;
 			rpath[0]=1;
 			rpath[1]=xy2idx(targetX,targetY);
@@ -1300,18 +1310,24 @@ map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;
 				}
 				i = lowest_f_cost_x; j=lowest_f_cost_y;
 			}
-			//get it in reversed order
+			//get it in correct order by reversing the traceback graph
 			path[0]=0;
 			for(i=rpath[0];i>0;i--){
 				path[0]++;
 				path[path[0]]=rpath[i];
 			}
+			// Check that starting and ending position in calculated path is the
+			// same as ship starting and target coordinates
 			assertion(path[1]==xy2idx(startX,startY) && path[path[0]] == xy2idx(targetX,targetY),"Incorrect path");
 			
-			//combine points of same direction or ziczac points
-			
+
+			/*--------------------------------------------------
+			Below: combine points of same direction or ziczac points
+			---------------------------------------------------*/
 			//use rpath as a buffer
-			for(i=0;i<BUFFER_SIZE;i++){ rpath[i]=0;}
+			for(i=0;i<BUFFER_SIZE;i++){
+				 rpath[i]=0;
+			}
 						
 			int prevx = startX, prevy = startY, prevdir = 9999, removex=-1, removey=-1;
 			for(i=2;i<=path[0];i++){
@@ -1346,10 +1362,12 @@ map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;
 				rpath[rpath[0]] = path[i];
 				prevx = node[0]; prevy = node[1]; prevdir = dir;
 			}
-			//copy rpath to path
-			for(i=0;i<BUFFER_SIZE;i++){ path[i]=rpath[i]; }
+			//copy rpath to path 
+			for(i=0;i<BUFFER_SIZE;i++){ 
+				path[i]=rpath[i]; 
+			}
 		} else {
-			//assertion(false,"Path not found");				
+			assertion(false,"Path not found");				
 		}
 		
 		ship.onNewPath(path);
