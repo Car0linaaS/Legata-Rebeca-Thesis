@@ -78,7 +78,7 @@ reactiveclass Ship(50) {
 	statevars{
 		byte rindex;	//numerical index of the ship, starting from 1
 		int targetX, targetY;  // target goal coordinates ??
-		int rx, ry, rdir, velocity; //coordinats, direction and speed for ship
+		int rx, ry, ship_dir, velocity; //coordinats, direction and speed for ship
 		int distance2target;  // distance from ship to target
 		int target_tolerance;
 		int[101] obstacles;	//nearest obstacles in 8 possible directions
@@ -116,7 +116,7 @@ reactiveclass Ship(50) {
 		int[2] p1 = {x,y};  // Ship's current xy-coordinate??
 		int[2] p2 = {tx,ty};	// Ship's target xy-coordinate??
 		// Ship's current x and y coordinates, direction, and target x y coordinates
-		rx = p1[0]; ry = p1[1]; rdir = DIR_N; targetX = p2[0]; targetY = p2[1]; 
+		rx = p1[0]; ry = p1[1]; ship_dir = DIR_N; targetX = p2[0]; targetY = p2[1]; 
 		distance2target = (int)INFINITY; 
 		target_tolerance = tolerance;  // Assigning from constructor value
 		default_velocity = round(real_velocity / MAP_RESOL); //velocity as cells per second
@@ -281,7 +281,7 @@ reactiveclass Ship(50) {
 	}	
 
 	int getNextDir(){
-		if (moveidx>=moves[0]) return rdir;
+		if (moveidx>=moves[0]) return ship_dir;
 		int[2] nxt = idx2xy(moves[moveidx+1]);
 		int dx = nxt[0] - rx;
 		int dy = nxt[1] - ry;
@@ -316,7 +316,7 @@ reactiveclass Ship(50) {
 		return p;	
 	}
 	
-	int[8][2] getNeighbors(int x, int y){
+	int[8][2] getneighbours(int x, int y){
 		//neighboring cells in 8 directions: e, ne, n, nw, w, sw, s, se
 		int[8][2] nxt = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
 		int[8][2] p ;
@@ -338,9 +338,9 @@ reactiveclass Ship(50) {
 		int y = ry + dy;
 		boolean moved = false;
 		if (isInside(x,y)){
-			rdir=dir;rx=x;ry=y; 
+			ship_dir=dir;rx=x;ry=y; 
 			moved=true;		
-			theMap.updateShipLocation(rindex,rx,ry,rdir,velocity,ship_length,ship_width);
+			theMap.updateShipLocation(rindex,rx,ry,ship_dir,velocity,ship_length,ship_width);
 			distance2target = round( odistance(rx,ry,targetX,targetY) );
 			if (stop) stop(false);
 		}
@@ -349,9 +349,9 @@ reactiveclass Ship(50) {
 	
 	//rotate the ship N steps (1 step = 45 degrees), positive = counter-clockwise, negative = clockwise
 	void rotate(int steps){
-		rdir += steps;
-		rdir %= 8;
-		while (rdir<0) rdir+=8;
+		ship_dir += steps;
+		ship_dir %= 8;
+		while (ship_dir<0) ship_dir+=8;
 	}
 	
 	void rotate180(){
@@ -381,6 +381,8 @@ reactiveclass Ship(50) {
 	}
 	
 	//Octile distance
+	// It accurately estimates the cost of travel by 
+	// considering the relative cost of diagonal and orthogonal moves
 	double odistance(double x1, double y1, double x2, double y2){
 		double dx = abs(x2-x1);
 		double dy = abs(y2-y1);
@@ -411,7 +413,7 @@ reactiveclass Ship(50) {
 		//update obstacles in range	
 		for(int i=0;i<BUFFER_SIZE;i++) obstacles[i]=scandata[i];
 		
-		front_obstacle = (int)(getObstacleAtDir(rdir,true));
+		front_obstacle = (int)(getObstacleAtDir(ship_dir,true));
 				
 		//only update moving status when not reached target yet
 		if (isWaiting || (scan_before_move && distance2target > target_tolerance))
@@ -493,14 +495,14 @@ reactiveclass Ship(50) {
 	//get the direction with farthest obstacle (depends on what the ship sees from laser scan)
 	//return {direction, distance}
 	int[2] getDirWithoutObstacle(int random,int mind){
-		int maxdir = rdir;
+		int maxdir = ship_dir;
 		int maxd = 0;
 		/*
 		int[8] dirs;
 		for(int dir=0;dir<8;dir++){
 			dirs[dir]=0;
 		}
-		int[3] backdirs = {normalizeDir(rdir+4),normalizeDir(rdir+3),normalizeDir(rdir+5)};
+		int[3] backdirs = {normalizeDir(ship_dir+4),normalizeDir(ship_dir+3),normalizeDir(ship_dir+5)};
 		for(int i=0;i<3;i++){
 			int dir = backdirs[i];
 			int d = (int)(getObstacleAtDir(dir,true));	
@@ -576,26 +578,26 @@ reactiveclass Ship(50) {
 		} else {
 			int ndir = getNextDir();
 			int time_to_rotate = 0;
-			if (rdir!=ndir){
+			if (ship_dir!=ndir){
 				velocity = 0;
-				int delta = ndir - rdir;
+				int delta = ndir - ship_dir;
 				if (delta<0) delta = -delta;
 				time_to_rotate = round(1000.0*45*delta / ship_ANGULAR_VELOCITY);
-				rdir = ndir; //rotate the ship to the next direction		
-				theMap.updateShipLocation(rindex,rx,ry,rdir,velocity,ship_length,ship_width);
+				ship_dir = ndir; //rotate the ship to the next direction		
+				theMap.updateShipLocation(rindex,rx,ry,ship_dir,velocity,ship_length,ship_width);
 			} 			
 			if (time_to_rotate>0){
 				updateMovingStatus(moveNext) after(time_to_rotate);
 			} else {
-				boolean diag = rdir % 2 >0;
+				boolean diag = ship_dir % 2 >0;
 				double steplen = diag ? CELL_DIAG : CELL_WIDTH;
 				int stepwait = diag ? default_time_cross_diag : default_time_cross;
-				double distance = getObstacleAtDir(rdir,false);
+				double distance = getObstacleAtDir(ship_dir,false);
 				front_obstacle = distance==INFINITY?(int)INFINITY:(int)(distance / steplen);
 				double expected_distance = steplen + ship_length/2 + STOP_ZONE;
 				if (distance > expected_distance){
 					if (velocity <= 0 ) velocity = default_velocity;
-					move(rdir,1,moveidx==moves[0]);	//always just move 1 step
+					move(ship_dir,1,moveidx==moves[0]);	//always just move 1 step
 					if (xy2idx(rx,ry) == moves[moveidx+1]) moveidx++;
 					waits = 0; isWaiting = false;
 					if (moveNext) updateMovingStatus(moveNext) after(stepwait);
@@ -607,8 +609,8 @@ reactiveclass Ship(50) {
 					//replan path if it has been waiting long enough
 					if (waits>0 && (waits % max_waiting_rounds == 0)){
 						failures++;
-						int odir = rdir;
-						//int redir = (rdir+4) % 8;
+						int odir = ship_dir;
+						//int redir = (ship_dir+4) % 8;
 						//int maxback = (int)getObstacleAtDir(redir,true);
 						int[2] od = getDirWithoutObstacle(?(0,1,2,3),5); int redir = od[0]; int maxback = od[1];				
 						int backsteps = ?(4,6,8,10,12);
@@ -631,7 +633,7 @@ reactiveclass Ship(50) {
 			if (failures>0) failures--;
 			for(int i=0;i<BUFFER_SIZE;i++) moves[i] = path[i];
 			//start moving
-			//rdir = getNextDir();
+			//ship_dir = getNextDir();
 			velocity = default_velocity;
 			if (!scan_before_move) updateMovingStatus(!scan_before_move);
 		} else {
@@ -640,8 +642,8 @@ reactiveclass Ship(50) {
 			if (failures>2){
 				assertion(false,"the ship seems to get stuck");
 			} else {
-				int odir = rdir;
-				//int redir = (rdir+4) % 8;
+				int odir = ship_dir;
+				//int redir = (ship_dir+4) % 8;
 				//int maxback = (int)getObstacleAtDir(redir,true);
 				int[2] od = getDirWithoutObstacle(?(0,1,2,3),5); int redir = od[0]; int maxback = od[1];				
 				int backsteps = ?(4,6,8,10,12);
@@ -729,6 +731,7 @@ reactiveclass MapServer(50) {
 		return ( sign(x-x1)*sign(x-x2) )<=0;
 	}
 	
+	// Check that coordinate is inside map boundaries
 	boolean isInside(int x, int y){
 		return x>=0 && x<=XMAX && y>=0 && y<=YMAX;
 	}		
@@ -811,7 +814,7 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 	@priority(1)
 	msgsrv scanObstacles(Ship ship,int rindex,int rate,int fov,int max_distance){	
 		int[8][2] nxt = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
-		int i,j,k,rx,ry,rdir,rspeed;
+		int i,j,k,rx,ry,ship_dir,ship_velocity;
 		
 		//prepare scan data here --> list of nearest obstacles around the ship, return (X,Y) coordinates to the ship's axises
 		int[101] scandata;
@@ -829,11 +832,11 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 			if (i!=rindex){
 				rx=ship_loc_dir_vel[4*(i-1)+1];
 				ry=ship_loc_dir_vel[4*(i-1)+2];
-				rspeed = ship_loc_dir_vel[4*(i-1)+3];
-				rdir = ship_loc_dir_vel[4*(i-1)+4];
+				ship_velocity = ship_loc_dir_vel[4*(i-1)+3];
+				ship_dir = ship_loc_dir_vel[4*(i-1)+4];
 				if (isInside(rx,ry)) map[rx][ry]=true;
 				/*
-				int[8][2] ns = getNeighbors(rx,ry);
+				int[8][2] ns = getneighbours(rx,ry);
 				for(int ii=0;ii<8;ii++){
 					if (isInside(ns[i][0],ns[i][1])) map[ns[i][0]][ns[i][1]]=true;
 				}
@@ -850,9 +853,9 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 
 		rx = ship_loc_dir_vel[4*(rindex-1)+1];
 		ry = ship_loc_dir_vel[4*(rindex-1)+2];
-		rdir = ship_loc_dir_vel[4*(rindex-1)+3];
+		ship_dir = ship_loc_dir_vel[4*(rindex-1)+3];
 		
-		int angleship = getAngleFromDir(rdir);	
+		int angleship = getAngleFromDir(ship_dir);	
 		int half_fov = round((double)fov/2.0);
 		int angleMin = angleship - half_fov;
 		int angleMax = angleship + half_fov;
@@ -960,12 +963,12 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 	
 	//a ship calls this msgsrv to tell the map server to keep track of its new location
 	@priority(5)
-	msgsrv updateShipLocation(int idx, int rx, int ry, int rdir,int velocity, int ship_length, int ship_width){
+	msgsrv updateShipLocation(int idx, int rx, int ry, int ship_dir,int velocity, int ship_length, int ship_width){
 		int i = (idx-1)*4;
 		
 		ship_loc_dir_vel[i+1] = rx;
 		ship_loc_dir_vel[i+2] = ry;
-		ship_loc_dir_vel[i+3] = rdir;
+		ship_loc_dir_vel[i+3] = ship_dir;
 		ship_loc_dir_vel[i+4] = velocity;
 		
 		//collision check
@@ -976,8 +979,8 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		double b = (ry+0.5) * MAP_RESOL;
 		
 		double[2] p1,p2,p3,p4;
-		p1 = ship2map(xmax,ymax,a,b,rdir);
-		p2 = ship2map(-xmax,-ymax,a,b,rdir);
+		p1 = ship2map(xmax,ymax,a,b,ship_dir);
+		p2 = ship2map(-xmax,-ymax,a,b,ship_dir);
 		
 		double[4] rs1,rs2;
 		
@@ -1051,14 +1054,14 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 	// (both horizontally, vertical, diagonally) to have margin for path calculation
 	boolean[50/*MAP_HEIGHT*/][50/*MAP_WIDTH*/] expandObstacles(boolean[50/*MAP_HEIGHT*/][50/*MAP_WIDTH*/] map){
 		boolean[50/*MAP_HEIGHT*/][50/*MAP_WIDTH*/] map2;
-		int[8][2] neighbors = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
+		int[8][2] neighbours = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
 		for(int i=0;i<MAP_HEIGHT;i++){
 			for(int j=0;j<MAP_WIDTH;j++){
 				map2[i][j] = map[i][j];
 				if (map[i][j]) {
 					for(int k=0;k<8;k++){
-						int nx = i+neighbors[k][0];
-						int ny = j+neighbors[k][1];
+						int nx = i+neighbours[k][0];
+						int ny = j+neighbours[k][1];
 						if (isInside(nx,ny) && !map[nx][ny]) 
 							map2[nx][ny]=true;
 					}
@@ -1079,7 +1082,8 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		return p;	
 	}
 	
-	int[8][2] getNeighbors(int x, int y){
+	// Get coordinates for neighbouring cells relative to x and y
+	int[8][2] getneighbours(int x, int y){
 		//neighboring cells in 8 directions: e, ne, n, nw, w, sw, s, se
 		int[8][2] nxt = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
 		int[8][2] p ;
@@ -1120,33 +1124,44 @@ map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;
 		// to be able to safely pass
 		int min_gap = round((ship_width + 2*SAFE_MARGIN) / MAP_RESOL);
 				
+		// ship_loc_dir_vel[0] is number of ships in environment
 		for (i=0;i<ship_loc_dir_vel[0];i++){
+			// ship_index is current ship, do not calculate itself as obstacle
 			if ((i+1)==ship_index) continue;
+			// Get x and y for other ships
 			int rx=ship_loc_dir_vel[4*i+1];
 			int ry=ship_loc_dir_vel[4*i+2];
+			// Check that ship coordinates are inside map boundaries
 			if (isInside(rx,ry)) map[rx][ry]=true;
-			 //block narrow gap between ship and borders if there is
+			 // Block narrow gap between ship and borders
+			 // if there is too little space to safely pass
 		    int gapleft = ry;
 		    int gapright = MAP_WIDTH - ry;
 		    int gaptop = rx;
 		    int gapbottom = MAP_HEIGHT - rx;
 		    
+			// Check gap size compared to mininum required gap
+			// If gap is too small, set map tile to true (obstacle)
 		    if (gapleft<min_gap) for(int y=0;y<ry;y++) map[rx][y]=true;
 		    else if (gapright<min_gap) for(int y=ry+1;y<MAP_WIDTH;y++) map[rx][y]=true;
 		    
 		    if (gaptop<min_gap) for(int x=0;x<rx;x++) map[x][ry]=true;
 		    else if (gapbottom<min_gap) for(int x=rx+1;x<MAP_HEIGHT;x++) map[x][ry]=true;	
 			
-			//if ship is moving, mark next cells in its moving direction as occupied (in the future)
-			int rdir = ship_loc_dir_vel[4*i+3];
-			int rspeed = ship_loc_dir_vel[4*i+4];
-			if (rspeed != 0){
-				int stop_cells = round(0.2*rspeed);//cells that it can move in 200 miliseconds
-				//int stop_cells = 2;
-				if (stop_cells < 2) stop_cells = 2;
-				for (j=1;j<=stop_cells;j++){
-					int[2] p = {rx + j*nxt[rdir][0], ry + j*nxt[rdir][1]};
-					//getNeighborAtDir(rx,ry,rdir);
+			// If ship is moving, mark next cells in its moving direction as occupied (in the future)
+			int ship_dir = ship_loc_dir_vel[4*i+3];
+			int ship_velocity = ship_loc_dir_vel[4*i+4];
+			// If ship is moving (velocity != 0) consider at least two cells in ship
+			// moving direction as obstacles, more if velocity is higher
+			if (ship_velocity != 0){
+				int potential_occupied_cells = round(0.2*ship_velocity);//cells that it can move in 200 miliseconds
+
+				if (potential_occupied_cells < 2) potential_occupied_cells = 2;
+				
+				for (j=1;j<=potential_occupied_cells;j++){
+					int[2] p = {rx + j*nxt[ship_dir][0], ry + j*nxt[ship_dir][1]};
+					//getNeighborAtDir(rx,ry,ship_dir);
+					// Check that coordinates are inside map boundary
 					if (isInside(p[0],p[1])) {
 						map[p[0]][p[1]]=true;						
 					} else {
@@ -1157,87 +1172,101 @@ map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;
 		}
 		
 		//make sure the expanded cells do not cover the ship that requests the path
-		int[8][2] neighbors = getNeighbors(startX,startY);
+		// Get current ship's neighbour cells coordinates
+		int[8][2] neighbours = getneighbours(startX,startY);
 		for(i=0;i<8;i++){
-			if (isInside(neighbors[i][0],neighbors[i][1]) && !omap[neighbors[i][0]][neighbors[i][1]]) map[neighbors[i][0]][neighbors[i][1]]=false;
-		}
-		
-		int k,lk,li,lj;
-		
-		int[512] open; open[0]=0;
-		double[50/*MAP_HEIGHT*/][50/*MAP_WIDTH*/][5] nodes;
-		
-		for(i=0;i<MAP_HEIGHT;i++){
-			for(j=0;j<MAP_WIDTH;j++){
-				nodes[i][j][0]=0;	//unchecked
-				nodes[i][j][1]=INFINITY;	//g_score = distance to starting point
-				nodes[i][j][2]=INFINITY;	//h_score = distance to ending point, f_score = g_score + h_score
-				nodes[i][j][3]=-1;	//preceding cell that leads to this cell
-				nodes[i][j][4]=-1;
+			// Check that coordinates are inside map boundary AND
+			// that the tile was not an obstacle originally (before expainsion)
+			// If those are true, clear the neighbours close to the ship's current position (neighbours = false)
+			if (isInside(neighbours[i][0],neighbours[i][1]) && !omap[neighbours[i][0]][neighbours[i][1]]) {
+				map[neighbours[i][0]][neighbours[i][1]]=false;
 			}
 		}
-		//add starting point
+		
+		int k,lowest_f_cost_open_index,lowest_f_cost_x,lowest_f_cost_y;
+		
+		int[512] open; open[0]=0;
+		// Create a list of every tile with the third matrix dimension [i][j][this] 
+		// containing each tiles information (see the for loop below)
+		double[50/*MAP_HEIGHT*/][50/*MAP_WIDTH*/][5] nodes;
+		
+		// Initialise each tile's information
+		for(i=0;i<MAP_HEIGHT;i++){
+			for(j=0;j<MAP_WIDTH;j++){
+				nodes[i][j][0]=0;	// Not yet checked/visited
+				nodes[i][j][1]=INFINITY;	//g_score = distance to starting point
+				nodes[i][j][2]=INFINITY;	//h_score = distance to ending point, f_score = g_score + h_score
+				nodes[i][j][3]=-1;	// Preceding x-coordinate that leads to this cell
+				nodes[i][j][4]=-1;	// Preceding y-coordinate that leads to this cell
+			}
+		}
+		// Open[0] is a counter/index
+		// Put starting (current) position at open[1]
 		open[0]=1;
 		open[1]=xy2idx(startX,startY);
 		
+
 		nodes[startX][startY][0]=1;
 		nodes[startX][startY][1]=0;//g_score
+		// Calculate "octile distance"
 		nodes[startX][startY][2]=odistance(startX,startY,targetX,targetY);//h_score
 						
+		// "found" is a variable to flag that the path algorithm has arrived at target destination
 		boolean found=false;
+
 		while (true){
-			double lf=INFINITY;
-			lk=-1; li=-1; lj=-1;
+			double lowest_f_cost=INFINITY;
+			lowest_f_cost_open_index=-1; lowest_f_cost_x=-1; lowest_f_cost_y=-1;
 			for(k=1;k<=open[0];k++){
 				if (open[k]>=0){
 					int[2] ij = idx2xy(open[k]);
 					i = ij[0];
 					j = ij[1];
-					if (i>=0 && j>=0 && (nodes[i][j][1] + nodes[i][j][2]) < lf){
-							lf=nodes[i][j][1] + nodes[i][j][2];
-							li=i;lj=j;lk=k;	
+					if (i>=0 && j>=0 && (nodes[i][j][1] + nodes[i][j][2]) < lowest_f_cost){
+							lowest_f_cost=nodes[i][j][1] + nodes[i][j][2];
+							lowest_f_cost_x=i;lowest_f_cost_y=j;lowest_f_cost_open_index=k;	
 					}
 				}
 			}
-			if (li<0 || lj<0) {
+			if (lowest_f_cost_x<0 || lowest_f_cost_y<0) {
 				found = false;
 				break;
 			}
-			nodes[li][lj][0]=2;//visisted
+			nodes[lowest_f_cost_x][lowest_f_cost_y][0]=2;//visisted
 			
-			if (li==targetX && lj==targetY){
+			if (lowest_f_cost_x==targetX && lowest_f_cost_y==targetY){
 				//found path
 				found = true;
 				break;
 			}
 			
 			//remove from open list		
-			//open = removeFromList(open,lk); this function is not used because Rebeca has error in passing parameters of large array type 			
+			//open = removeFromList(open,lowest_f_cost_open_index); this function is not used because Rebeca has error in passing parameters of large array type 			
 			int[512] topen; //copy array
 			for(i=0;i<512;i++) { topen[i]=open[i]; open[i]=0; }				
 			//open[0]=0;
-			if (topen[0]>0 && lk>=1 && lk<=topen[0]){
+			if (topen[0]>0 && lowest_f_cost_open_index>=1 && lowest_f_cost_open_index<=topen[0]){
 				open[0]=topen[0]-1;
-				for(i=1;i<lk;i++){
+				for(i=1;i<lowest_f_cost_open_index;i++){
 					open[i]=topen[i];
 				}
-				for(i=lk;i<topen[0];i++){
+				for(i=lowest_f_cost_open_index;i<topen[0];i++){
 					open[i]=topen[i+1];
 				}
 			}
 			
 			for(k=0;k<7;k++){
-				int nx = li + nxt[k][0];
-				int ny = lj + nxt[k][1];
+				int nx = lowest_f_cost_x + nxt[k][0];
+				int ny = lowest_f_cost_y + nxt[k][1];
 				if (isInside(nx,ny)){
 					if (0==nodes[nx][ny][0] && false==map[nx][ny]){					
-						double g = nodes[li][lj][1] + ((nx==li||ny==lj)?1:SQRT2);
+						double g = nodes[lowest_f_cost_x][lowest_f_cost_y][1] + ((nx==lowest_f_cost_x||ny==lowest_f_cost_y)?1:SQRT2);
 						if (g < nodes[nx][ny][1]){
 							nodes[nx][ny][0] = 1;
 							nodes[nx][ny][1] = g;
 							nodes[nx][ny][2] = odistance(nx,ny,targetX,targetY);	
-							nodes[nx][ny][3] = li;
-							nodes[nx][ny][4] = lj;		
+							nodes[nx][ny][3] = lowest_f_cost_x;
+							nodes[nx][ny][4] = lowest_f_cost_y;		
 							
 							boolean added = false;
 							int code = xy2idx(nx,ny);
@@ -1261,15 +1290,15 @@ map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;
 			rpath[0]=1;
 			rpath[1]=xy2idx(targetX,targetY);
 			while(true){
-				li=(int)nodes[i][j][3];
-				lj=(int)nodes[i][j][4];
-				if (li>=0 && lj>=0){
+				lowest_f_cost_x=(int)nodes[i][j][3];
+				lowest_f_cost_y=(int)nodes[i][j][4];
+				if (lowest_f_cost_x>=0 && lowest_f_cost_y>=0){
 					rpath[0]++;
-					rpath[rpath[0]] = xy2idx(li,lj);
+					rpath[rpath[0]] = xy2idx(lowest_f_cost_x,lowest_f_cost_y);
 				} else {
 					break;
 				}
-				i = li; j=lj;
+				i = lowest_f_cost_x; j=lowest_f_cost_y;
 			}
 			//get it in reversed order
 			path[0]=0;
