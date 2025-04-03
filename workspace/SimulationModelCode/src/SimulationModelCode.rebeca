@@ -62,6 +62,8 @@ env int WCET_ACTION_NAME = 30000;
 
 // =======================
 // Variables for Legata clauses
+// If this one is changed, we want to change everywhere
+// where we have added //NROFSHIPS
 env int NROFSHIPS = 2;
 
 // Visual variables
@@ -79,19 +81,19 @@ reactiveclass Ship(50) {
 	}
 	statevars{
 		byte ship_index;	//numerical index of the ship, starting from 1
-		int targetX, targetY;  // target goal coordinates ??
+		int targetX, targetY;  // target goal coordinates
 		int ship_x, ship_y, ship_dir, velocity; //coordinats, direction and speed for ship
 		int distance2target;  // distance from ship to target
 		int target_tolerance;
 		int[101] obstacles;	//nearest obstacles in 8 possible directions
-		int front_obstacle; // Distance to front obstacle ??
-		int[11] targets; // a list of targets to visit, target[0] is index ??
+		int front_obstacle; // Distance to front obstacle
+		int[11] targets; // a list of targets to visit, target[0] is number of targets
 		int[101/*BUFFER_SIZE*/] moves;	//movement commands to tell the ship to move in a path, element 0 = size	
-		int moveidx;	//index to tell the state of the movement in the moves list??
+		int moveidx;	//index to tell the state of the movement in the moves list
 		boolean isWaiting; 
 		int waits; // Counter for how long the ship has been waiting
 		int max_waiting_rounds;
-		int failures;  // Failure if waited too long, then constructing new path??
+		int failures;  // Failure if waited too long, assertion (ship gets stuck)
 		boolean scan_before_move;		
 		int default_velocity;  //velocity as cells per second
 		int default_time_cross;  //time in miliseconds to cross a cell horizontally or vertically
@@ -115,10 +117,15 @@ reactiveclass Ship(50) {
 		vis_range = VISRANGEOK;
 		
 		ship_index = idx;  // Assigning ship index from constructor value
-		int[2] p1 = {x,y};  // Ship's current xy-coordinate??
-		int[2] p2 = {tx,ty};	// Ship's target xy-coordinate??
+		int[2] ship_xy = {x,y};  // Ship's current xy-coordinate
+		int[2] target_xy = {tx,ty};	// Ship's target xy-coordinate
 		// Ship's current x and y coordinates, direction, and target x y coordinates
-		ship_x = p1[0]; ship_y = p1[1]; ship_dir = DIR_N; targetX = p2[0]; targetY = p2[1]; 
+		ship_x = ship_xy[0]; 
+		ship_y = ship_xy[1]; 
+		ship_dir = DIR_N; 
+		targetX = target_xy[0]; 
+		targetY = target_xy[1]; 
+
 		distance2target = (int)INFINITY; 
 		target_tolerance = tolerance;  // Assigning from constructor value
 		default_velocity = round(real_velocity / MAP_RESOL); //velocity as cells per second
@@ -132,7 +139,8 @@ reactiveclass Ship(50) {
 		moveidx=0;  // We haven't made a move yet
 		
 		// Initialise the statevars (value NOT from constructor)
-		waits=0; isWaiting=false;  
+		waits=0; 
+		isWaiting=false;  
 		failures = 0;
 		
 		
@@ -146,10 +154,11 @@ reactiveclass Ship(50) {
 		for(int i=0;i<BUFFER_SIZE;i++) obstacles[i]=0;
 		front_obstacle = 0;
 		
-
-		setTarget(p2[0],p2[1]);
+		// Add target to target list
+		setTarget(target_xy[0],target_xy[1]);
 	}
 	
+	// Currently not used
 	int[2] pixel2map(int row,int col){
 		int x = MAP_WIDTH - col - 1;
 		int y = row;
@@ -157,6 +166,7 @@ reactiveclass Ship(50) {
 		return p;
 	}
 	
+	// Currently not used
 	int[2] map2pixel(int x, int y){
 		int col= MAP_WIDTH - 1 - x;
 		int row = y;
@@ -164,19 +174,24 @@ reactiveclass Ship(50) {
 		return p;
 	}
 	
+	// Convert distance from real unit to map unit
 	int real2map(double d){
 		return round(d / MAP_RESOL);
 	}
 	
+	// Stop (and if true, flush moves list)
 	void stop(boolean flushCmdPipe){
 		velocity = 0;
 		if (flushCmdPipe){
-			for(int i=0;i<BUFFER_SIZE;i++) moves[i]=0;
+			for(int i=0;i<BUFFER_SIZE;i++) {
+			moves[i]=0;
+			}
 			moveidx=0;
 			waits=0; isWaiting=false;
 		}
 	}
 	
+	// Currently not used
 	void resume(){
 		if (moveidx < moves[0]){
 			velocity = default_velocity;
@@ -224,22 +239,28 @@ reactiveclass Ship(50) {
 		return ret;
 	}	
 	
+	// Compare function that returns 1, -1 or 0
 	int cmp(double a,double b){
 		return a>b?1:(a<b?-1:0);
 	}
 	
 	//1.1 -> 2, -1.1 -> -2
+	//Rounding to number further from 0
 	int round(double x){
 		double dec = x/10;
-		if (dec!=0) dec = dec>0?1:-1;
+		if (dec!=0) {
+			dec = dec>0?1:-1;
+		}
 		return (int)x + dec;
 	}
 	
+	// Currently not used
 	int getTimeToStop(double v, double a){
 		// a = delta v / delta t
 		return a==0 ? 0 : round(v/a);
 	}
 	
+	// Currently not used
 	double getDistanceToStop(double v, double a){
 		//v^2 - vo^2 = 2as
 		return v==0 ? 0: 2*a / (v*v);
@@ -262,7 +283,8 @@ reactiveclass Ship(50) {
 		int code = xy2idx(x,y);
 		//if target is not already in current queue at index (targets[0]), add one to index (targets[0])
 		// and add target encoded coordinate
-		/*
+		
+		/* ENCODING EXAMPLE
 		targets[0] == 0 (inget i kön)
 		// Now we will add 20561034 to targets
 		targets[0]++ -> targets[0] == 1
@@ -299,6 +321,7 @@ reactiveclass Ship(50) {
 		//return moves[moveidx+1];
 	}
 	
+	// Currently not used
 	int getTargetDir(){
 		int dx = cmp(targetX,ship_x);
 		int dy = cmp(targetY,ship_y);
@@ -309,7 +332,8 @@ reactiveclass Ship(50) {
 		else dir = dx<0?3:7;
 		return dir;
 	}
-		
+	
+	// Get coordinate for tile that is number of steps away at a specific direction
 	int[2] getTileAtDir(int x, int y, int dir,int steps){
 		//neighboring cells in 8 directions: e, ne, n, nw, w, sw, s, se
 		int[8][2] nxt = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
@@ -321,6 +345,7 @@ reactiveclass Ship(50) {
 		return coordinate;	
 	}
 	
+	// Get coordinates for neighbouring cells relative to x and y
 	int[8][2] getneighbours(int x, int y){
 		//neighboring cells in 8 directions: e, ne, n, nw, w, sw, s, se
 		int[8][2] nxt = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
@@ -347,35 +372,43 @@ reactiveclass Ship(50) {
 			moved=true;		
 			theMap.updateShipLocation(ship_index,ship_x,ship_y,ship_dir,velocity,ship_length,ship_width);
 			distance2target = round( odistance(ship_x,ship_y,targetX,targetY) );
-			if (stop) stop(false);
+			if (stop) {
+				velocity = 0;
+			}
 		}
 		return moved;
 	}
 	
 	//rotate the ship N steps (1 step = 45 degrees), positive = counter-clockwise, negative = clockwise
+	// Currently not used
 	void rotate(int steps){
 		ship_dir += steps;
 		ship_dir %= 8;
 		while (ship_dir<0) ship_dir+=8;
 	}
 	
+	// Currently not used
 	void rotate180(){
 		rotate(4);
 	}
 	
+	// Currently not used
 	void rotateLeft(){
 		rotate(1);
 	}
 	
+	// Currently not used
 	void rotateRight(){
 		rotate(-1);
 	}
 	
+	// Return absolute value
 	double abs(double x){
 		return x>=0?x:-x;
 	}
 	
-		//Euclide distance
+	//Euclide distance
+	// Currently not used
 	double edistance(double x1, double y1, double x2, double y2){
 		return sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 	}
@@ -395,12 +428,14 @@ reactiveclass Ship(50) {
 		return (dx < dy) ? f * dx + dy : f * dy + dx;	
 	}
 	
+	// Currently not used
 	double cdistance(double x1, double y1, double x2, double y2){
 		double dx = abs(x2-x1);
 		double dy = abs(y2-y1);
 		return dx>dy?dx:dy;
 	}
 	
+	// Currently not used
 	int normalizeDir(int dir){
 		dir%=8;
 		if (dir<0) dir+=8;
@@ -471,6 +506,7 @@ reactiveclass Ship(50) {
 		return nearest;
 	}
 
+	// Currently not used
 	double[2] grid2map(int x,int y){
 		double[2] p;
 		p[0] = (x+0.5) * MAP_RESOL;
@@ -478,6 +514,7 @@ reactiveclass Ship(50) {
 		return p;
 	}
 	
+
 	double[2] map2ship(double x, double y, double a, double b, int dir){
 		dir = dir % 8;
 		if (dir<0) dir+=8;
@@ -549,7 +586,7 @@ reactiveclass Ship(50) {
 		// moves[0] holds the total number of move steps in the queue.
 		// If this is true, it has exhausted all possible current moves in the list
 		if ( moveidx >= moves[0]){
-			stop(false);
+			velocity = 0;
 			boolean reached = false;
 			// If more than one target exists in the list,
 			// check if current target is reached
@@ -620,28 +657,33 @@ reactiveclass Ship(50) {
 					}
 					waits = 0; 
 					isWaiting = false;
-					if (moveNext) updateMovingStatus(moveNext) after(stepwait);
-				} else {
+					if (moveNext) {
+						updateMovingStatus(moveNext) after(stepwait);
+					}
+				}
+				// If distance needed is bigger than distance to obstacle:
+				else {
 					//cannot move, stop if is moving, wait for obstacles to go away
-					stop(false);
+					// stop mainly sets velocity to 0
+					velocity = 0;
 					isWaiting = true;
 					waits++;
 					//replan path if it has been waiting long enough
 					if (waits>0 && (waits % max_waiting_rounds == 0)){
 						failures++;
-						int odir = ship_dir;
-						//int redir = (ship_dir+4) % 8;
-						//int maxback = (int)getObstacleAtDir(redir,true);
-						int[2] od = getDirWithoutObstacle(?(0,1,2,3),5); 
-						int redir = od[0]; 
-						int maxback = od[1];				
+						//get the (random out of four) direction with farthest obstacle
+						int[2] dir_and_dist = getDirWithoutObstacle(?(0,1,2,3),5); 
+						int newdirect = dir_and_dist[0]; 
+						int maxback = dir_and_dist[1];				
 						int backsteps = ?(4,6,8,10,12);
-						while (backsteps > maxback) backsteps--;
-						int[2] backpoint = getTileAtDir(ship_x,ship_y,redir,backsteps);
+						while (backsteps > maxback) {
+							backsteps--;
+						}
+						int[2] backpoint = getTileAtDir(ship_x,ship_y,newdirect,backsteps);
 						setTarget(backpoint[0],backpoint[1]);
 					} else {
 						//continue waiting
-						//updateMovingStatus(moveNext) after(LASERSCAN_RATE);
+						updateMovingStatus(moveNext) after(LASERSCAN_RATE);
 					}
 				}
 			}
@@ -671,9 +713,6 @@ reactiveclass Ship(50) {
 			if (failures>2){
 				assertion(false,"the ship seems to get stuck");
 			} else {
-				int odir = ship_dir;
-
-
 				// Get the direction with farthest obstacle 
 				// (depends on what the ship sees from laser scan)
 				int[2] dir_and_dist = getDirWithoutObstacle(?(0,1,2,3),5);
@@ -704,7 +743,8 @@ reactiveclass MapServer(50) {
 		int[9] ship_loc_dir_vel; //#0 = counter, [1,2,3,4] = [x,y,dir,isMoving] of each ship
 		int min_vis_range;
 	}
-		
+	
+	//Constructor
 	MapServer(int rcount){
 		int max = NROFSHIPS;//(int)((BUFFER_SIZE-1)/4);
 		assertion(rcount>=1 && rcount<=max,"Number of ships is out of range");
@@ -722,6 +762,7 @@ reactiveclass MapServer(50) {
 		min_vis_range = MINVISRANGE;
 	}
 	//NROFSHIPS
+	// Currently not used
 	int[1] getshipInfo(int index){
 		int i = 4*(index-1);
 		//NROFSHIPS
@@ -730,6 +771,7 @@ reactiveclass MapServer(50) {
 	}
 	
 	//helper math functions	
+	// Many currently not used
 	double pow(double base, int n){
 		double x = 1; 
 		for(int i=0;i<n;i++) x*=base;
@@ -817,7 +859,8 @@ reactiveclass MapServer(50) {
 		double f = SQRT2 - 1;
 		return (dx < dy) ? f * dx + dy : f * dy + dx;	
 	}
-	
+
+	// Currently not used
 	double cdistance(double x1, double y1, double x2, double y2){
 		double dx = abs(x2-x1);
 		double dy = abs(y2-y1);
@@ -871,13 +914,9 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 				ship_y=ship_loc_dir_vel[4*(i-1)+2];
 				ship_velocity = ship_loc_dir_vel[4*(i-1)+3];
 				ship_dir = ship_loc_dir_vel[4*(i-1)+4];
-				if (isInside(ship_x,ship_y)) map[ship_x][ship_y]=true;
-				/*
-				int[8][2] ns = getneighbours(ship_x,ship_y);
-				for(int ii=0;ii<8;ii++){
-					if (isInside(ns[i][0],ns[i][1])) map[ns[i][0]][ns[i][1]]=true;
+				if (isInside(ship_x,ship_y)) {
+					map[ship_x][ship_y]=true;
 				}
-				*/			
 				}
 			}
 		
@@ -938,10 +977,6 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 					break;		
 				}
 			}
-			//set range for this angle
- 			
- 			//ranges[0]++;
-  			//ranges[ranges[0]]=range;
  		}
 		ship.onLaserScan(scandata, angles) deadline(rate+5);	
 		scanObstacles(ship,ship_index,rate,fov,max_distance) after(rate);
