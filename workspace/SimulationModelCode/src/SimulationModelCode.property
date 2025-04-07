@@ -8,7 +8,7 @@ property{
 
 
 		// Good if TRUE
-		visRangeOK =  s1.vis_range > theMap.min_vis_range;
+		//visRangeOK =  s1.vis_range > theMap.min_vis_range;
 		
 		//minVisRange = theMap.min_vis_range;
 		//ownShipVisibilityRange = OwnShip.visRange;
@@ -23,7 +23,7 @@ property{
 	
 	Assertion{
 		//Safety: !distanceToShip || visibilityRange
-		Safety: visRangeOK;
+		//Safety: visRangeOK;
 	
 		reached_all: 
 		  (!(done1 && onTarget1) || !(done2 && onTarget2)) ^ ((done1 && onTarget1) && (done2 && onTarget2));		

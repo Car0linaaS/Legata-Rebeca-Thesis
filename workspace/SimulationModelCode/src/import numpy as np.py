@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Define map size
-MAP_WIDTH = 50
-MAP_HEIGHT = 50
+MAP_WIDTH = 100
+MAP_HEIGHT = 100
 
 # Initialize map with False (empty)
 map_grid = np.zeros((MAP_HEIGHT, MAP_WIDTH))

@@ -1368,11 +1368,11 @@ map[8][18]=true;map[8][19]=true;map[8][20]=true;map[8][21]=true;map[8][22]=true;
 
 main {
 
-	@priority(3) Node r1(theMap):(1,5,5,45,45,2,0.5,1500,false);
-	@priority(5) Node r2(theMap):(2,5,15,45,35,2,0.7,2000,false);
-	@priority(6) Node r3(theMap):(3,5,25,45,25,2,0.8,2500,false);
-	@priority(4) Node r4(theMap):(4,5,35,45,15,2,0.5,3000,false);
-	@priority(2) Node r5(theMap):(5,5,45,45,5,2,0.3,1500,false);	
+	@priority(3) Node r1(theMap):(1,5,5,5,45,2,0.5,1500,false);
+	@priority(5) Node r2(theMap):(2,5,15,5,25,2,0.7,2000,false);
+	@priority(6) Node r3(theMap):(3,6,25,45,25,2,0.8,2500,false);
+	@priority(4) Node r4(theMap):(4,6,35,45,15,2,0.5,3000,false);
+	@priority(2) Node r5(theMap):(5,6,45,45,5,2,0.3,1500,false);	
 	@priority(1) MapServer theMap(r1,r2,r3,r4,r5):(5);	
 	
 
