@@ -1543,7 +1543,7 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 main {
 	//Contains: Ship nr, starting x, starting y, target x, target y, tolerance to target, velocity, max nr of waiting rounds, scanfirst true/false, ship length, ship width, ship draught
 	@priority(3) Ship s1(theMap):(1,5,13,47,13,2,1.1,1500,false,160,20,11);
-	@priority(5) Ship s2(theMap):(2,10,5,12,10,2,1.1,2000,false,160,20,9);
+	@priority(5) Ship s2(theMap):(2,10,5,12,10,2,0.9,2000,false,160,20,9);
 	@priority(1) MapServer theMap(s1,s2):(2);	
 	
 }
