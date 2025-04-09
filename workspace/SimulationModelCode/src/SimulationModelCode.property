@@ -13,17 +13,13 @@ property{
 		
 	
 		// B.1, first clause
-		ship1isOverLengthLimit = s1.ship_length > theMap.max_length;
-		ship1isOverDraughtLimit = s1.ship_draught > theMap.max_draught;
-		ship1isOverCurrentLimit = theMap.undercurrent > theMap.max_undercurrent;
+		ship1isOverLengthLimit = s1.ship_length > theMap.max_length; //OK
+		ship1isOverDraughtLimit = s1.ship_draught > theMap.max_draught; //OK
+		ship1isOverCurrentLimit = theMap.undercurrent > theMap.max_undercurrent; //OK
 		// Rules apply if true
-		ship1isOverLengthAndOverCurrent = ship1isOverLengthLimit && ship1isOverCurrentLimit;
-		ship1isOverDraughtAndOverCurrent = ship1isOverDraughtLimit && ship1isOverCurrentLimit;
 		// Is fast enough even if too long/too deep
-		ship1isFastEnough = s1.ship_velocity > theMap.min_velocity;
+		ship1isFastEnough = s1.ship_velocity > theMap.min_velocity; //OK
 		
-		ship1isUnderLengthCurrentLimitOrOverMinSpeed = !ship1isOverLengthAndOverCurrent || ship1isFastEnough;
-		ship1isUnderDraughtCurrentLimitOrOverMinSpeed = !ship1isOverDraughtAndOverCurrent || ship1isFastEnough;
 	}
 	
 	Assertion{
@@ -31,7 +27,7 @@ property{
 		visrange_ship: (visRangeOK || (!ship1InsideVTS)) && (visRangeOK || (!ship2InsideVTS));
 	
 		// B.1
-		LargeVesselSafetey: ship1isUnderLengthCurrentLimitOrOverMinSpeed && ship1isUnderDraughtCurrentLimitOrOverMinSpeed;	
+		s1LargeVesselSafetey: (!(ship1isOverLengthLimit && ship1isOverCurrentLimit) || ship1isFastEnough) && (!(ship1isOverDraughtLimit && ship1isOverCurrentLimit) || ship1isFastEnough);	
 		
 	
 		reached_all: 

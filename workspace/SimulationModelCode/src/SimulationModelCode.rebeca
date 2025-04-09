@@ -14,17 +14,16 @@ env double COS45 = 0.7071;
 // Map and cell variables
 env int MAP_WIDTH=50;	//cols
 env int MAP_HEIGHT=50;	//rows
-env double MAP_RESOL=1.00;	//cell size in reality in meters
+env double MAP_RESOL=2.00;	//cell size in reality in meters
 env double CELL_WIDTH = MAP_RESOL;
 env double CELL_DIAG = SQRT2*MAP_RESOL;
 env int XMAX = MAP_HEIGHT-1;
 env int YMAX = MAP_WIDTH-1;
 
 // Safety and collision values
-env double SAFE_MARGIN = 0.1;	
-env double STOP_ZONE = 1.2;
-env double COLLISION_RADIUS = 1.20;
-env double COLLISION_MARGIN = 0.1;	
+env double SAFE_MARGIN = 0.02;	
+env double STOP_ZONE = 0.3;
+env double COLLISION_MARGIN = 0.02;	
 
 // Scanning and detection variables
 env double ship_ANGULAR_VELOCITY = 360;//degrees per second
@@ -114,14 +113,15 @@ reactiveclass Ship(50) {
 	
 	// Constructor
 	//Contains: Ship nr, starting x, starting y, target x, target y, tolerance to target, velocity, max nr of waiting rounds, scanfirst true/false, ship length, ship width, ship draught
-	Ship (byte idx, int x, int y, int tx, int ty, int tolerance, double real_velocity, int maxwait, boolean scanfirst, double s_length, double s_width, double s_draught){
+	Ship (byte idx, int x, int y, int tx, int ty, int tolerance, double real_velocity, int maxwait, boolean scanfirst, int s_length, int s_width, int s_draught){
 		assertion(idx>=1,"Ship index must be from 1");
-		
+		assertion(s_length>=1,"Ship length must be positive int at least 1");
+		assertion(s_width>=1,"Ship width must be positive int at least 1");
 		// ADDED
-		ship_length = (int)(s_length*(SCALING_FACTOR));
-		ship_width = (int)(s_width*(SCALING_FACTOR));
-		ship_draught = (int)(s_draught*(SCALING_FACTOR));
-		ship_velocity = (int)(real_velocity*(SCALING_FACTOR));
+		ship_length = s_length;
+		ship_width = s_width;
+		ship_draught = s_draught;
+		ship_velocity =  (int)(real_velocity*10);
 		vis_range = VISRANGEOK;
 		
 		
@@ -493,7 +493,9 @@ reactiveclass Ship(50) {
 		double nearest = INFINITY;
 		double steplen = dir %2 > 0? CELL_DIAG:CELL_WIDTH;
 
-		double ymax = ship_width/2 + SAFE_MARGIN;
+		double scaled_ship_width = ((double)ship_width)/SCALING_FACTOR;
+		
+		double ymax = scaled_ship_width/2 + SAFE_MARGIN;
 		double ymin = steplen/2 + SAFE_MARGIN;
 		if (ymax<ymin) ymax=ymin;
 		double offset = 0.5;
@@ -1065,8 +1067,14 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 	
 	//a ship calls this msgsrv to tell the map server to keep track of its new location
 	@priority(5)
-	msgsrv updateShipLocation(int idx, int ship_x, int ship_y, int ship_dir,int velocity, double ship_length, double ship_width){
+	msgsrv updateShipLocation(int idx, int ship_x, int ship_y, int ship_dir,int velocity, int s_length, int s_width){
 		int i = (idx-1)*4;
+		
+		double ship_length = ((double)s_length)/SCALING_FACTOR;
+		double ship_width = ((double)s_width)/SCALING_FACTOR;
+		
+		//assertion(ship_length==1.6,"UpdShi, Ship length is not 1.6");
+		//assertion(ship_width==0.2,"UpdShi, Ship width is not 0.2");
 		
 		ship_loc_dir_vel[i+1] = ship_x;
 		ship_loc_dir_vel[i+2] = ship_y;
@@ -1074,8 +1082,8 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		ship_loc_dir_vel[i+4] = velocity;
 		
 		// Calculate minimum distance needed from ship center (coordinate point)
-		double min_front_back_length = ship_length/2 + COLLISION_MARGIN;
-		double min_left_right_width = ship_width/2 + COLLISION_MARGIN;
+		double min_front_back_length = ship_length/2.0 + COLLISION_MARGIN;
+		double min_left_right_width = ship_width/2.0 + COLLISION_MARGIN;
 		
 		// Convert ship coordinates to "real world" position (in metres?)
 		double a = (ship_x+0.5) * MAP_RESOL;
@@ -1219,9 +1227,15 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 	
 	//generate a path from (x,y) to (targetX,targetY) using a selected algorithm (A*?)
 	@priority(3)
-	msgsrv generatePath(Ship ship,int ship_index,int startX, int startY, int targetX, int targetY, double ship_length, double ship_width){		
+	msgsrv generatePath(Ship ship,int ship_index,int startX, int startY, int targetX, int targetY, int s_length, int s_width){		
 		//prepare occupancy grid with static obstacles and mobile obstacles
+		double ship_length = ((double)s_length)/SCALING_FACTOR;
+		double ship_width = ((double)s_width)/SCALING_FACTOR;
 		
+		//assertion(ship_length==1.6,"GenPath, Ship length is not 1.6");
+		//assertion(ship_width==0.2,"GenPath, Ship width is not 0.2");
+		
+
 		//neighboring cells in 8 directions: e, ne, n, nw, w, sw, s, se
 		int[8][2] nxt = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
 			
@@ -1272,11 +1286,31 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		    
 			// Check gap size compared to mininum required gap
 			// If gap is too small, set map tile to true (obstacle)
-		    if (gapleft<min_gap) for(int y=0;y<ship_y;y++) map[ship_x][y]=true;
-		    else if (gapright<min_gap) for(int y=ship_y+1;y<MAP_WIDTH;y++) map[ship_x][y]=true;
+		    if (gapleft<min_gap){
+		    	for(int y=0;y<ship_y;y++){
+		     		map[ship_x][y]=true;
+		     		assertion(false, "gapleft");
+		    	}
+		    }
+		    else if (gapright<min_gap){
+		    	for(int y=ship_y+1;y<MAP_WIDTH;y++){
+		    		map[ship_x][y]=true;
+		    		assertion(false, "gapright");
+		    	}
+		    }
 		    
-		    if (gaptop<min_gap) for(int x=0;x<ship_x;x++) map[x][ship_y]=true;
-		    else if (gapbottom<min_gap) for(int x=ship_x+1;x<MAP_HEIGHT;x++) map[x][ship_y]=true;	
+		    if (gaptop<min_gap){
+		    	for(int x=0;x<ship_x;x++){
+		    		map[x][ship_y]=true;
+		    		assertion(false, "gaptop");
+		    	}
+		    }
+		    else if (gapbottom<min_gap){
+		    	for(int x=ship_x+1;x<MAP_HEIGHT;x++){
+		    		map[x][ship_y]=true;
+		    		assertion(false, "gapbottom");
+		    	}
+		    }	
 			
 			// If ship is moving, mark next cells in its moving direction as occupied (in the future)
 			int ship_dir = ship_loc_dir_vel[4*i+3];
@@ -1286,7 +1320,9 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 			if (ship_velocity != 0){
 				int potential_occupied_cells = round(0.2*ship_velocity);//cells that it can move in 200 miliseconds
 
-				if (potential_occupied_cells < 2) potential_occupied_cells = 2;
+				if (potential_occupied_cells < 2){
+					potential_occupied_cells = 2;
+				}
 				
 				for (j=1;j<=potential_occupied_cells;j++){
 					int[2] p = {ship_x + j*nxt[ship_dir][0], ship_y + j*nxt[ship_dir][1]};
@@ -1496,9 +1532,9 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 				path[i]=rpath[i]; 
 			}
 		} else {
-			assertion(false,"Path not found");				
+			assertion(ship_index!=1,"Ship1 Path not found");
+			assertion(ship_index!=2,"Ship2 Path not found");				
 		}
-		
 		ship.onNewPath(path);
 	}
 	
@@ -1506,8 +1542,8 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 
 main {
 	//Contains: Ship nr, starting x, starting y, target x, target y, tolerance to target, velocity, max nr of waiting rounds, scanfirst true/false, ship length, ship width, ship draught
-	@priority(3) Ship s1(theMap):(1,5,23,45,19,2,0.09,1500,false,160,20,11);
-	@priority(5) Ship s2(theMap):(2,15,21,48,22,2,0.09,2000,false,160,20,9);
+	@priority(3) Ship s1(theMap):(1,5,13,47,13,2,1.1,1500,false,160,20,11);
+	@priority(5) Ship s2(theMap):(2,10,5,12,10,2,1.1,2000,false,160,20,9);
 	@priority(1) MapServer theMap(s1,s2):(2);	
 	
 }

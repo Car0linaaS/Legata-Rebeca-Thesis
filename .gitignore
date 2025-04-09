@@ -12,6 +12,8 @@
 *.dot
 *.history
 .metadata
+progress
+
 
 # General
 .DS_Store
