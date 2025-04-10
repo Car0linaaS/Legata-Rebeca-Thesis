@@ -6,8 +6,6 @@ property{
 		onTarget2 = s2.distance2target <=s2.target_tolerance; //s2.rx==s2.targetX && s2.ry==s2.targetY;
 		done2 = s2.moves[0]>0 && s2.moves[0]-s2.moveidx<=s2.target_tolerance;		
 
-		// Lägg till ship2
-		
 		ship1visRangeOK = (s1.vis_range > theMap.min_vis_range);
 		ship2visRangeOK = (s2.vis_range > theMap.min_vis_range);
 		ship1InsideVTS = theMap.ship1_inside_vts;
@@ -31,31 +29,43 @@ property{
 		ship2isFastEnough = s2.ship_velocity > theMap.min_velocity;
 		
 		// Rule 19
-		shipsClose = theMap.ships_close_to_each_other;	//A
+		shipsClose = theMap.ships_close_to_each_other;
 		// Ship 1
-		ship1insideFog = s1.is_inside_fog; //B
-		ship1isPowerdriven = s1.vessel_type_powerdriven; //C
-		ship1safeSpeedLowVis = s1.default_velocity < theMap.speed_safe_range; //D
-		ship1engineOn = s1.engine_on; //E
+		ship1insideFog = s1.is_inside_fog;
+		ship1isPowerdriven = s1.vessel_type_powerdriven;
+		ship1safeSpeedLowVis = s1.default_velocity < theMap.speed_safe_range;
+		ship1engineOn = s1.engine_on;
 		// Ship 2
-		ship2insideFog = s2.is_inside_fog; //F
-		ship2isPowerdriven = s2.vessel_type_powerdriven; //G
-		ship2safeSpeedLowVis = s2.default_velocity < theMap.speed_safe_range; //H
-		ship2engineOn = s2.engine_on; //I
+		ship2insideFog = s2.is_inside_fog;
+		ship2isPowerdriven = s2.vessel_type_powerdriven;
+		ship2safeSpeedLowVis = s2.default_velocity < theMap.speed_safe_range;
+		ship2engineOn = s2.engine_on;
 		
+		// Rule 22
+		// Ship 1
+		ship1Above50m = s1.ship_length > 50;
+		ship1Above50mContainsAllLights = s1.masthead_light && s1.side_light && s1.stern_light && s1.towing_light && s1.signal_light;
+		ship1Above50mLightRangeOK = s1.masthead_light_range >= 6 && s1.side_light_range >= 3 && s1.stern_light_range >= 3 && s1.towing_light_range >= 3 && s1.signal_light_range >= 3;
+		// Ship 2
+		ship2Above50m = s2.ship_length > 50;
+		ship2Above50mContainsAllLights = s2.masthead_light && s2.side_light && s2.stern_light && s2.towing_light && s2.signal_light;
+		ship2Above50mLightRangeOK = s2.masthead_light_range >= 6 && s2.side_light_range >= 3 && s2.stern_light_range >= 3 && s2.towing_light_range >= 3 && s2.signal_light_range >= 3;
+
 	}
-	
+	//Om assertion är false löser den ut
 	Assertion {
-		// Rule 19
-		safeSpeedInLowVis: (!shipsClose || ((!ship1insideFog || !ship2insideFog) &&
-		//Om assertion är false löser den ut
-		(!C || D && E)
-		(!ship1isPowerdriven || ship1safeSpeedLowVis && ship1engineOn)
+		// Rule 22
+		ship1rule22: !ship1Above50m || ship1Above50mContainsAllLights && ship1Above50mLightRangeOK;
+		ship2rule22: !ship2Above50m || ship2Above50mContainsAllLights && ship2Above50mLightRangeOK;
 		
+		// Rule 19
+		ship1rule19: (!shipsClose || !(ship1insideFog || ship2insideFog)) || (!ship1isPowerdriven || ship1safeSpeedLowVis && ship1engineOn);
+		ship2rule19: (!shipsClose || !(ship1insideFog || ship2insideFog)) || (!ship2isPowerdriven || ship2safeSpeedLowVis && ship2engineOn);
 		
 		// 6.2.2
-		visrangeShip: (!ship1InsideVTS || ship1visRangeOK) && (!ship2InsideVTS || ship2visRangeOK);
-	
+		ship1visrangeInsideVTS: (!ship1InsideVTS || ship1visRangeOK);
+		ship2visrangeInsideVTS: (!ship2InsideVTS || ship2visRangeOK);
+		
 		// B.1 first
 		s1LargeVesselB1: (!ship1InsideVTS || ((!(ship1isOverLengthLimit && undercurrentsAboveLimit) || ship1isFastEnough) && (!(ship1isOverDraughtLimit && undercurrentsAboveLimit) || ship1isFastEnough)));	
 		s2LargeVesselB1: (!ship2InsideVTS || ((!(ship2isOverLengthLimit && undercurrentsAboveLimit) || ship2isFastEnough) && (!(ship2isOverDraughtLimit && undercurrentsAboveLimit) || ship2isFastEnough)));	

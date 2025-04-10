@@ -73,6 +73,7 @@ env int MINVISRANGE = 926;
 env int SCALING_FACTOR = 100;
 
 // Fog variables
+env boolean FOG_ACTIVATED = false;
 env double FOG_VAR_0 = 13.0;
 env double FOG_VAR_1 = 25.0;
 env double FOG_VAR_2 = 10.0;
@@ -116,6 +117,17 @@ reactiveclass Ship(50) {
 		boolean contains_hazardous;
 		boolean vessel_type_powerdriven;
 		boolean engine_on;
+		
+		boolean masthead_light;
+		int masthead_light_range;
+		boolean side_light;
+		int side_light_range;
+		boolean stern_light;
+		int stern_light_range;
+		boolean towing_light;
+		int towing_light_range;
+		boolean signal_light;
+		int signal_light_range;
 	}
 	
 	// Constructor
@@ -136,6 +148,16 @@ reactiveclass Ship(50) {
 		contains_hazardous = is_hazardous;
 		vessel_type_powerdriven = is_powerdriven;
 		engine_on = true;
+		masthead_light = true;
+		masthead_light_range = 6;
+		side_light = true;
+		side_light_range = 3;
+		stern_light = true;
+		stern_light_range = 3;
+		towing_light = true;
+		towing_light_range = 3;
+		signal_light = true;
+		signal_light_range = 3;		
 		
 		ship_index = idx;  // Assigning ship index from constructor value
 		// Ship's current x and y coordinates, direction, and target x y coordinates
@@ -586,7 +608,7 @@ reactiveclass Ship(50) {
 		fog_zone[2] = FOG_VAR_2; 
 		fog_zone[3] = FOG_VAR_3;
 		
-		if (isInsideRect(fog_zone, ship_x, ship_y)) {
+		if (FOG_ACTIVATED && isInsideRect(fog_zone, ship_x, ship_y)) {
 			vis_range = VISRANGENOTOK;
 			is_inside_fog = true;
 			ship_velocity = round(original_velocity/2);
