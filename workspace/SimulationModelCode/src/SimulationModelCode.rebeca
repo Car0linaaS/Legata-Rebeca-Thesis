@@ -122,6 +122,7 @@ reactiveclass Ship(50) {
 		boolean masthead_light;
 		int masthead_light_range;
 		boolean side_light;
+		boolean side_light_on;
 		int side_light_range;
 		boolean stern_light;
 		int stern_light_range;
@@ -129,6 +130,10 @@ reactiveclass Ship(50) {
 		int towing_light_range;
 		boolean signal_light;
 		int signal_light_range;
+		
+		boolean allround_light;
+		boolean allround_light_on;
+		int allround_light_range;
 	}
 	
 	// Constructor
@@ -149,9 +154,11 @@ reactiveclass Ship(50) {
 		contains_hazardous = is_hazardous;
 		vessel_type_powerdriven = is_powerdriven;
 		engine_on = true;
+		// Lights
 		masthead_light = true;
 		masthead_light_range = 6;
 		side_light = true;
+		side_light_on = true;
 		side_light_range = 3;
 		stern_light = true;
 		stern_light_range = 3;
@@ -159,6 +166,9 @@ reactiveclass Ship(50) {
 		towing_light_range = 3;
 		signal_light = true;
 		signal_light_range = 3;		
+		allround_light = true;
+		allround_light_on = true;
+		allround_light_range = 2;
 		
 		ship_index = idx;  // Assigning ship index from constructor value
 		// Ship's current x and y coordinates, direction, and target x y coordinates

@@ -28,7 +28,7 @@ property{
 		// Is fast enough even if too long/too deep
 		ship2isFastEnough = s2.ship_velocity > 10;
 		
-		// Rule 19
+		// Rule 19 b
 		shipsClose = theMap.ships_close_to_each_other;
 		// Ship 1
 		ship1insideFog = s1.is_inside_fog;
@@ -41,22 +41,35 @@ property{
 		ship2safeSpeedLowVis = s2.default_velocity < theMap.speed_safe_range;
 		ship2engineOn = s2.engine_on;
 		
-		// Rule 22
+		// Rule 22 a
 		// Ship 1
-		ship1Above50m = s1.ship_length > 50;
-		ship1Above50mContainsAllLights = s1.masthead_light && s1.side_light && s1.stern_light && s1.towing_light && s1.signal_light;
-		ship1Above50mLightRangeOK = s1.masthead_light_range >= 6 && s1.side_light_range >= 3 && s1.stern_light_range >= 3 && s1.towing_light_range >= 3 && s1.signal_light_range >= 3;
+		ship1LongerThan50m = s1.ship_length > 50;
+		ship1LongerThan50mContainsAllLights = s1.masthead_light && s1.side_light && s1.stern_light && s1.towing_light && s1.signal_light;
+		ship1LongerThan50mLightRangeOK = s1.masthead_light_range >= 6 && s1.side_light_range >= 3 && s1.stern_light_range >= 3 && s1.towing_light_range >= 3 && s1.signal_light_range >= 3;
 		// Ship 2
-		ship2Above50m = s2.ship_length > 50;
-		ship2Above50mContainsAllLights = s2.masthead_light && s2.side_light && s2.stern_light && s2.towing_light && s2.signal_light;
-		ship2Above50mLightRangeOK = s2.masthead_light_range >= 6 && s2.side_light_range >= 3 && s2.stern_light_range >= 3 && s2.towing_light_range >= 3 && s2.signal_light_range >= 3;
-
+		ship2LongerThan50m = s2.ship_length > 50;
+		ship2LongerThan50mContainsAllLights = s2.masthead_light && s2.side_light && s2.stern_light && s2.towing_light && s2.signal_light;
+		ship2LongerThan50mLightRangeOK = s2.masthead_light_range >= 6 && s2.side_light_range >= 3 && s2.stern_light_range >= 3 && s2.towing_light_range >= 3 && s2.signal_light_range >= 3;
+		
+		// Rule 23 D 1
+		// Ship 1
+		ship1underway = s1.velocity > 0;
+		ship1LongerThan12m = s1.ship_length > 12;
+		ship1LightsAreOn = s1.allround_light_on && s1.side_light_on;
+		// Ship 2
+		ship2underway = s2.velocity > 0;
+		ship2LongerThan12m = s2.ship_length > 12;
+		ship2LightsAreOn = s2.allround_light_on && s2.side_light_on;
 	}
 	//Om assertion är false löser den ut
 	Assertion {
+		// Rule 23
+		ship1rule23: !ship1underway || (ship1LongerThan12m || ship1isPowerdriven && ship1LightsAreOn);
+		ship2rule23: !ship2underway || (ship2LongerThan12m || ship2isPowerdriven && ship2LightsAreOn);
+		
 		// Rule 22
-		ship1rule22: !ship1Above50m || ship1Above50mContainsAllLights && ship1Above50mLightRangeOK;
-		ship2rule22: !ship2Above50m || ship2Above50mContainsAllLights && ship2Above50mLightRangeOK;
+		ship1rule22: !ship1LongerThan50m || ship1LongerThan50mContainsAllLights && ship1LongerThan50mLightRangeOK;
+		ship2rule22: !ship2LongerThan50m || ship2LongerThan50mContainsAllLights && ship2LongerThan50mLightRangeOK;
 		
 		// Rule 19
 		ship1rule19: (!shipsClose || !(ship1insideFog || ship2insideFog)) || (!ship1isPowerdriven || ship1safeSpeedLowVis && ship1engineOn);
