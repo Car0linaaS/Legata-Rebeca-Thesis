@@ -109,11 +109,12 @@ reactiveclass Ship(50) {
 		int ship_draught;
 		int ship_velocity;
 		int vis_range;
+		boolean contains_hazardous;
 	}
 	
 	// Constructor
 	//Contains: Ship nr, starting x, starting y, target x, target y, tolerance to target, velocity, max nr of waiting rounds, scanfirst true/false, ship length, ship width, ship draught
-	Ship (byte idx, int x, int y, int tx, int ty, int tolerance, double real_velocity, int maxwait, boolean scanfirst, int s_length, int s_width, int s_draught){
+	Ship (byte idx, int x, int y, int tx, int ty, int tolerance, double real_velocity, int maxwait, boolean scanfirst, int s_length, int s_width, int s_draught, boolean ishazardous){
 		assertion(idx>=1,"Ship index must be from 1");
 		assertion(s_length>=1,"Ship length must be positive int at least 1");
 		assertion(s_width>=1,"Ship width must be positive int at least 1");
@@ -122,7 +123,8 @@ reactiveclass Ship(50) {
 		ship_width = s_width;
 		ship_draught = s_draught;
 		ship_velocity =  (int)(real_velocity*10);
-		vis_range = VISRANGEOK;
+		vis_range = VISRANGENOTOK;
+		contains_hazardous = ishazardous;
 		
 		
 		ship_index = idx;  // Assigning ship index from constructor value
@@ -1122,6 +1124,9 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 			}
 		}
 
+		// VTS zone is defined by upper left corner and lower right corner
+		// Upper left: 10,9
+		// Lower right: 47,37
 		double[4] VTS_zone;
 		// Calculate all corners for bounding rectangle for VTS zone
 		VTS_zone[0] = 10.0 * MAP_RESOL; 
@@ -1541,9 +1546,10 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 }
 
 main {
-	//Contains: Ship nr, starting x, starting y, target x, target y, tolerance to target, velocity, max nr of waiting rounds, scanfirst true/false, ship length, ship width, ship draught
-	@priority(3) Ship s1(theMap):(1,5,13,47,13,2,1.1,1500,false,160,20,11);
-	@priority(5) Ship s2(theMap):(2,10,5,12,10,2,0.9,2000,false,160,20,9);
+	// Contains: Ship nr, starting x, starting y, target x, target y, tolerance to target, velocity, max nr of waiting rounds, 
+	// scanfirst true/false, ship length, ship width, ship draught, contains hazardous
+	@priority(3) Ship s1(theMap):(1,5,13,47,13,2,0.9,1500,false,140,20,9, true);
+	@priority(5) Ship s2(theMap):(2,10,5,12,10,2,1.1,2000,false,140,20,9, false);
 	@priority(1) MapServer theMap(s1,s2):(2);	
 	
 }
