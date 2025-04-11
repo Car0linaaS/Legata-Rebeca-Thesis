@@ -13,7 +13,9 @@
 *.history
 .metadata
 progress
-
+.\workspace\SimulationModelCode\src\script\cppfiles\*
+.\workspace\SimulationModelCode\src\script\executables
+.\workspace\SimulationModelCode\src\script\output
 
 # General
 .DS_Store
