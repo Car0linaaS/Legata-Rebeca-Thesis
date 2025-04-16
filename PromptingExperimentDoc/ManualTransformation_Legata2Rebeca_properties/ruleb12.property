@@ -1,0 +1,38 @@
+property{
+	define {
+		onTarget1 = s1.distance2target <=s1.target_tolerance; //s1.rx==s1.targetX && s1.ry==s1.targetY;
+		done1 = s1.moves[0]>0 && s1.moves[0]-s1.moveidx<=s1.target_tolerance;
+		
+		onTarget2 = s2.distance2target <=s2.target_tolerance; //s2.rx==s2.targetX && s2.ry==s2.targetY;
+		done2 = s2.moves[0]>0 && s2.moves[0]-s2.moveidx<=s2.target_tolerance;		
+	
+		// B.1
+		undercurrentsAboveLimit = theMap.undercurrent > 4;
+		// Ship1
+		ship1InsideVTS = theMap.ship1_inside_vts;
+		ship1isOverLengthLimit = s1.ship_length > 150;
+		ship1isOverDraughtLimit = s1.ship_draught > 10;
+		ship1containsHazardous = s1.contains_hazardous;
+		// Is fast enough even if too long/too deep
+		ship1isFastEnough = s1.ship_velocity > 10;
+		
+		// Ship 2
+		ship2InsideVTS = theMap.ship2_inside_vts;
+		ship2isOverLengthLimit = s2.ship_length > 150;
+		ship2isOverDraughtLimit = s2.ship_draught > 10;
+		ship2containsHazardous = s2.contains_hazardous;
+		// Is fast enough even if too long/too deep
+		ship2isFastEnough = s2.ship_velocity > 10;
+
+	}
+	//Om assertion är false löser den ut
+	Assertion {
+		// B.1 second
+		s1HazardousVesselB1: (!ship1InsideVTS || (!(ship1containsHazardous && undercurrentsAboveLimit) || ship1isFastEnough));	
+		s2HazardousVesselB1: (!ship2InsideVTS || (!(ship2containsHazardous && undercurrentsAboveLimit) || ship2isFastEnough));	
+		
+	
+		reached_all: 
+		  (!(done1 && onTarget1) || !(done2 && onTarget2)) ^ ((done1 && onTarget1) && (done2 && onTarget2));		
+	}
+}

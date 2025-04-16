@@ -1,0 +1,32 @@
+property{
+	define {
+		onTarget1 = s1.distance2target <=s1.target_tolerance; //s1.rx==s1.targetX && s1.ry==s1.targetY;
+		done1 = s1.moves[0]>0 && s1.moves[0]-s1.moveidx<=s1.target_tolerance;
+		
+		onTarget2 = s2.distance2target <=s2.target_tolerance; //s2.rx==s2.targetX && s2.ry==s2.targetY;
+		done2 = s2.moves[0]>0 && s2.moves[0]-s2.moveidx<=s2.target_tolerance;		
+		
+		// Rule 19 b
+		shipsClose = theMap.ships_close_to_each_other;
+		// Ship 1
+		ship1insideFog = s1.is_inside_fog;
+		ship1isPowerdriven = s1.vessel_type_powerdriven;
+		ship1safeSpeedLowVis = s1.default_velocity < theMap.speed_safe_range;
+		ship1engineOn = s1.engine_on;
+		// Ship 2
+		ship2insideFog = s2.is_inside_fog;
+		ship2isPowerdriven = s2.vessel_type_powerdriven;
+		ship2safeSpeedLowVis = s2.default_velocity < theMap.speed_safe_range;
+		ship2engineOn = s2.engine_on;
+		
+	}
+	//Om assertion är false löser den ut
+	Assertion {
+		// Rule 19
+		ship1rule19: (!shipsClose || !(ship1insideFog || ship2insideFog)) || (!ship1isPowerdriven || ship1safeSpeedLowVis && ship1engineOn);
+		ship2rule19: (!shipsClose || !(ship1insideFog || ship2insideFog)) || (!ship2isPowerdriven || ship2safeSpeedLowVis && ship2engineOn);
+		
+		reached_all: 
+		  (!(done1 && onTarget1) || !(done2 && onTarget2)) ^ ((done1 && onTarget1) && (done2 && onTarget2));		
+	}
+}

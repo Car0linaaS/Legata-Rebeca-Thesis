@@ -1,0 +1,31 @@
+property{
+	define {
+		onTarget1 = s1.distance2target <=s1.target_tolerance; //s1.rx==s1.targetX && s1.ry==s1.targetY;
+		done1 = s1.moves[0]>0 && s1.moves[0]-s1.moveidx<=s1.target_tolerance;
+		
+		onTarget2 = s2.distance2target <=s2.target_tolerance; //s2.rx==s2.targetX && s2.ry==s2.targetY;
+		done2 = s2.moves[0]>0 && s2.moves[0]-s2.moveidx<=s2.target_tolerance;		
+
+
+		// Rule 23 D 1
+		// Ship 1
+		ship1isPowerdriven = s1.vessel_type_powerdriven;
+		ship1underway = s1.velocity > 0;
+		ship1LongerThan12m = s1.ship_length > 12;
+		ship1LightsAreOn = s1.allround_light_on && s1.side_light_on;
+		// Ship 2
+		ship2isPowerdriven = s2.vessel_type_powerdriven;
+		ship2underway = s2.velocity > 0;
+		ship2LongerThan12m = s2.ship_length > 12;
+		ship2LightsAreOn = s2.allround_light_on && s2.side_light_on;
+	}
+	//Om assertion är false löser den ut
+	Assertion {
+		// Rule 23
+		ship1rule23: !ship1underway || (ship1LongerThan12m || ship1isPowerdriven && ship1LightsAreOn);
+		ship2rule23: !ship2underway || (ship2LongerThan12m || ship2isPowerdriven && ship2LightsAreOn);
+	
+		reached_all: 
+		  (!(done1 && onTarget1) || !(done2 && onTarget2)) ^ ((done1 && onTarget1) && (done2 && onTarget2));		
+	}
+}
