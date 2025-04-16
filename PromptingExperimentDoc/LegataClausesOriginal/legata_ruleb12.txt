@@ -1,0 +1,16 @@
+// This clause is from the Legata article (case study), in appendix B.1
+
+define: {
+    OS: OwnShip
+}
+
+clause['Istanbul.Strait.Rule3.DangerousCargo']:{
+    : {
+        condition: { 
+            :(OS.Cargo in ['HazardousMaterial']) and (OS.Undercurrent > kn(4))
+        }
+        assure: { 
+            :OS.Velocity > kn(10)
+        }
+    }
+}
