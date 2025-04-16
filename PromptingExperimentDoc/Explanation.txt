@@ -1,0 +1,2 @@
+This folder contains all documentation for the experiment we have conducted.
+All subfolders have a file "Explanation.txt" that shortly describes its purpose.

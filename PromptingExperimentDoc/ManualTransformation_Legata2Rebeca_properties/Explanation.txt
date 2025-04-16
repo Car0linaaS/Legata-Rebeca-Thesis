@@ -1,0 +1,1 @@
+This folder contains our manual transformation of the Legata clauses we have worked with.
