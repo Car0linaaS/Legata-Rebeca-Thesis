@@ -1,11 +1,5 @@
 property{
 	define {
-		onTarget1 = s1.distance2target <=s1.target_tolerance; //s1.rx==s1.targetX && s1.ry==s1.targetY;
-		done1 = s1.moves[0]>0 && s1.moves[0]-s1.moveidx<=s1.target_tolerance;
-		
-		onTarget2 = s2.distance2target <=s2.target_tolerance; //s2.rx==s2.targetX && s2.ry==s2.targetY;
-		done2 = s2.moves[0]>0 && s2.moves[0]-s2.moveidx<=s2.target_tolerance;		
-
 		// 6.2.2
 		ship1visRangeOK = (s1.vis_range > 926);
 		ship2visRangeOK = (s2.vis_range > 926);
@@ -17,9 +11,6 @@ property{
 	Assertion {
 		// 6.2.2
 		ship1visrangeInsideVTS: (!ship1InsideVTS || ship1visRangeOK);
-		ship2visrangeInsideVTS: (!ship2InsideVTS || ship2visRangeOK);
-
-		reached_all: 
-		  (!(done1 && onTarget1) || !(done2 && onTarget2)) ^ ((done1 && onTarget1) && (done2 && onTarget2));		
+		ship2visrangeInsideVTS: (!ship2InsideVTS || ship2visRangeOK);	
 	}
 }

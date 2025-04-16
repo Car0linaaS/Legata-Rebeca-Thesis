@@ -1,12 +1,5 @@
 property{
 	define {
-		onTarget1 = s1.distance2target <=s1.target_tolerance; //s1.rx==s1.targetX && s1.ry==s1.targetY;
-		done1 = s1.moves[0]>0 && s1.moves[0]-s1.moveidx<=s1.target_tolerance;
-		
-		onTarget2 = s2.distance2target <=s2.target_tolerance; //s2.rx==s2.targetX && s2.ry==s2.targetY;
-		done2 = s2.moves[0]>0 && s2.moves[0]-s2.moveidx<=s2.target_tolerance;		
-
-
 		// Rule 23 D 1
 		// Ship 1
 		ship1isPowerdriven = s1.vessel_type_powerdriven;
@@ -23,9 +16,6 @@ property{
 	Assertion {
 		// Rule 23
 		ship1rule23: !ship1underway || (ship1LongerThan12m || ship1isPowerdriven && ship1LightsAreOn);
-		ship2rule23: !ship2underway || (ship2LongerThan12m || ship2isPowerdriven && ship2LightsAreOn);
-	
-		reached_all: 
-		  (!(done1 && onTarget1) || !(done2 && onTarget2)) ^ ((done1 && onTarget1) && (done2 && onTarget2));		
+		ship2rule23: !ship2underway || (ship2LongerThan12m || ship2isPowerdriven && ship2LightsAreOn);	
 	}
 }

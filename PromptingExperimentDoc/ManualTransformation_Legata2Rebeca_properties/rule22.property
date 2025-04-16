@@ -1,11 +1,5 @@
 property{
-	define {
-		onTarget1 = s1.distance2target <=s1.target_tolerance; //s1.rx==s1.targetX && s1.ry==s1.targetY;
-		done1 = s1.moves[0]>0 && s1.moves[0]-s1.moveidx<=s1.target_tolerance;
-		
-		onTarget2 = s2.distance2target <=s2.target_tolerance; //s2.rx==s2.targetX && s2.ry==s2.targetY;
-		done2 = s2.moves[0]>0 && s2.moves[0]-s2.moveidx<=s2.target_tolerance;		
-		
+	define {		
 		// Rule 22 a
 		// Ship 1
 		ship1LongerThan50m = s1.ship_length > 50;
@@ -21,9 +15,6 @@ property{
 	Assertion {
 		// Rule 22
 		ship1rule22: !ship1LongerThan50m || ship1LongerThan50mContainsAllLights && ship1LongerThan50mLightRangeOK;
-		ship2rule22: !ship2LongerThan50m || ship2LongerThan50mContainsAllLights && ship2LongerThan50mLightRangeOK;
-	
-		reached_all: 
-		  (!(done1 && onTarget1) || !(done2 && onTarget2)) ^ ((done1 && onTarget1) && (done2 && onTarget2));		
+		ship2rule22: !ship2LongerThan50m || ship2LongerThan50mContainsAllLights && ship2LongerThan50mLightRangeOK;		
 	}
 }
