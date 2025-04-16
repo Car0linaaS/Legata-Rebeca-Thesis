@@ -2,7 +2,6 @@
 *.o
 *.h
 *.cpp
-*.txt
 *.xml
 *.php
 *.lock
