@@ -1,0 +1,22 @@
+Example
+S1VEL11LEN160DRA20HAZnPDaEOa_S2VEL9LEN140DRA10HAZnPDaEOa_theMapUCaSHCLaSAFS7_FOGa
+
+S1 == Ship 1
+VEL11 == Speed in knots is 11
+LEN160 == Length in metres is 160
+DRA20 == Draught in metres is 20
+HAZa == Hazardous "activated" (true)
+PDa == Power driven "activated" (true)
+EOa == Engine on "activated" (true)
+S2 == Ship 2
+VEL9 == Speed in knots is 9
+LEN140 == Length in metres is 140
+DRA10 == Draught in metres is 10
+HAZa == Hazardous "activated" (true)
+PDn == Power driven "not activated" (false)
+EOn == Engine on "not activated" (false)
+theMap == MapServer
+UCa == Undercurrent "activated" (above treshold value)
+SHCLa == Ships close "activated" (Ships will be close to each other sometime during run)
+SAFSa == speed_safe_range set above half velocity value 
+FOGa == Fog area "activated"
