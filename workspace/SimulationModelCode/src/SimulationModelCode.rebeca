@@ -67,8 +67,6 @@ env int UNDERCURRENT_ATTR = 5;
 // Visual variables
 env int VISRANGEOK = 1200;
 env int VISRANGENOTOK = 500;
-//DELETE?
-env int MINVISRANGE = 926;
 
 //To scale from "model size" to "real size"
 env int SCALING_FACTOR = 100;
@@ -792,11 +790,6 @@ reactiveclass MapServer(50) {
 	statevars{
 	//NROFSHIPS
 		int[9] ship_loc_dir_vel; //#0 = counter, [1,2,3,4] = [x,y,dir,isMoving] of each ship
-		int min_vis_range;
-		int max_length; //DELETE?
-		int max_draught; //DELETE?
-		int max_undercurrent; //DELETE?
-		int min_velocity;
 		int speed_safe_range;
 		
 		boolean ship1_inside_traffic_zone;
@@ -820,14 +813,9 @@ reactiveclass MapServer(50) {
 		scanObstacles(s1,1,LASERSCAN_RATE,FIELD_OF_VIEW,max_range);
 		scanObstacles(s2,2,LASERSCAN_RATE,FIELD_OF_VIEW,max_range);
 		//ADDED
-		min_vis_range = MINVISRANGE; //DELETE?
-		max_length = 150; //DELETE?
-		max_draught = 10; //DELETE?
 		ship1_inside_traffic_zone = false;
 		ship2_inside_traffic_zone = false;
 		undercurrent = UNDERCURRENT_ATTR;
-		max_undercurrent = 4; //DELETE?
-		min_velocity = 10; //DELETE?
 		ships_close_to_each_other = false;
 		speed_safe_range = 7;
 	}
