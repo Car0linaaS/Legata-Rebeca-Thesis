@@ -15,7 +15,6 @@ for %%F in ("%BASE%\*.property") do (
     if not exist "%BASE%\RMCout_!PROMPT!"  mkdir "%BASE%\RMCout_!PROMPT!"
     if not exist "%BASE%\statespace_output" mkdir "%BASE%\statespace_output"
     
-    @REM %%G will give us the "long" scenario name, e.g. S1VEL11LEN160DRA20HAZnPDaEOa_S2VEL11LEN160DRA20HAZnPDaEOa_theMapUCaSHCLaSAFS3_FOGa
     for %%G in ("%SCEN_DIR%\*.rebeca") do (
         set "SCEN=%%~nG"
         set "OUTDIR=%BASE%\RMCout_!PROMPT!\!SCEN!"
@@ -38,7 +37,7 @@ for %%F in ("%BASE%\*.property") do (
                 exit /b 1
             )
             @rem Now compile: use unquoted wildcard so cmd expands it
-            g++ *.cpp -w -o "..\!PROMPT!_!SCEN!.exe"
+            g++ *.cpp -w -o ..\!PROMPT!_!SCEN!.exe
             if errorlevel 1 (
                 echo ERROR: g++ failed to compile in "!OUTDIR!"
                 popd
@@ -49,7 +48,7 @@ for %%F in ("%BASE%\*.property") do (
 
 
         @rem ── Execute & capture
-        !OUTDIR!\!PROMPT!_!SCEN!.exe > "%BASE%\statespace_output\!PROMPT!_!SCEN!.txt"
+        %BASE%\RMCout_!PROMPT!\!PROMPT!_!SCEN!.exe > "%BASE%\statespace_output\!PROMPT!_!SCEN!.txt"
         if errorlevel 1 (
             echo WARNING: execution of !PROMPT!_!SCEN! returned %ERRORLEVEL%
         )
