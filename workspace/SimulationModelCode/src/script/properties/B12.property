@@ -63,30 +63,12 @@ property{
 	}
 	//Om assertion är false löser den ut
 	Assertion {
-		// Rule 23
-		ship1rule23: !ship1underway || (ship1LongerThan12m || ship1isPowerdriven && ship1LightsAreOn);
-		ship2rule23: !ship2underway || (ship2LongerThan12m || ship2isPowerdriven && ship2LightsAreOn);
-		
-		// Rule 22
-		ship1rule22: !ship1LongerThan50m || ship1LongerThan50mContainsAllLights && ship1LongerThan50mLightRangeOK;
-		ship2rule22: !ship2LongerThan50m || ship2LongerThan50mContainsAllLights && ship2LongerThan50mLightRangeOK;
-		
-		// Rule 19
-		ship1rule19: (!shipsClose || !(ship1insideFog || ship2insideFog)) || (!ship1isPowerdriven || ship1safeSpeedLowVis && ship1engineOn);
-		ship2rule19: (!shipsClose || !(ship1insideFog || ship2insideFog)) || (!ship2isPowerdriven || ship2safeSpeedLowVis && ship2engineOn);
-		
-		// 6.2.2
-		ship1visrangeInsideVTS: (!ship1InsideVTS || ship1visRangeOK);
-		ship2visrangeInsideVTS: (!ship2InsideVTS || ship2visRangeOK);
-		
-		// B.1 first
-		s1LargeVesselB1: (!ship1InsideVTS || ((!(ship1isOverLengthLimit && undercurrentsAboveLimit) || ship1isFastEnough) && (!(ship1isOverDraughtLimit && undercurrentsAboveLimit) || ship1isFastEnough)));	
-		s2LargeVesselB1: (!ship2InsideVTS || ((!(ship2isOverLengthLimit && undercurrentsAboveLimit) || ship2isFastEnough) && (!(ship2isOverDraughtLimit && undercurrentsAboveLimit) || ship2isFastEnough)));	
-		
+
 		// B.1 second
 		s1HazardousVesselB1: (!ship1InsideVTS || (!(ship1containsHazardous && undercurrentsAboveLimit) || ship1isFastEnough));	
 		s2HazardousVesselB1: (!ship2InsideVTS || (!(ship2containsHazardous && undercurrentsAboveLimit) || ship2isFastEnough));	
 		
+	
 		reached_all: 
 		  (!(done1 && onTarget1) || !(done2 && onTarget2)) ^ ((done1 && onTarget1) && (done2 && onTarget2));		
 	}
