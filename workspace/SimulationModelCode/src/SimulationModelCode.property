@@ -80,9 +80,11 @@ property{
 		ship2rule622: (!ship2InsideTrafficZone || ship2visRangeOK);
 		
 		// B.1 first
-		s1LargeVesselB1: (!ship1InsideTrafficZone || ((!(ship1isOverLengthLimit && undercurrentsAboveLimit) || ship1isFastEnough) && (!(ship1isOverDraughtLimit && undercurrentsAboveLimit) || ship1isFastEnough)));	
-		s2LargeVesselB1: (!ship2InsideTrafficZone || ((!(ship2isOverLengthLimit && undercurrentsAboveLimit) || ship2isFastEnough) && (!(ship2isOverDraughtLimit && undercurrentsAboveLimit) || ship2isFastEnough)));	
-		
+		//s1LargeVesselB1: (!ship1InsideTrafficZone || ((!(ship1isOverLengthLimit && undercurrentsAboveLimit) || ship1isFastEnough) && (!(ship1isOverDraughtLimit && undercurrentsAboveLimit) || ship1isFastEnough)));	
+		//s2LargeVesselB1: (!ship2InsideTrafficZone || ((!(ship2isOverLengthLimit && undercurrentsAboveLimit) || ship2isFastEnough) && (!(ship2isOverDraughtLimit && undercurrentsAboveLimit) || ship2isFastEnough)));	
+		s1LargeVesselB1: !ship1InsideTrafficZone || ship1isFastEnough || !undercurrentsAboveLimit || (!ship1isOverLengthLimit || !ship1isOverDraughtLimit);
+		s2LargeVesselB1: !ship2InsideTrafficZone || ship2isFastEnough || !undercurrentsAboveLimit || (!ship2isOverLengthLimit || !ship2isOverDraughtLimit);
+
 		// B.1 second
 		s1HazardousVesselB1: (!ship1InsideTrafficZone || (!(ship1containsHazardous && undercurrentsAboveLimit) || ship1isFastEnough));	
 		s2HazardousVesselB1: (!ship2InsideTrafficZone || (!(ship2containsHazardous && undercurrentsAboveLimit) || ship2isFastEnough));	
