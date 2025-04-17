@@ -7,7 +7,7 @@ property{
 		ship1LongerThan12m = s1.ship_length > 12;
 		ship1LightsAreOn = s1.allround_light_on && s1.side_light_on;
 		// Ship 2
-		ship2isPowerdriven = s1.vessel_type_powerdriven;
+		ship2isPowerdriven = s2.vessel_type_powerdriven;
 		ship2underway = s2.velocity > 0;
 		ship2LongerThan12m = s2.ship_length > 12;
 		ship2LightsAreOn = s2.allround_light_on && s2.side_light_on;
