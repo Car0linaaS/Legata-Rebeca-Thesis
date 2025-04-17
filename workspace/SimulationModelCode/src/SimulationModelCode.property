@@ -64,8 +64,8 @@ property{
 	//Om assertion är false löser den ut
 	Assertion {
 		// Rule 23
-		ship1rule23: !ship1underway || (ship1LongerThan12m || ship1isPowerdriven && ship1LightsAreOn);
-		ship2rule23: !ship2underway || (ship2LongerThan12m || ship2isPowerdriven && ship2LightsAreOn);
+		ship1rule23: !ship1underway || (!(!ship1LongerThan12m && ship1isPowerdriven) || ship1LightsAreOn);
+		ship2rule23: !ship2underway || (!(!ship2LongerThan12m && ship2isPowerdriven) || ship2LightsAreOn);
 		
 		// Rule 22
 		ship1rule22: !ship1LongerThan50m || ship1LongerThan50mContainsAllLights && ship1LongerThan50mLightRangeOK;
@@ -76,8 +76,8 @@ property{
 		ship2rule19: (!shipsClose || !(ship1insideFog || ship2insideFog)) || (!ship2isPowerdriven || ship2safeSpeedLowVis && ship2engineOn);
 		
 		// 6.2.2
-		ship1visrangeInsideTrafficZone: (!ship1InsideTrafficZone || ship1visRangeOK);
-		ship2visrangeInsideTrafficZone: (!ship2InsideTrafficZone || ship2visRangeOK);
+		ship1rule622: (!ship1InsideTrafficZone || ship1visRangeOK);
+		ship2rule622: (!ship2InsideTrafficZone || ship2visRangeOK);
 		
 		// B.1 first
 		s1LargeVesselB1: (!ship1InsideTrafficZone || ((!(ship1isOverLengthLimit && undercurrentsAboveLimit) || ship1isFastEnough) && (!(ship1isOverDraughtLimit && undercurrentsAboveLimit) || ship1isFastEnough)));	
