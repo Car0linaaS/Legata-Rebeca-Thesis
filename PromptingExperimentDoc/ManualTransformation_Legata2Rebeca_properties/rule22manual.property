@@ -15,6 +15,6 @@ property{
 	Assertion {
 		// Rule 22
 		ship1rule22: !ship1LongerThan50m || ship1LongerThan50mContainsAllLights && ship1LongerThan50mLightRangeOK;
-		ship2rule22: !ship2LongerThan50m || ship2LongerThan50mContainsAllLights && ship2LongerThan50mLightRangeOK;		
-	}
+		ship2rule22: !ship2LongerThan50m || ship2LongerThan50mContainsAllLights && ship2LongerThan50mLightRangeOK;
+		}
 }
