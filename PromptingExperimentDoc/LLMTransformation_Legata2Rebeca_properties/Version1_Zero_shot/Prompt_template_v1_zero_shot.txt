@@ -18,10 +18,6 @@ The relevant actors are Ship and MapServer. The acronym VTS means Vessel Traffic
 
 <MapServer code>
 
-The relevant attributes regarding ship objects and MapServer objects are those:
-
-<Some code>
-
 The property file is constructed like this:
 property{
 	define {
