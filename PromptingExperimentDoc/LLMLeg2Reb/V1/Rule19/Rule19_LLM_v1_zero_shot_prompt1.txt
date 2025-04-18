@@ -67,31 +67,57 @@ _______________________________________________________________________________
 
 
 ============= CRITERIA EVALUATION =============
-Number of fulfilled criteria: x
+Number of fulfilled criteria: 3/6
 
 1. Can we run the proposed Rebeca property, with the model code?
-Answer: 
+Answer: Yes
 
 2. Is the logic correct?
-Answer:
+Answer: No
+
+!(D && B && E) || F
+
+Right: Nothing
+Wrong:
+Will succeed as long as engine is on
+Does not check whether ship is close to the other ship
+Inverts logic [ !(PowerDriven && InRestrictedVisibility && SpeedInSafeRange) ]
+
 
 3. Is the syntax correct?
-Answer:
+Answer: Yes
 
 4. Are all relevant attributes included?
-Answer:
+Answer: No
+Attributes:
+Ship: [exists for ship1] [exists for ship2]
+Restricted_visibility ✅❌
+Vessel_type_powerdriven✅❌
+Ship_velocity✅❌
+engine_on✅❌
+theMap:
+Speed_safe_range✅❌
+Ships_close❌
 
 5. Are correctness properties created for all actors?
-Answer:
+Answer: No
+Only for Ship1 and TheMap
 
-6. Did any hallucinations occur (e.g. any irrelevant code added)?
-Answer:
+6. Is the output code free from hallucinations (e.g. any irrelevant code added)?
+Answer: Yes
 
 _______________________________________________________________________________
 
 
 ============= COMMENT =============
-<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+It seems to understand what to model for the assure-part in Legata, but not the rest
 
-
+s1: (!shipsClose || !(ship1restrictedVisibility || ship2restrictedVisibility)) || (!ship1isPowerdriven || ship1safeSpeedLowVis && ship1engineOn);
+(!A || !(B || C)) || (!D || E && F)
+shipsClose = A
+ship1restrictedVisibility = B
+ship2restrictedVisibility = C
+ship1isPowerdriven = D
+ship1safeSpeedLowVis = E
+ship1engineOn = F
 _______________________________________________________________________________

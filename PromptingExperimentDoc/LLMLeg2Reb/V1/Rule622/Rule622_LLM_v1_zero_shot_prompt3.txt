@@ -88,7 +88,7 @@ Answer:
 5. Are correctness properties created for all actors?
 Answer:
 
-6. Did any hallucinations occur (e.g. any irrelevant code added)?
+6. Is the output code free from hallucinations (e.g. any irrelevant code added)?
 Answer:
 
 _______________________________________________________________________________

@@ -72,7 +72,7 @@ env int VISRANGENOTOK = 500;
 env int SCALING_FACTOR = 100;
 
 // Fog variables
-env boolean FOG_ACTIVATED = false;
+env boolean FOG_ACTIVATED = true;
 env double FOG_VAR_0 = 13.0;
 env double FOG_VAR_1 = 25.0;
 env double FOG_VAR_2 = 10.0;
@@ -152,7 +152,7 @@ reactiveclass Ship(50) {
 		restricted_visibility = false;
 		contains_hazardous = is_hazardous;
 		vessel_type_powerdriven = is_powerdriven;
-		engine_on = false;
+		engine_on = true;
 		// Lights
 		masthead_light = true;
 		masthead_light_range = 6;
