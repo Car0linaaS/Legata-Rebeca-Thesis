@@ -1,0 +1,11 @@
+property {
+    define {
+        OwnShip_Near_TrafficZone = (theMap.ship1_inside_traffic_zone == true);
+        OwnShip_Visibility_High = (s1.vis_range > 0.5);
+    }
+
+    Assertion {
+        IstanbulStrait_Clause_1_Compliance: 
+        (!OwnShip_Near_TrafficZone) || (OwnShip_Visibility_High);
+    }
+}

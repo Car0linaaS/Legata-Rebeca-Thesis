@@ -1,0 +1,12 @@
+property {
+    define {
+        PowerDriven = (s1.vessel_type_powerdriven == true);
+        InRestrictedVisibility = (s1.restricted_visibility == true);
+        SpeedInSafeRange = (s1.ship_velocity <= theMap.speed_safe_range);
+        EngineOn = (s1.engine_on == true);
+    }
+
+    Assertion {
+        COLREG_Rule19b_Compliance: !(PowerDriven && InRestrictedVisibility && SpeedInSafeRange) || EngineOn;
+    }
+}

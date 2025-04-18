@@ -1,0 +1,20 @@
+property {
+    define {
+        OS_Length_GT_50 = (s1.ship_length > 50);
+        OS_MastheadLight_OK = (s1.masthead_light_range >= 6);
+        OS_SideLight_OK = (s1.side_light_range >= 3);
+        OS_SternLight_OK = (s1.stern_light_range >= 3);
+        OS_TowingLight_OK = (s1.towing_light_range >= 3);
+        OS_SignalLight_OK = (s1.signal_light_range >= 3);
+    }
+
+    Assertion {
+        COLREG_Rule22a_Compliance: 
+        (OS_Length_GT_50 && 
+         OS_MastheadLight_OK &&
+         OS_SideLight_OK &&
+         OS_SternLight_OK &&
+         OS_TowingLight_OK &&
+         OS_SignalLight_OK);
+    }
+}

@@ -1,0 +1,16 @@
+property {
+    define {
+        OwnShip_Long = (s1.ship_length > 50);
+        MastheadLight_OK = (s1.masthead_light_range >= 6);
+        SideLight_OK = (s1.side_light_range >= 3);
+        SternLight_OK = (s1.stern_light_range >= 3);
+        TowingLight_OK = (s1.towing_light_range >= 3);
+        SignalLight_OK = (s1.signal_light_range >= 3);
+    }
+
+    Assertion {
+        COLREG_Rule22a_Compliance:
+        (!OwnShip_Long) || 
+        (MastheadLight_OK && SideLight_OK && SternLight_OK && TowingLight_OK && SignalLight_OK);
+    }
+}

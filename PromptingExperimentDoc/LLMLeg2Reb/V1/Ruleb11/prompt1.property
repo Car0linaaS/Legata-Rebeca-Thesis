@@ -1,0 +1,13 @@
+property {
+	define {
+		ShipIsLong = (s1.ship_length > 150);
+		ShipIsDeep = (s1.ship_draught > 10);
+		StrongUndercurrent = (theMap.undercurrent > 4);
+		ShipIsFast = (s1.ship_velocity > 10);
+	}
+
+	Assertion {
+		LargeVesselMustBeFast:
+		((ShipIsLong && StrongUndercurrent) || (ShipIsDeep && StrongUndercurrent)) && ShipIsFast;
+	}
+}

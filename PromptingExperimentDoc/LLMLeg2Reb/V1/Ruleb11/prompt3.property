@@ -1,0 +1,13 @@
+property {
+    define {
+        isLargeShip1 = (s1.ship_length > 150);
+        isDeepDraughtShip1 = (s1.ship_draught > 10);
+        strongUndercurrent = (theMap.undercurrent > 4);
+        ship1IsFast = (s1.ship_velocity > 10);
+    }
+
+    Assertion {
+        Istanbul_Strait_Rule3_LargeVessel_Ship1:
+        (!((isLargeShip1 && strongUndercurrent) || (isDeepDraughtShip1 && strongUndercurrent)) || ship1IsFast);
+    }
+}

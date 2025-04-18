@@ -1,0 +1,15 @@
+property {
+    define {
+        IsPowerDriven = (s1.vessel_type_powerdriven == true);
+        IsInSafeSpeedRange = (s1.ship_velocity <= theMap.speed_safe_range);
+        IsEngineOn = (s1.engine_on == true);
+        IsRestrictedVisibility = (s1.restricted_visibility == true);
+        ShipsClose = (theMap.ships_close_to_each_other == true);
+    }
+
+    // Assertion: A power-driven vessel in restricted visibility must have engine on and proceed at a safe speed
+    Assertion Rule19b_Compliance: (
+        (!IsRestrictedVisibility || !IsPowerDriven || !ShipsClose) || 
+        (IsInSafeSpeedRange && IsEngineOn)
+    );
+}
