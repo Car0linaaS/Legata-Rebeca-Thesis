@@ -1,0 +1,106 @@
+
+============= PROMPT =============
+According to prompt file per rule and version.
+_______________________________________________________________________________
+
+============= COMPLETE LLM OUTPUT =============
+Here is the **Rebeca property file** that captures the Legata clause `COLREG.Rule22.a` in Rebeca syntax:
+
+---
+
+### ✅ **Rebeca Property File**
+
+```rebeca
+property {
+    define {
+        OwnShip_Long = (s1.ship_length > 50);
+        MastheadLight_OK = (s1.masthead_light_range >= 6);
+        SideLight_OK = (s1.side_light_range >= 3);
+        SternLight_OK = (s1.stern_light_range >= 3);
+        TowingLight_OK = (s1.towing_light_range >= 3);
+        SignalLight_OK = (s1.signal_light_range >= 3);
+    }
+
+    Assertion {
+        COLREG_Rule22a_Compliance:
+        (!OwnShip_Long) || 
+        (MastheadLight_OK && SideLight_OK && SternLight_OK && TowingLight_OK && SignalLight_OK);
+    }
+}
+```
+
+---
+
+### 📘 **Explanation and Mapping from Legata Clause to Rebeca Property**
+
+#### 🧠 **Semantic Meaning of the Legata Clause `COLREG.Rule22.a`:**
+
+This clause is part of **Rule 22 of the COLREG**, which defines **minimum visibility ranges for navigational lights** on vessels. Specifically, for **vessels that are 50 meters or more in length**, the regulation requires:
+
+- A masthead light visible for at least **6 nautical miles**,
+- Sidelight, sternlight, towing light, and all-round light (which includes signal lights) visible for at least **3 nautical miles** each.
+
+The clause ensures that such ships are properly equipped with sufficiently powerful lighting for visibility and safety during night or restricted visibility conditions.
+
+---
+
+#### 🔄 **Mapping Legata Attributes to Rebeca Properties:**
+
+| **Legata**                          | **Rebeca Mapping**                              | **Description**                                        |
+|------------------------------------|--------------------------------------------------|--------------------------------------------------------|
+| `OS.Length > meters(50)`           | `s1.ship_length > 50`                            | Checks if the own ship (`s1`) is 50 meters or longer   |
+| `OS.Equipment.MastheadLight.Range` | `s1.masthead_light_range`                        | Masthead light range in nautical miles                |
+| `OS.Equipment.SideLight.Range`     | `s1.side_light_range`                            | Sidelight range in nautical miles                     |
+| `OS.Equipment.SternLight.Range`    | `s1.stern_light_range`                           | Sternlight range in nautical miles                    |
+| `OS.Equipment.TowingLight.Range`   | `s1.towing_light_range`                          | Towing light range in nautical miles                  |
+| `OS.Equipment.SignalLight.Range`   | `s1.signal_light_range`                          | Signal (all-round) light range in nautical miles      |
+
+The assertion uses logical structure:
+- If the ship is **not** over 50 meters, the rule does **not apply** — thus, it's trivially true.
+- If the ship **is** over 50 meters, then **all five light ranges must meet the minimum** requirements for the assertion to hold.
+
+This captures the **conditional applicability** and **mandatory requirements** of Rule 22(a) faithfully in the Rebeca model.
+
+---
+
+Let me know if you want to model this for ship `s2` as well, or combine both ships in a broader compliance check!
+
+
+_______________________________________________________________________________
+
+
+============= LLM PROPERTY TRANSFORMATION =============
+<The suggested property tranformation from the LLM extracted from the output>
+
+
+_______________________________________________________________________________
+
+============= CRITERIA EVALUATION =============
+Number of fulfilled criteria: x
+
+1. Can we run the proposed Rebeca property, with the model code?
+Answer: 
+
+2. Is the logic correct?
+Answer:
+
+3. Is the syntax correct?
+Answer:
+
+4. Are all relevant attributes included?
+Answer:
+
+5. Are correctness properties created for all actors?
+Answer:
+
+6. Did any hallucinations occur (e.g. any irrelevant code added)?
+Answer:
+
+_______________________________________________________________________________
+
+
+============= COMMENT =============
+<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+
+
+_______________________________________________________________________________

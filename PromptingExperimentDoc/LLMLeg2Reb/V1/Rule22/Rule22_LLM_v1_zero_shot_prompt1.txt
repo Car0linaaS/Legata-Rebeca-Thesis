@@ -1,0 +1,101 @@
+
+============= PROMPT =============
+According to prompt file per rule and version.
+_______________________________________________________________________________
+
+============= COMPLETE LLM OUTPUT =============
+Here is the **Rebeca property file** that corresponds to the Legata clause `COLREG.Rule22.a`:
+
+---
+
+### 📄 Rebeca Property File for COLREG.Rule22.a
+
+```rebeca
+property {
+    define {
+        OS_Length_GT_50 = (s1.ship_length > 50);
+        OS_MastheadLight_OK = (s1.masthead_light_range >= 6);
+        OS_SideLight_OK = (s1.side_light_range >= 3);
+        OS_SternLight_OK = (s1.stern_light_range >= 3);
+        OS_TowingLight_OK = (s1.towing_light_range >= 3);
+        OS_SignalLight_OK = (s1.signal_light_range >= 3);
+    }
+
+    Assertion {
+        COLREG_Rule22a_Compliance: 
+        (OS_Length_GT_50 && 
+         OS_MastheadLight_OK &&
+         OS_SideLight_OK &&
+         OS_SternLight_OK &&
+         OS_TowingLight_OK &&
+         OS_SignalLight_OK);
+    }
+}
+```
+
+---
+
+### 🧠 Semantic Meaning of the Clause
+
+This clause from **COLREG Rule 22(a)** specifies visibility requirements for navigation lights on **vessels that are 50 meters or more in length**. Each specified light (masthead, sidelights, sternlight, towing light, and all-round signal light) must be visible at a **minimum distance**, to ensure that the vessel can be seen by others in various conditions (like night or fog).
+
+In essence:
+- **Condition**: The vessel is 50 meters or longer.
+- **Assurance**: All the prescribed lights must meet or exceed specific visibility ranges.
+
+---
+
+### 🔄 Mapping from Legata Clause to Rebeca Property
+
+| **Legata Attribute**                                | **Mapped Rebeca Variable**       | **Explanation**                                       |
+|-----------------------------------------------------|----------------------------------|-------------------------------------------------------|
+| `OS.Length > meters(50)`                            | `s1.ship_length > 50`            | Checking the vessel length                           |
+| `OS.Equipment.MastheadLight.Range >= miles(6)`      | `s1.masthead_light_range >= 6`   | Minimum visibility of masthead light                 |
+| `OS.Equipment.SideLight.Range >= miles(3)`          | `s1.side_light_range >= 3`       | Minimum visibility of sidelights                     |
+| `OS.Equipment.SternLight.Range >= miles(3)`         | `s1.stern_light_range >= 3`      | Minimum visibility of sternlight                     |
+| `OS.Equipment.TowingLight.Range >= miles(3)`        | `s1.towing_light_range >= 3`     | Minimum visibility of towing light                   |
+| `OS.Equipment.SignalLight.Range >= miles(3)`        | `s1.signal_light_range >= 3`     | Minimum visibility of all-round signal light         |
+
+---
+
+Let me know if you'd like to apply this to `s2` as well, or generate a version for multiple vessels!
+
+
+_______________________________________________________________________________
+
+
+============= LLM PROPERTY TRANSFORMATION =============
+<The suggested property tranformation from the LLM extracted from the output>
+
+
+_______________________________________________________________________________
+
+============= CRITERIA EVALUATION =============
+Number of fulfilled criteria: x
+
+1. Can we run the proposed Rebeca property, with the model code?
+Answer: 
+
+2. Is the logic correct?
+Answer:
+
+3. Is the syntax correct?
+Answer:
+
+4. Are all relevant attributes included?
+Answer:
+
+5. Are correctness properties created for all actors?
+Answer:
+
+6. Did any hallucinations occur (e.g. any irrelevant code added)?
+Answer:
+
+_______________________________________________________________________________
+
+
+============= COMMENT =============
+<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+
+
+_______________________________________________________________________________

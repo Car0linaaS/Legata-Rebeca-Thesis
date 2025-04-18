@@ -4,7 +4,63 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here's the **Rebeca property file** that models the Legata clause `COLREG.Rule19.b` as an **Assertion**, followed by a **detailed explanation** of how the clause is semantically interpreted and translated into the property variables:
+
+---
+
+### ✅ Rebeca Property File:
+```rebeca
+property {
+    define {
+        PowerDriven = (s1.vessel_type_powerdriven == true);
+        InRestrictedVisibility = (s1.restricted_visibility == true);
+        SpeedInSafeRange = (s1.ship_velocity <= theMap.speed_safe_range);
+        EngineOn = (s1.engine_on == true);
+    }
+
+    Assertion {
+        COLREG_Rule19b_Compliance: !(PowerDriven && InRestrictedVisibility && SpeedInSafeRange) || EngineOn;
+    }
+}
+```
+
+---
+
+### 🧠 Semantic Meaning and Mapping Explanation:
+
+#### 🔸 **Legata Clause Summary:**
+The Legata clause `COLREG.Rule19.b` is derived from Rule 19 of COLREGs which addresses vessel behavior in restricted visibility. It consists of:
+
+1. **Applicability condition (a)**: Applies to vessels not in sight of one another in or near an area of restricted visibility.
+2. **Obligation (b)**:
+   - Power-driven vessels must:
+     - Proceed at a **safe speed** suitable for **restricted visibility**.
+     - Have their **engine on** and ready for immediate maneuver.
+
+#### 🔁 **Translation to Rebeca Assertions:**
+
+| Legata Concept | Rebeca Variable(s) | Explanation |
+|----------------|--------------------|-------------|
+| `OS.Type is Vessel.Type.PowerDriven` | `s1.vessel_type_powerdriven == true` | Indicates the vessel is power-driven. |
+| `OS.Speed in Vessel.RestrictedVisibility.Speed.Safe.Range` | `s1.ship_velocity <= theMap.speed_safe_range` | Speed is within the safe range for restricted visibility. |
+| `OS.Engine.State in ['Vessel.Engine.ON']` | `s1.engine_on == true` | Engine is turned on. |
+| Restricted Visibility Context | `s1.restricted_visibility == true` | Models the environmental condition (e.g., fog). |
+
+#### ✅ **Assertion Logic:**
+The assertion:
+```rebeca
+!(PowerDriven && InRestrictedVisibility && SpeedInSafeRange) || EngineOn;
+```
+means:
+- If a vessel **is power-driven**, **in restricted visibility**, and **moving within safe speed limits**, then its **engine must be on**.
+- If any part of the condition is not met, the rule is not violated.
+- It's expressed as a logical safety condition (i.e., the bad thing — a power-driven vessel in fog, at appropriate speed, **without** engine on — should **never happen**).
+
+This assertion ensures compliance with the COLREG Rule 19(b) as modeled by Legata.
+
+---
+
+Let me know if you'd like to extend this with other parts of Rule 19 (e.g., clause c/d/e), or map it to different vessels or scenarios.
 
 
 _______________________________________________________________________________

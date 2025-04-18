@@ -4,7 +4,66 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+### ✅ **Rebeca Property File for `COLREG.Rule19.b`**
+
+```rebeca
+property {
+    define {
+        IsPowerDriven = (s1.vessel_type_powerdriven == true);
+        IsInSafeSpeedRange = (s1.ship_velocity <= theMap.speed_safe_range);
+        IsEngineOn = (s1.engine_on == true);
+        IsRestrictedVisibility = (s1.restricted_visibility == true);
+        ShipsClose = (theMap.ships_close_to_each_other == true);
+    }
+
+    // Assertion: A power-driven vessel in restricted visibility must have engine on and proceed at a safe speed
+    Assertion Rule19b_Compliance: (
+        (!IsRestrictedVisibility || !IsPowerDriven || !ShipsClose) || 
+        (IsInSafeSpeedRange && IsEngineOn)
+    );
+}
+```
+
+---
+
+### 🔍 **Semantic Explanation of Legata Clause → Rebeca Property Mapping**
+
+---
+
+#### 💡 **Clause Context – Rule 19**
+
+This rule governs vessels **not in sight of one another** and navigating in or near areas of **restricted visibility** (e.g., fog, heavy rain). The primary concern is collision prevention in low-visibility conditions.
+
+---
+
+### 🧠 **Semantic Mapping**
+
+| Legata Component | Rebeca Mapping | Explanation |
+|------------------|----------------|-------------|
+| `OS.Type is Vessel.Type.PowerDriven` | `s1.vessel_type_powerdriven == true` | Checks if the ship (`s1`) is a power-driven vessel |
+| `OS.Speed in Vessel.RestrictedVisibility.Speed.Safe.Range` | `s1.ship_velocity <= theMap.speed_safe_range` | Verifies if the speed is within the safe range defined by the map server |
+| `OS.Engine.State in ['Vessel.Engine.ON']` | `s1.engine_on == true` | Confirms that the engine is ON (ready for immediate manoeuvre) |
+| `Map.Sky@RestrictedVisibility` | `s1.restricted_visibility == true` | Indicates that restricted visibility conditions exist in the ship's environment |
+| `Distance in Area.Near.SafeRange` | `theMap.ships_close_to_each_other == true` | Simplified in Rebeca as a boolean flag showing ships are close and need to consider Rule 19 |
+
+---
+
+### ⚙️ **Assertion Logic**
+
+- We **only enforce Rule 19(b)** if all these are true:
+  - Restricted visibility exists.
+  - The vessel is power-driven.
+  - Another ship is close (meaning we are "navigating in or near").
+
+- Then we **assert** that:
+  - The vessel is moving at a safe speed.
+  - The engine is ON.
+
+- If the rule **does not apply**, we don’t enforce the requirement (`!IsRestrictedVisibility || !IsPowerDriven || !ShipsClose`).
+
+---
+
+Let me know if you want the assertion to apply to both `s1` and `s2`, or want a version with more detailed scenario modeling.
 
 
 _______________________________________________________________________________

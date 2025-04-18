@@ -1,0 +1,96 @@
+
+============= PROMPT =============
+According to prompt file per rule and version.
+_______________________________________________________________________________
+
+============= COMPLETE LLM OUTPUT =============
+Here is the **Rebeca property file** that represents the **Legata clause `Istanbul.Strait.Rule3.LargeVessel`**:
+
+---
+
+### ✅ **Rebeca Property File:**
+
+```rebeca
+property {
+	define {
+		ShipIsLong = (s1.ship_length > 150);
+		ShipIsDeep = (s1.ship_draught > 10);
+		StrongUndercurrent = (theMap.undercurrent > 4);
+		ShipIsFast = (s1.ship_velocity > 10);
+	}
+
+	Assertion {
+		LargeVesselMustBeFast:
+		((ShipIsLong && StrongUndercurrent) || (ShipIsDeep && StrongUndercurrent)) && ShipIsFast;
+	}
+}
+```
+
+---
+
+### 📜 **Semantic Meaning of the Legata Clause:**
+
+The **Legata clause `Istanbul.Strait.Rule3.LargeVessel`** models a regulatory rule that applies to **Own Ships (OS)** — that is, the ship under evaluation, in this case mapped to `s1` in Rebeca.
+
+The clause defines a **compliance requirement** for **large vessels** navigating in an area with strong undercurrents. It specifies two distinct **conditions**, each of which is sufficient to trigger the requirement (i.e., an OR logic between the conditions):
+
+- If a ship is **longer than 150 meters** and the **undercurrent is stronger than 4 knots**, OR  
+- If a ship has a **draught (depth) greater than 10 meters** and the **undercurrent is stronger than 4 knots**,  
+⇒ Then the ship must be traveling **faster than 10 knots**.
+
+In simpler terms: **Large and heavy ships in strong undercurrents must maintain a high enough speed (over 10 knots)** — likely for safety and control reasons.
+
+---
+
+### 🔄 **Mapping from Legata Clause to Rebeca Property:**
+
+| **Legata Term**                    | **Mapped Rebeca Variable**             | **Explanation**                                 |
+|-----------------------------------|----------------------------------------|-------------------------------------------------|
+| `OS.Length > meters(150)`         | `s1.ship_length > 150`                 | `s1` is the OwnShip; length is modeled directly |
+| `OS.Draught > meters(10)`         | `s1.ship_draught > 10`                 | Draught of the ship                             |
+| `OS.Undercurrent > kn(4)`         | `theMap.undercurrent > 4`             | MapServer tracks environmental undercurrent     |
+| `OS.Velocity > kn(10)`            | `s1.ship_velocity > 10`                | Required speed threshold                        |
+
+---
+
+Would you like me to generate the **same property for a different ship (e.g. `s2`)** or convert **another Legata clause**?
+
+
+_______________________________________________________________________________
+
+
+============= LLM PROPERTY TRANSFORMATION =============
+<The suggested property tranformation from the LLM extracted from the output>
+
+
+_______________________________________________________________________________
+
+============= CRITERIA EVALUATION =============
+Number of fulfilled criteria: x
+
+1. Can we run the proposed Rebeca property, with the model code?
+Answer: 
+
+2. Is the logic correct?
+Answer:
+
+3. Is the syntax correct?
+Answer:
+
+4. Are all relevant attributes included?
+Answer:
+
+5. Are correctness properties created for all actors?
+Answer:
+
+6. Did any hallucinations occur (e.g. any irrelevant code added)?
+Answer:
+
+_______________________________________________________________________________
+
+
+============= COMMENT =============
+<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+
+
+_______________________________________________________________________________

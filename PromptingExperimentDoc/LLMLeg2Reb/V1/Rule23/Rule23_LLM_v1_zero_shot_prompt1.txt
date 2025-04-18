@@ -1,0 +1,95 @@
+
+============= PROMPT =============
+According to prompt file per rule and version.
+_______________________________________________________________________________
+
+============= COMPLETE LLM OUTPUT =============
+Here is the **Rebeca property file** that models the **Legata clause `COLREG.Rule23.d.i`** for simulation using **Timed Rebeca**:
+
+---
+
+### 📜 Rebeca Property File
+```rebeca
+property {
+    // Define the conditions of the clause
+    define {
+        IsPowerDriven = (s1.vessel_type_powerdriven == true);
+        IsLengthLessThan12 = (s1.ship_length < 12);
+        AllroundLightOn = (s1.allround_light_on == true);
+        SideLightOn = (s1.side_light_on == true);
+    }
+
+    // Assertion: If vessel is power-driven and less than 12 meters, it must show an all-round white light and sidelights
+    Assertion COLREG_Rule23_d_i_Compliance: (
+        !(IsPowerDriven && IsLengthLessThan12) || (AllroundLightOn && SideLightOn)
+    );
+}
+```
+
+---
+
+### 🧠 Semantic Explanation
+
+#### 💡 **Intended Meaning of Legata Clause `COLREG.Rule23.d.i`**:
+This clause defines **lighting requirements** for a **power-driven vessel** that is **less than 12 meters in length** and **underway** (i.e., not anchored or moored). 
+
+Instead of showing all the standard lights (masthead, sidelights, sternlight), such vessels may comply by simply showing:
+- An **all-round white light**, and
+- **Sidelights**.
+
+#### 🔄 **Mapping Legata to Rebeca Property**:
+
+| Legata Concept | Mapped to Rebeca Variable | Description |
+|----------------|----------------------------|-------------|
+| `OS.Type is Vessel.Type.PowerDriven` | `s1.vessel_type_powerdriven == true` | Own Ship (s1) is power-driven |
+| `OS.Length > meters(12)` (in exclude) | `s1.ship_length < 12` | Vessel must be **less** than 12 meters |
+| `OS.Signal.ON has 'Light.Allround.White'` | `s1.allround_light_on == true` | All-round white light is turned on |
+| `OS.Signal.ON has 'Light.Sidelight'` | `s1.side_light_on == true` | Sidelights are turned on |
+
+#### ⚖️ Assertion Logic:
+- The assertion ensures that **if** the vessel is power-driven and under 12 meters, **then** both the all-round white light and sidelights must be on.
+- If the vessel **does not meet** these conditions (e.g., is not power-driven or is longer than 12m), the lighting rule doesn’t apply — hence the logical **OR** condition (`!precondition || compliance`).
+
+---
+
+Let me know if you want to cover additional clauses, or adapt this to a different vessel (`s2`) or extend for simulation testing!
+
+
+_______________________________________________________________________________
+
+
+============= LLM PROPERTY TRANSFORMATION =============
+<The suggested property tranformation from the LLM extracted from the output>
+
+
+_______________________________________________________________________________
+
+============= CRITERIA EVALUATION =============
+Number of fulfilled criteria: x
+
+1. Can we run the proposed Rebeca property, with the model code?
+Answer: 
+
+2. Is the logic correct?
+Answer:
+
+3. Is the syntax correct?
+Answer:
+
+4. Are all relevant attributes included?
+Answer:
+
+5. Are correctness properties created for all actors?
+Answer:
+
+6. Did any hallucinations occur (e.g. any irrelevant code added)?
+Answer:
+
+_______________________________________________________________________________
+
+
+============= COMMENT =============
+<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+
+
+_______________________________________________________________________________

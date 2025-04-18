@@ -1,0 +1,111 @@
+
+============= PROMPT =============
+According to prompt file per rule and version.
+_______________________________________________________________________________
+
+============= COMPLETE LLM OUTPUT =============
+Here's how the Legata clause `Istanbul.Strait.Rule3.LargeVessel` can be translated into a Rebeca property file:
+
+---
+
+### ✅ **Rebeca Property File:**
+
+```rebeca
+property {
+    define {
+        isLargeShip1 = (s1.ship_length > 150);
+        isDeepDraughtShip1 = (s1.ship_draught > 10);
+        strongUndercurrent = (theMap.undercurrent > 4);
+        ship1IsFast = (s1.ship_velocity > 10);
+    }
+
+    Assertion {
+        Istanbul_Strait_Rule3_LargeVessel_Ship1:
+        (!((isLargeShip1 && strongUndercurrent) || (isDeepDraughtShip1 && strongUndercurrent)) || ship1IsFast);
+    }
+}
+```
+
+---
+
+### ✅ **Semantic Explanation of the Legata Clause:**
+
+#### **Legata Clause: `Istanbul.Strait.Rule3.LargeVessel`**
+This clause models a maritime safety regulation applicable in the Istanbul Strait. It targets vessels that either:
+- Are large (length > 150 meters) **and** sailing in strong undercurrents (> 4 knots), **or**
+- Have a deep draught (> 10 meters) **and** are also in strong undercurrents.
+
+In either case, if **any** of those conditions are true, the **vessel must be moving faster than 10 knots**. This likely serves a navigational or safety purpose, possibly to ensure maneuverability or to avoid drifting due to current.
+
+---
+
+### ✅ **Mapping Legata Clause to Rebeca Properties:**
+
+| Legata Concept | Rebeca Mapping | Description |
+|----------------|----------------|-------------|
+| `OS.Length > meters(150)` | `s1.ship_length > 150` | Check if the ship is a large vessel. |
+| `OS.Draught > meters(10)` | `s1.ship_draught > 10` | Check if the ship has a deep draught. |
+| `OS.Undercurrent > kn(4)` | `theMap.undercurrent > 4` | Check if the environmental condition includes strong undercurrents. |
+| `OS.Velocity > kn(10)` | `s1.ship_velocity > 10` | Assures that the vessel's speed is sufficient if conditions are met. |
+
+---
+
+### ✅ **Assertion Logic Explanation:**
+We use logical expression transformation here:  
+The Legata clause expresses **"If condition(s), then assure"**.
+
+Since Rebeca properties **do not support implication (`->`)**, we write it using logical equivalence:  
+**`(condition -> assure)` becomes `(!condition || assure)`**.
+
+So we transform:
+```
+((isLarge && currentStrong) || (isDeep && currentStrong)) -> isFast
+```
+into:
+```
+!(...) || isFast
+```
+
+---
+
+Let me know if you want to do this for `s2` as well, or if you’d like to generate clauses for multiple ships together!
+
+
+_______________________________________________________________________________
+
+
+============= LLM PROPERTY TRANSFORMATION =============
+<The suggested property tranformation from the LLM extracted from the output>
+
+
+_______________________________________________________________________________
+
+============= CRITERIA EVALUATION =============
+Number of fulfilled criteria: x
+
+1. Can we run the proposed Rebeca property, with the model code?
+Answer: 
+
+2. Is the logic correct?
+Answer:
+
+3. Is the syntax correct?
+Answer:
+
+4. Are all relevant attributes included?
+Answer:
+
+5. Are correctness properties created for all actors?
+Answer:
+
+6. Did any hallucinations occur (e.g. any irrelevant code added)?
+Answer:
+
+_______________________________________________________________________________
+
+
+============= COMMENT =============
+<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+
+
+_______________________________________________________________________________

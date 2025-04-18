@@ -1,0 +1,98 @@
+
+============= PROMPT =============
+According to prompt file per rule and version.
+_______________________________________________________________________________
+
+============= COMPLETE LLM OUTPUT =============
+### ✅ Rebeca Property File (Assertion-based) for Legata Clause `Istanbul.Strait.Rule3.DangerousCargo`
+
+```rebeca
+property {
+    define {
+        ship1_has_dangerous_cargo = (s1.contains_hazardous == true);
+        ship2_has_dangerous_cargo = (s2.contains_hazardous == true);
+        strong_undercurrent = (theMap.undercurrent > 4);
+        ship1_high_velocity = (s1.ship_velocity > 10);
+        ship2_high_velocity = (s2.ship_velocity > 10);
+    }
+
+    Assertion {
+        Ship1_Complies_With_DangerousCargoRule: 
+            !(ship1_has_dangerous_cargo && strong_undercurrent) || ship1_high_velocity;
+    }
+
+    Assertion {
+        Ship2_Complies_With_DangerousCargoRule: 
+            !(ship2_has_dangerous_cargo && strong_undercurrent) || ship2_high_velocity;
+    }
+}
+```
+
+---
+
+### 💡 Semantic Explanation of the Legata Clause and Mapping
+
+#### **Clause Summary (Legata)**
+- **Rule Name**: `Istanbul.Strait.Rule3.DangerousCargo`
+- **Applicability**: Applies to an "OwnShip" (OS)
+- **Condition**: The ship has **hazardous cargo** *and* the **undercurrent is stronger than 4 knots**
+- **Assure**: In such a situation, the ship’s **velocity must be greater than 10 knots**
+
+#### **Intended Semantics**
+The law mandates that any vessel carrying hazardous cargo must maintain a **minimum speed of over 10 knots** if it’s operating in an area where the **undercurrent exceeds 4 knots**. This likely reflects safety or navigational control measures in a hazardous or narrow waterway (like the Istanbul Strait).
+
+---
+
+### 🧭 Mapping Legata to Timed Rebeca
+
+| **Legata Element**                       | **Rebeca Model Representation**                           |
+|------------------------------------------|-----------------------------------------------------------|
+| `OS.Cargo in ['HazardousMaterial']`      | `s1.contains_hazardous == true` / `s2.contains_hazardous == true` |
+| `OS.Undercurrent > kn(4)`                | `theMap.undercurrent > 4`                                 |
+| `OS.Velocity > kn(10)`                   | `s1.ship_velocity > 10` / `s2.ship_velocity > 10`         |
+
+Note: We assume `kn(x)` is already represented in Rebeca units (int), so no conversion is shown here.
+
+---
+
+Would you like to extend this with traffic zone conditions or apply this structure to another Legata clause?
+
+
+_______________________________________________________________________________
+
+
+============= LLM PROPERTY TRANSFORMATION =============
+<The suggested property tranformation from the LLM extracted from the output>
+
+
+_______________________________________________________________________________
+
+============= CRITERIA EVALUATION =============
+Number of fulfilled criteria: x
+
+1. Can we run the proposed Rebeca property, with the model code?
+Answer: 
+
+2. Is the logic correct?
+Answer:
+
+3. Is the syntax correct?
+Answer:
+
+4. Are all relevant attributes included?
+Answer:
+
+5. Are correctness properties created for all actors?
+Answer:
+
+6. Did any hallucinations occur (e.g. any irrelevant code added)?
+Answer:
+
+_______________________________________________________________________________
+
+
+============= COMMENT =============
+<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+
+
+_______________________________________________________________________________

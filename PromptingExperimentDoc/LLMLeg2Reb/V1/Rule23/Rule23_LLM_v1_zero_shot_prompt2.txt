@@ -1,0 +1,89 @@
+
+============= PROMPT =============
+According to prompt file per rule and version.
+_______________________________________________________________________________
+
+============= COMPLETE LLM OUTPUT =============
+### ✅ **Rebeca Property File (Assertion) for `COLREG.Rule23.d.i`**
+
+```rebeca
+property {
+    define {
+        IsPowerDriven = (s1.vessel_type_powerdriven == true);
+        IsShortVessel = (s1.ship_length <= 12);
+        AllroundLightOn = (s1.allround_light_on == true);
+        SidelightOn = (s1.side_light_on == true);
+    }
+
+    Assertion {
+        COLREG_Rule23_d_i: (IsPowerDriven && IsShortVessel && AllroundLightOn && SidelightOn);
+    }
+}
+```
+
+---
+
+### 🔍 **Semantic Meaning of the Clause**
+
+The Legata clause `COLREG.Rule23.d.i` captures a specific exemption for **power-driven vessels under 12 meters** in length. Instead of displaying the full set of navigational lights required under Rule 23(a), such vessels **may** show a simplified light configuration:
+- An **all-round white light**, and
+- **Sidelights**.
+
+This exemption simplifies lighting requirements for smaller vessels that may lack the physical structure to support full lighting arrangements like dual masthead lights.
+
+---
+
+### 🧠 **Mapping Legata to Rebeca Property**
+
+| **Legata Attribute**               | **Mapped Rebeca Attribute**      | **Explanation** |
+|-----------------------------------|----------------------------------|-----------------|
+| `OS.Type is Vessel.Type.PowerDriven` | `s1.vessel_type_powerdriven == true` | Indicates the vessel is power-driven. |
+| `OS.Length > meters(12)` (exclude) | `s1.ship_length <= 12`            | The clause only applies to vessels **less than or equal to 12 meters**. |
+| `OS.Signal.ON has 'Light.Allround.White'` | `s1.allround_light_on == true` | Ensures the vessel is showing an all-round white light. |
+| `OS.Signal.ON has 'Light.Sidelight'` | `s1.side_light_on == true` | Ensures the sidelights are on. |
+
+Note: The `exclude` in Legata is interpreted as an inverse condition, i.e., it excludes vessels **greater than** 12 meters, so we assert that the vessel is **less than or equal to** 12 meters in the property.
+
+---
+
+Let me know if you want to generate similar assertions for other clauses or simulate violations in Rebeca.
+
+
+_______________________________________________________________________________
+
+
+============= LLM PROPERTY TRANSFORMATION =============
+<The suggested property tranformation from the LLM extracted from the output>
+
+
+_______________________________________________________________________________
+
+============= CRITERIA EVALUATION =============
+Number of fulfilled criteria: x
+
+1. Can we run the proposed Rebeca property, with the model code?
+Answer: 
+
+2. Is the logic correct?
+Answer:
+
+3. Is the syntax correct?
+Answer:
+
+4. Are all relevant attributes included?
+Answer:
+
+5. Are correctness properties created for all actors?
+Answer:
+
+6. Did any hallucinations occur (e.g. any irrelevant code added)?
+Answer:
+
+_______________________________________________________________________________
+
+
+============= COMMENT =============
+<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+
+
+_______________________________________________________________________________

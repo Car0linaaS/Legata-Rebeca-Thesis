@@ -1,0 +1,101 @@
+
+============= PROMPT =============
+According to prompt file per rule and version.
+_______________________________________________________________________________
+
+============= COMPLETE LLM OUTPUT =============
+Here is the **Rebeca property file** based on the provided **Legata clause**:
+
+---
+
+### ✅ **Rebeca Property File**
+```rebeca
+property {
+    define {
+        ownShip_near_traffic_zone = (theMap.ship1_inside_traffic_zone == true);
+        ownShip_vis_range_high_enough = (s1.vis_range > 0.5);
+    }
+
+    Assertion {
+        IstanbulStrait_Clause1_Compliance: ( !ownShip_near_traffic_zone || ownShip_vis_range_high_enough );
+    }
+}
+```
+
+---
+
+### 🔍 **Semantic Meaning (Natural Language)**
+
+This clause represents a rule from the **COLREGs** applicable in or near the **Istanbul Strait's Traffic Separation Zone**. It essentially states:
+
+> **If** a ship (the "OwnShip") is within **proximity** to a **Traffic Zone**, then it must ensure that its **visibility range** is **greater than 0.5 nautical miles**.
+
+This rule ensures that any vessel operating close to critical traffic areas like the Istanbul Strait maintains an adequate visibility range—likely for safety, navigation, and compliance reasons.
+
+---
+
+### 🧠 **Mapping Legata to Rebeca**
+
+| **Legata Component** | **Explanation** | **Rebeca Mapping** |
+|----------------------|------------------|---------------------|
+| `OS` | OwnShip | `s1` (assumed OwnShip is Ship 1) |
+| `Map.Sea@TrafficZone.Distance in Area.Near.ProximityRange` | Indicates the ship is near the Traffic Zone | `theMap.ship1_inside_traffic_zone == true` |
+| `OS.Visibility.Range > kn(.5)` | Visibility range of ship must be over 0.5 nm | `s1.vis_range > 0.5` |
+
+### 🛑 Why No Implication?
+
+Rebeca’s property specification doesn’t support implication (→), so we express:
+
+```
+if A then B
+```
+as:
+```
+!A || B
+```
+
+Which logically achieves the same outcome.
+
+---
+
+Would you like to include the same clause for `s2` (another ship) as well?
+
+
+_______________________________________________________________________________
+
+
+============= LLM PROPERTY TRANSFORMATION =============
+<The suggested property tranformation from the LLM extracted from the output>
+
+
+_______________________________________________________________________________
+
+============= CRITERIA EVALUATION =============
+Number of fulfilled criteria: x
+
+1. Can we run the proposed Rebeca property, with the model code?
+Answer: 
+
+2. Is the logic correct?
+Answer:
+
+3. Is the syntax correct?
+Answer:
+
+4. Are all relevant attributes included?
+Answer:
+
+5. Are correctness properties created for all actors?
+Answer:
+
+6. Did any hallucinations occur (e.g. any irrelevant code added)?
+Answer:
+
+_______________________________________________________________________________
+
+
+============= COMMENT =============
+<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+
+
+_______________________________________________________________________________
