@@ -69,23 +69,16 @@ Let me know if you want the assertion to apply to both `s1` and `s2`, or want a 
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Number of fulfilled criteria: x
+Total points: 5/10
 
-1. Can we run the proposed Rebeca property, with the model code?
+1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
 Answer: No
+Points: 0p
 
-2. Is the logic correct?
-Answer: 
-Correct for what's included
-
-((!B || !D || !A) || (E && F))
-
-3. Is the syntax correct?
+2. Are all relevant attributes included? (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p)
 Answer: No
-Missing { and } for Assertions block
+Points: 1p
 
-4. Are all relevant attributes included?
-Answer: No
 Ship: [exists for ship1] [exists for ship2]
 Restricted_visibility ✅❌
 Vessel_type_powerdriven✅❌
@@ -95,17 +88,30 @@ theMap: [exists for ship1] [exists for ship2]
 Speed_safe_range✅❌
 Ships_close✅
 
-5. Are correctness properties created for all actors?
+3. Are correctness properties created for all relevant actors? (All = 2p, deduct 1p for each missing actor)
 Answer: No
+Points: 1p
+
 Only for s1 and theMap
 
-6. Is the output code free from hallucinations (e.g. any irrelevant code added)?
+4. Is the output code free from hallucinations (e.g. any irrelevant code added)? (1p)
 Answer: Yes
+Points: 1p
+
+5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
+Answer: Correct, not full expression
+Points: 2p
+
+Correct for what's included
+
+((!B || !D || !A) || (E && F))
 
 _______________________________________________________________________________
 
 
 ============= COMMENT =============
+Two ships needed to fully check correct properties, e.g. ChatGPTs property misses out on when the ship outside fog goes too fast even though it is close to the ship inside fog
+
 After adding {} it works as expected for scenario 
 ✅S1VEL11LEN160DRA20HAZnPDaEOa_S2VEL11LEN160DRA20HAZnPDaEOa_theMapUCaSHCLaSAFS3_FOGa
 ❌S1VEL11LEN160DRA20HAZnPDaEOa_S2VEL11LEN160DRA20HAZnPDaEOa_theMapUCaSHCLaSAFS7_FOGa

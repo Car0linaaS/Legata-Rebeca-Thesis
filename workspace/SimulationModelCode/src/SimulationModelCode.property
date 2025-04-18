@@ -1,15 +1,12 @@
 property {
     define {
-        IsPowerDriven = (s1.vessel_type_powerdriven == true);
-        IsInSafeSpeedRange = (s1.ship_velocity <= theMap.speed_safe_range);
-        IsEngineOn = (s1.engine_on == true);
-        IsRestrictedVisibility = (s1.restricted_visibility == true);
-        ShipsClose = (theMap.ships_close_to_each_other == true);
+        PowerDriven = (s1.vessel_type_powerdriven == true);
+        Under12Meters = (s1.ship_length < 12);
+        AllroundWhiteOn = (s1.allround_light_on == true);
+        SideLightOn = (s1.side_light_on == true);
     }
 
-    // Assertion: A power-driven vessel in restricted visibility must have engine on and proceed at a safe speed
-    Assertion{ 
-    Rule19b_Compliance: ((!IsRestrictedVisibility || !IsPowerDriven || !ShipsClose) || 
-        (IsInSafeSpeedRange && IsEngineOn));
+    Assertion {
+        COLREG_Rule23_d_i: (PowerDriven && Under12Meters) == (AllroundWhiteOn && SideLightOn);
     }
 }

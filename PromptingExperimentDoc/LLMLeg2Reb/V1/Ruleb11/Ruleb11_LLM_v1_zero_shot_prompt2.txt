@@ -4,85 +4,32 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-Here's the **Rebeca property file** that represents the Legata clause `Istanbul.Strait.Rule3.LargeVessel`:
-
----
-
-### ✅ **Rebeca Property File**
-```rebeca
-property {
-    define {
-        IsLargeLength = (s1.ship_length > 150);
-        IsDeepDraught = (s1.ship_draught > 10);
-        IsStrongUndercurrent = (theMap.undercurrent > 4);
-        IsHighVelocity = (s1.ship_velocity > 10);
-    }
-
-    Assertion {
-        Istanbul_Strait_Rule3_LargeVessel_Assertion: 
-        ((IsLargeLength && IsStrongUndercurrent) || (IsDeepDraught && IsStrongUndercurrent)) 
-        && IsHighVelocity;
-    }
-}
-```
-
----
-
-### 🧠 Semantic Explanation
-
-#### 📜 **Intended Meaning of the Legata Clause**
-This clause from Legata (`Istanbul.Strait.Rule3.LargeVessel`) describes a regulation that applies to large vessels navigating through the Istanbul Strait under strong undercurrent conditions. It enforces a **minimum speed** requirement for vessels that meet **either of two conditions**:
-
-1. **Condition 1**: The vessel is longer than 150 meters and the undercurrent is stronger than 4 knots.
-2. **Condition 2**: The vessel has a draught deeper than 10 meters and the undercurrent is stronger than 4 knots.
-
-➡️ **Assure**: If either of the above conditions is met, the ship must travel faster than 10 knots.
-
----
-
-### 🔄 Mapping Legata → Rebeca
-
-| Legata Attribute        | Rebeca Mapping                       | Notes |
-|-------------------------|--------------------------------------|-------|
-| `OS.Length > 150`       | `s1.ship_length > 150`              | OwnShip is mapped to `s1` |
-| `OS.Draught > 10`       | `s1.ship_draught > 10`              | Depth of the vessel |
-| `OS.Undercurrent > 4`   | `theMap.undercurrent > 4`           | Undercurrent measured by `MapServer` |
-| `OS.Velocity > 10`      | `s1.ship_velocity > 10`             | Required assured condition |
-
----
-
-Let me know if you'd like this adjusted for `s2` as the own ship, or want to incorporate this into a full Rebeca simulation scenario.
-
-
-_______________________________________________________________________________
-
-
-============= LLM PROPERTY TRANSFORMATION =============
-<The suggested property tranformation from the LLM extracted from the output>
+<The complete output from the LLM>
 
 
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Number of fulfilled criteria: x
+Total points: x/10
 
-1. Can we run the proposed Rebeca property, with the model code?
+1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
 Answer: 
 
-2. Is the logic correct?
-Answer:
+2. Are all relevant attributes included? (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p) (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p)
+Answer: 
+Points:
 
-3. Is the syntax correct?
-Answer:
+3. Are correctness properties created for all relevant actors? (All = 2p, deduct 1p for each missing actor) (All = 2p, deduct 1p for each missing actor)
+Answer: 
+Points:
 
-4. Are all relevant attributes included?
-Answer:
+4. Is the output code free from hallucinations (e.g. any irrelevant code added)? (1p) (1p)
+Answer: 
+Points:
 
-5. Are correctness properties created for all actors?
-Answer:
-
-6. Is the output code free from hallucinations (e.g. any irrelevant code added)?
-Answer:
+5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
+Answer: 
+Points:
 
 _______________________________________________________________________________
 

@@ -2,8 +2,8 @@
 @REM Set up a local environment for variables etc.
 setlocal enabledelayedexpansion
 
-set "BASE=LLMLeg2Reb\V1\Rule19"
-set "SCEN_DIR=RebecaCodeScenarios\Rule19RebecaCodeScenarios"
+set "BASE=LLMLeg2Reb\V1\Rule622"
+set "SCEN_DIR=RebecaCodeScenarios\Rule622RebecaCodeScenarios"
 
 @REM %%F will give us prompot ID number, e.g. prompt1
 for %%F in ("%BASE%\*.property") do (
