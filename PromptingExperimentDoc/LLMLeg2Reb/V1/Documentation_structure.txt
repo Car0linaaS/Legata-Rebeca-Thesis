@@ -1,8 +1,6 @@
 
 ============= PROMPT =============
-<The complete prompt that was passed to the LLM>
-
-
+According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
@@ -12,15 +10,14 @@ _______________________________________________________________________________
 _______________________________________________________________________________
 
 
-============= LLM TRANSFORMATION =============
-<The suggested tranformation from the LLM extracted from the output>
+============= LLM PROPERTY TRANSFORMATION =============
+<The suggested property tranformation from the LLM extracted from the output>
 
 
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
 Number of fulfilled criteria: x
-ID for non-fulfilled criteria: y, z
 
 1. Can we run the proposed Rebeca property, with the model code?
 Answer: 

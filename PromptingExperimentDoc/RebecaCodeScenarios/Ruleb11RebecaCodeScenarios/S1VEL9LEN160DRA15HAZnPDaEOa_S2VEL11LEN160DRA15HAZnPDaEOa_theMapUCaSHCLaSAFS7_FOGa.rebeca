@@ -112,7 +112,7 @@ reactiveclass Ship(50) {
 		int ship_velocity; //Current speed in knots for our calculation
 		int original_velocity; //"Ship max speed" in knots for our calculation
 		int vis_range;
-		boolean is_inside_fog;
+		boolean restricted_visibility;
 		boolean contains_hazardous;
 		boolean vessel_type_powerdriven;
 		boolean engine_on;
@@ -149,7 +149,7 @@ reactiveclass Ship(50) {
 		ship_velocity =  (int)(real_velocity*10);
 		original_velocity = ship_velocity;
 		vis_range = VISRANGEOK;
-		is_inside_fog = false;
+		restricted_visibility = false;
 		contains_hazardous = is_hazardous;
 		vessel_type_powerdriven = is_powerdriven;
 		engine_on = true;
@@ -621,12 +621,12 @@ reactiveclass Ship(50) {
 		if (FOG_ACTIVATED && isInsideRect(fog_zone, ship_x, ship_y)) {
 			// Set current visual range to "low" (VISRANGENOTOK), decrease speed
 			vis_range = VISRANGENOTOK;
-			is_inside_fog = true;
+			restricted_visibility = true;
 			ship_velocity = round((double)original_velocity/2);
 		}
 		else {
 			vis_range = VISRANGEOK;
-			is_inside_fog = false;
+			restricted_visibility = false;
 			ship_velocity = original_velocity;
 		}
 		

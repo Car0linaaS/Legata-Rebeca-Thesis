@@ -72,7 +72,7 @@ env int VISRANGENOTOK = 500;
 env int SCALING_FACTOR = 100;
 
 // Fog variables
-env boolean FOG_ACTIVATED = false;
+env boolean FOG_ACTIVATED = true;
 env double FOG_VAR_0 = 13.0;
 env double FOG_VAR_1 = 25.0;
 env double FOG_VAR_2 = 10.0;
@@ -112,7 +112,7 @@ reactiveclass Ship(50) {
 		int ship_velocity; //Current speed in knots for our calculation
 		int original_velocity; //"Ship max speed" in knots for our calculation
 		int vis_range;
-		boolean is_inside_fog;
+		boolean restricted_visibility;
 		boolean contains_hazardous;
 		boolean vessel_type_powerdriven;
 		boolean engine_on;
@@ -149,7 +149,7 @@ reactiveclass Ship(50) {
 		ship_velocity =  (int)(real_velocity*10);
 		original_velocity = ship_velocity;
 		vis_range = VISRANGEOK;
-		is_inside_fog = false;
+		restricted_visibility = false;
 		contains_hazardous = is_hazardous;
 		vessel_type_powerdriven = is_powerdriven;
 		engine_on = true;
@@ -621,12 +621,12 @@ reactiveclass Ship(50) {
 		if (FOG_ACTIVATED && isInsideRect(fog_zone, ship_x, ship_y)) {
 			// Set current visual range to "low" (VISRANGENOTOK), decrease speed
 			vis_range = VISRANGENOTOK;
-			is_inside_fog = true;
+			restricted_visibility = true;
 			ship_velocity = round((double)original_velocity/2);
 		}
 		else {
 			vis_range = VISRANGEOK;
-			is_inside_fog = false;
+			restricted_visibility = false;
 			ship_velocity = original_velocity;
 		}
 		
@@ -817,7 +817,7 @@ reactiveclass MapServer(50) {
 		ship2_inside_traffic_zone = false;
 		undercurrent = UNDERCURRENT_ATTR;
 		ships_close_to_each_other = false;
-		speed_safe_range = 7;
+		speed_safe_range = 3;
 	}
 	
 	//helper math functions	
@@ -1550,8 +1550,8 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 main {
 	// Contains: Ship nr, starting x, starting y, target x, target y, tolerance to target, velocity, max nr of waiting rounds, 
 	// scanfirst true/false, ship length, ship width, ship draught, contains hazardous, is powerdriven
-	@priority(3) Ship s1(theMap):(1,5,13,47,13,2,0.9,1500,false,140,20,9,false,true);
-	@priority(5) Ship s2(theMap):(2,10,5,12,10,2,0.9,2000,false,160,9,9,false,true);
+	@priority(3) Ship s1(theMap):(1,5,13,47,13,2,1.1,1500,false,160,20,20,false,true);
+	@priority(5) Ship s2(theMap):(2,10,5,12,10,2,1.1,2000,false,160,20,20,false,true);
 	@priority(1) MapServer theMap(s1,s2):(2);	
 	
 }

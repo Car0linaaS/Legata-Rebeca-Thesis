@@ -1,14 +1,14 @@
 property{
 	define {		
-		// Rule 19 b
+// Rule 19 b
 		shipsClose = theMap.ships_close_to_each_other;
 		// Ship 1
-		ship1insideFog = s1.is_inside_fog;
+		ship1restrictedVisibility = s1.restricted_visibility;
 		ship1isPowerdriven = s1.vessel_type_powerdriven;
 		ship1safeSpeedLowVis = s1.ship_velocity < theMap.speed_safe_range;
 		ship1engineOn = s1.engine_on;
 		// Ship 2
-		ship2insideFog = s2.is_inside_fog;
+		ship2restrictedVisibility = s2.restricted_visibility;
 		ship2isPowerdriven = s2.vessel_type_powerdriven;
 		ship2safeSpeedLowVis = s2.ship_velocity < theMap.speed_safe_range;
 		ship2engineOn = s2.engine_on;
@@ -16,7 +16,7 @@ property{
 	//Om assertion är false löser den ut
 	Assertion {
 		// Rule 19
-		ship1rule19: (!shipsClose || !(ship1insideFog || ship2insideFog)) || (!ship1isPowerdriven || ship1safeSpeedLowVis && ship1engineOn);
-		ship2rule19: (!shipsClose || !(ship1insideFog || ship2insideFog)) || (!ship2isPowerdriven || ship2safeSpeedLowVis && ship2engineOn);
+		ship1rule19: (!shipsClose || !(ship1restrictedVisibility || ship2restrictedVisibility)) || (!ship1isPowerdriven || ship1safeSpeedLowVis && ship1engineOn);
+		ship2rule19: (!shipsClose || !(ship1restrictedVisibility || ship2restrictedVisibility)) || (!ship2isPowerdriven || ship2safeSpeedLowVis && ship2engineOn);
 		}
 }
