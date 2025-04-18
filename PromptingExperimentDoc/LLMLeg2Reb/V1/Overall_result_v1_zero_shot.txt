@@ -1,0 +1,31 @@
+The overall result for this prompt version:
+
+============= FULFILLED CRITERIA FOR EACH PROMPT =============
+Rule19_LLM_v1_zero_shot_prompt1: x/6
+Rule19_LLM_v1_zero_shot_prompt2: x/6
+Rule19_LLM_v1_zero_shot_prompt3: x/6
+
+Rule22_LLM_v1_zero_shot_prompt1: x/6
+Rule22_LLM_v1_zero_shot_prompt2: x/6
+Rule22_LLM_v1_zero_shot_prompt3: x/6
+
+Rule23_LLM_v1_zero_shot_prompt1: x/6
+Rule23_LLM_v1_zero_shot_prompt2: x/6
+Rule23_LLM_v1_zero_shot_prompt3: x/6
+
+Rule622_LLM_v1_zero_shot_prompt1: x/6
+Rule622_LLM_v1_zero_shot_prompt2: x/6
+Rule622_LLM_v1_zero_shot_prompt3: x/6
+
+Ruleb11_LLM_v1_zero_shot_prompt1: x/6
+Ruleb11_LLM_v1_zero_shot_prompt2: x/6
+Ruleb11_LLM_v1_zero_shot_prompt3: x/6
+
+Ruleb12_LLM_v1_zero_shot_prompt1: x/6
+Ruleb12_LLM_v1_zero_shot_prompt2: x/6
+Ruleb12_LLM_v1_zero_shot_prompt3: x/6
+
+
+============= AVERAGE FULFILLED CRITERA FOR ALL PROMPTS =============
+Average: x/4
+
