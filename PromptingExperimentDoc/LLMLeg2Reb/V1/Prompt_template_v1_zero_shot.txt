@@ -12,7 +12,7 @@ assure: {
 }
 
 Timed Rebeca (Reactive Objects Language) is used for modeling and simulating concurrent, reactive systems. The code below is part of a model used to simulate vessels, created in Timed Rebeca. 
-The relevant actors are Ship and MapServer. The actors are modeled like this:
+The relevant actors are Ship s1, Ship s2 and MapServer theMap. The actors are modeled like this:
 
 <ship code>
 
@@ -31,7 +31,7 @@ property{
 
 Instruction: In Rebeca syntax, create a property file that represents the law in the Legata clause. We are only interested in Assertions, not TCTL. After generating the property code, explain the intended semantic meaning of the Legata clause, and how the Legata clause attributes/conditions is mapped to the property variables/attributes. 
 Allowed operators: <, >, ==, <=, >=, !, ||, &&, ^.
-Do not use expressions like -> and do not define chained variables in define.
+Do not use implication (->, =>) and do not define chained variables in define.
 
 Legata clause to transform: 
 

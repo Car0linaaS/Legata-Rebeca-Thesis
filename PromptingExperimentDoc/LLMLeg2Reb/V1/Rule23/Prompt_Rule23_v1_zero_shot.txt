@@ -19,10 +19,13 @@ reactiveclass Ship(50) {
 		MapServer theMap;
 	}
 	statevars{
-		int ship_velocity;
-		boolean restricted_visibility;
+		int ship_length;
+		int velocity;
 		boolean vessel_type_powerdriven;
-		boolean engine_on;
+		
+		boolean side_light_on;
+	
+		boolean allround_light_on;
 	}
 
 reactiveclass MapServer(50) {
@@ -31,8 +34,6 @@ reactiveclass MapServer(50) {
 		Ship s2;
 	}
 	statevars{
-		int speed_safe_range;
-		boolean ships_close_to_each_other;
 	}
 
 The property file is constructed like this:
@@ -52,30 +53,41 @@ Do not use implication (->, =>) and do not define chained variables in define.
 
 Legata clause to transform: 
 
-
-# (a) This Rule applies to vessels not in sight of one another when navigating in 
-# or near an area of restricted visibility.
-condition: {
-    : (
-        ((OS, TS).Visible is true) and
-        ([OS.Position, Map.Sky@RestrictedVisibility].Distance in Area.Near.SafeRange)
-      )
-
-    # Trigger rule 19 overriding other conditions. Useful for rules in cross-reference.
-    : OS.Restriction in ['COLREG.Rule19.*']  
+define: {
+    OS: OwnShip
 }
 
-# (b) Every vessel shall proceed at a safe speed adapted to the prevailing 
-# circumstances and conditions of restricted visibility. A power-driven vessel 
-# shall have engines ready for immediate manoeuvre.
-clause['COLREG.Rule19.b']:{
+condition: { 
+    :OS.Operation has 'Vessel.Operation.UNDERWAY'
+}
+
+# Power-driven Vessels underway
+# (The new paragraph (c) shall enter into force on 29 November
+# 2003, as amended by Resolution A.919(22))
+# (a) A power-driven vessel underway shall exhibit:
+# (i) a masthead light forward;
+# (ii) a second masthead light abaft of and higher than the forward one; except that
+# a vessel of less than 50 meters in length shall not be obliged to exhibit such
+# light but may do so;
+# (iii) sidelights;
+# (iv) a sternlight.
+
+
+# (d)
+# (i) A power-driven vessel of less than 12 meters in length may in lieu of the lights
+# prescribed in paragraph (a) of this Rule exhibit an all-round white light and
+# sidelights:
+clause['COLREG.Rule23.d.i']:{
     : {
         condition: { 
-            :(OS.Type is Vessel.Type.PowerDriven) and 
-             (OS.Speed in Vessel.RestrictedVisibility.Speed.Safe.Range)
-         }
+            :OS.Type is Vessel.Type.PowerDriven
+        }
+		exclude:{
+            :OS.Length > meters(12)
+		}
         assure: { 
-            :OS.Engine.State in ['Vessel.Engine.ON'] 
+            :OS.Signal.ON has 'Light.Allround.White'
+            :OS.Signal.ON has 'Light.Sidelight'
         }
     }
 }

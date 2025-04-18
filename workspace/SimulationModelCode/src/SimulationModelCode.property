@@ -87,7 +87,7 @@ property{
 
 		// B.1 second
 		s1HazardousVesselB1: (!ship1InsideTrafficZone || (!(ship1containsHazardous && undercurrentsAboveLimit) || ship1isFastEnough));	
-		s2HazardousVesselB1: (!ship2InsideTrafficZone || (!(ship2containsHazardous && undercurrentsAboveLimit) || ship2isFastEnough));	
+		s2HazardousVesselB1: (!ship2InsideTrafficZone || (!(ship2containsHazardous && undercurrentsAboveLimit) || ship2isFastEnough));
 		
 		reached_all: 
 		  (!(done1 && onTarget1) || !(done2 && onTarget2)) ^ ((done1 && onTarget1) && (done2 && onTarget2));		
