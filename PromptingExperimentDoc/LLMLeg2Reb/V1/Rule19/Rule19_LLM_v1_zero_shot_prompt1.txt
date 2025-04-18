@@ -66,12 +66,6 @@ Let me know if you'd like to extend this with other parts of Rule 19 (e.g., clau
 _______________________________________________________________________________
 
 
-============= LLM PROPERTY TRANSFORMATION =============
-<The suggested property tranformation from the LLM extracted from the output>
-
-
-_______________________________________________________________________________
-
 ============= CRITERIA EVALUATION =============
 Number of fulfilled criteria: x
 

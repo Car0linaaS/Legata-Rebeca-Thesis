@@ -9,6 +9,7 @@ set "SCEN_DIR=RebecaCodeScenarios\Rule19RebecaCodeScenarios"
 for %%F in ("%BASE%\*.property") do (
     set "PROMPT=%%~nF"
     echo.
+    echo.
     echo === Processing prompt: !PROMPT! ===
 
     @REM Create output folders
@@ -24,26 +25,23 @@ for %%F in ("%BASE%\*.property") do (
         java -jar rmc-2.13.jar -s "%%G" -p "%%F" -o "!OUTDIR!" -e TIMED_REBECA -x
         if errorlevel 1 (
             echo ERROR: RMC failed on %%G with code %ERRORLEVEL%
-            exit /b 1
         )
 
-            @rem ── Compile (fixed wildcard expansion)
-            pushd "!OUTDIR!" || exit /b 1
-            rem Make sure there are .cpp files to compile
-            dir /b *.cpp >nul 2>&1
-            if errorlevel 1 (
-                echo ERROR: No .cpp files in "!OUTDIR!"
-                popd
-                exit /b 1
-            )
-            @rem Now compile: use unquoted wildcard so cmd expands it
-            g++ *.cpp -w -o ..\!PROMPT!_!SCEN!.exe
-            if errorlevel 1 (
-                echo ERROR: g++ failed to compile in "!OUTDIR!"
-                popd
-                exit /b 1
-            )
+        @rem ── Compile (fixed wildcard expansion)
+        pushd "!OUTDIR!" || exit /b 1
+        rem Make sure there are .cpp files to compile
+        dir /b *.cpp >nul 2>&1
+        if errorlevel 1 (
+            echo ERROR: No .cpp files in "!OUTDIR!"
             popd
+        )
+        @rem Now compile: use unquoted wildcard so cmd expands it
+        g++ *.cpp -w -o ..\!PROMPT!_!SCEN!.exe
+        if errorlevel 1 (
+            echo ERROR: g++ failed to compile in "!OUTDIR!"
+            popd
+        )
+        popd
 
 
 

@@ -10,12 +10,14 @@
 *.statespace
 *.dot
 *.history
+*.spec
 .metadata
 progress
 
 workspace/SimulationModelCode/src/script/cppfiles/
 workspace/SimulationModelCode/src/script/output/
 workspace/SimulationModelCode/src/script/executables/
+PromptingExperimentDoc/LLMLeg2Reb/V1/Rule*/RMCout*
 *.jar
 
 # General

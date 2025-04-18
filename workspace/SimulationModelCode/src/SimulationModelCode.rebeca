@@ -72,7 +72,7 @@ env int VISRANGENOTOK = 500;
 env int SCALING_FACTOR = 100;
 
 // Fog variables
-env boolean FOG_ACTIVATED = true;
+env boolean FOG_ACTIVATED = false;
 env double FOG_VAR_0 = 13.0;
 env double FOG_VAR_1 = 25.0;
 env double FOG_VAR_2 = 10.0;
@@ -152,7 +152,7 @@ reactiveclass Ship(50) {
 		restricted_visibility = false;
 		contains_hazardous = is_hazardous;
 		vessel_type_powerdriven = is_powerdriven;
-		engine_on = true;
+		engine_on = false;
 		// Lights
 		masthead_light = true;
 		masthead_light_range = 6;
@@ -817,7 +817,7 @@ reactiveclass MapServer(50) {
 		ship2_inside_traffic_zone = false;
 		undercurrent = UNDERCURRENT_ATTR;
 		ships_close_to_each_other = false;
-		speed_safe_range = 3;
+		speed_safe_range = 7;
 	}
 	
 	//helper math functions	
