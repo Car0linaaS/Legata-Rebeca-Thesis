@@ -13,7 +13,7 @@ OS: OwnShip # Convenience macro definitions
 clause['Istanbul.Strait.Rule3.LargeVessel']:{
     : {
         condition: { 
-            :(OS.Length > meters(150)) and (OS.Undercurrent > kn(4))
+        :(OS.Length > meters(150)) and (OS.Undercurrent > kn(4))
 	    :(OS.Draught > meters(10)) and (OS.Undercurrent > kn(4))
         }
         assure: { 
