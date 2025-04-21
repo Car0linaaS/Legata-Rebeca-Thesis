@@ -4,69 +4,62 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-Here is the **Rebeca property file** that represents the Legata clause `Istanbul.Strait.Rule3.DangerousCargo`:
+Here is the **Rebeca property file** that captures the semantics of the **Legata clause `Istanbul.Strait.Rule3.DangerousCargo`**:
+
+---
+
+### ✅ Rebeca Property File (for Timed Rebeca Simulation)
 
 ```rebeca
 property {
     define {
-        Ship1_Has_Hazardous_Cargo = (s1.contains_hazardous == true);
-        Undercurrent_High = (theMap.undercurrent > 4);
-        Ship1_High_Speed = (s1.ship_velocity > 10);
+        // Ship s1 represents OwnShip (OS)
+        is_hazardous = (s1.contains_hazardous == true);
+        current_strong = (theMap.undercurrent > 4);
+        low_speed = (s1.ship_velocity <= 10);
+        ship_in_strait = (theMap.ship1_inside_istanbul_strait == true);
     }
 
     Assertion {
-        DangerousCargoSpeedCompliance: (!(Ship1_Has_Hazardous_Cargo && Undercurrent_High) || Ship1_High_Speed);
+        NoEntryIfHazardousInStrongCurrentAndSlow:
+        !(is_hazardous && current_strong && low_speed && ship_in_strait);
     }
 }
 ```
 
 ---
 
-### ✅ **Semantic Explanation of the Legata Clause**
+### 🔎 Semantic Meaning of the Legata Clause
 
-**Legata Clause Name:** `Istanbul.Strait.Rule3.DangerousCargo`  
-**Intended Meaning:**
-> If the *own ship* is carrying **hazardous material** and the **undercurrent is stronger than 4 knots**, then the **ship must be traveling faster than 10 knots** to maintain safety in the strait.
+**Clause Summary (Istanbul.Strait.Rule3.DangerousCargo):**
 
-This rule is likely motivated by safety and maneuverability requirements in strong currents, particularly for vessels carrying dangerous cargo.
-
----
-
-### 🔄 **Mapping from Legata to Rebeca Property**
-
-| **Legata Component**                          | **Rebeca Equivalent**                                    |
-|----------------------------------------------|----------------------------------------------------------|
-| `OS.Cargo in ['HazardousMaterial']`          | `s1.contains_hazardous == true`                          |
-| `OS.Undercurrent > kn(4)`                    | `theMap.undercurrent > 4`                                |
-| `OS.Velocity > kn(10)`                       | `s1.ship_velocity > 10`                                  |
-
-- `OS` (OwnShip) is mapped to the actor `s1`, the ship we are observing.
-- `contains_hazardous` is a boolean state variable representing if the ship carries hazardous cargo.
-- `undercurrent` is maintained by `MapServer`, and is assumed to be measured in knots.
-- `ship_velocity` is directly compared to 10 knots.
+- If a ship is carrying *hazardous cargo* and the *undercurrent exceeds 4 knots*, then it must have a *speed greater than 10 knots* to be permitted to enter the strait.
+- Otherwise, entry into the Istanbul Strait is prohibited for safety reasons.
 
 ---
 
-### 🧠 Logic of the Assertion
+### 🧭 Mapping Legata → Rebeca
 
-The assertion uses logical equivalence:  
-> **If** ship carries hazardous cargo **and** undercurrent is strong, **then** its speed must be >10 knots.
+| **Legata Clause Element**                        | **Mapped Rebeca Variable**                           | **Explanation** |
+|--------------------------------------------------|------------------------------------------------------|-----------------|
+| `OS.Cargo in ['HazardousMaterial']`              | `s1.contains_hazardous == true`                      | Boolean state of whether the ship is carrying hazardous material |
+| `OS.Undercurrent > kn(4)`                        | `theMap.undercurrent > 4`                            | Underwater current level monitored by the map server |
+| `OS.Velocity > kn(10)`                           | `s1.ship_velocity > 10`                              | The required velocity condition to enter |
+| **Violation Condition:** <br> `(hazardous && strong current && low speed)` | `!(...)` used in assertion to disallow violation | If this dangerous condition is met **and** the ship enters, it's a **violation** |
 
-This is represented as:
+---
 
-```rebeca
-!(Ship1_Has_Hazardous_Cargo && Undercurrent_High) || Ship1_High_Speed
-```
+### ✅ Assertion Logic
 
-Which is logically equivalent to:
+The assertion **disallows** a situation where:
+- The ship is **carrying hazardous cargo**
+- The **undercurrent is strong** (> 4 kn)
+- The ship is moving at **10 knots or less**
+- And the ship is **inside the strait**
 
-```text
-IF (Hazardous AND Strong Undercurrent)
-THEN (High Speed)
-```
+If all these conditions hold, that is a direct **violation** of the clause and should be **prevented or flagged** during simulation.
 
-Let me know if you'd like this applied to a second clause or extended to handle `s2` or other traffic rules.
-
+Let me know if you want this adapted for `s2` (another ship) or for multiple ships dynamically!
 
 _______________________________________________________________________________
 

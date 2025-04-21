@@ -9,7 +9,7 @@
 	<type>Reachability</type>
 	<name>Deadlock-Freedom and No Deadline Missed</name>
 	<result>assertion failed</result>
-	<message>Istanbul_Strait_Rule3_LargeVessel_Ship1</message>
+	<message>StraitEntryRestriction</message>
 <options>
 	<option>Export state space</option>
 	<option>Safe mode is enabled</option>
@@ -17,7 +17,7 @@
 </options>
 </checked-property>
 <counter-example-trace>
-<state id="1_0" atomicpropositions="isLargeShip1,isDeepDraughtShip1,strongUndercurrent," >
+<state id="1_0" atomicpropositions="Ship1_IsLarge,Ship1_IsDeepDraught,Strong_Undercurrent,Ship1_SpeedLow," >
 	<rebec name="s1">
 		<statevariables>
 			<variable name="Ship.ship_index" type="byte">1</variable>
@@ -130,6 +130,8 @@
 			<variable name="MapServer.speed_safe_range" type="int">7</variable>
 			<variable name="MapServer.ship1_inside_traffic_zone" type="boolean">false</variable>
 			<variable name="MapServer.ship2_inside_traffic_zone" type="boolean">false</variable>
+			<variable name="MapServer.ship1_inside_istanbul_strait" type="boolean">false</variable>
+			<variable name="MapServer.ship2_inside_istanbul_strait" type="boolean">false</variable>
 			<variable name="MapServer.undercurrent" type="int">5</variable>
 			<variable name="MapServer.ships_close_to_each_other" type="boolean">false</variable>
 		</statevariables>

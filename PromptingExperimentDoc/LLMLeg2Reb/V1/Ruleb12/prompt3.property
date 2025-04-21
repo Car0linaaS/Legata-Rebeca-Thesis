@@ -1,19 +1,12 @@
 property {
     define {
-        ship1_has_dangerous_cargo = (s1.contains_hazardous == true);
-        ship2_has_dangerous_cargo = (s2.contains_hazardous == true);
+        ship1_carries_hazardous = (s1.contains_hazardous == true);
+        ship1_velocity_low = (s1.ship_velocity <= 10);
         strong_undercurrent = (theMap.undercurrent > 4);
-        ship1_high_velocity = (s1.ship_velocity > 10);
-        ship2_high_velocity = (s2.ship_velocity > 10);
+        ship1_in_strait = (theMap.ship1_inside_istanbul_strait == true);
     }
 
     Assertion {
-        Ship1_Complies_With_DangerousCargoRule: 
-            !(ship1_has_dangerous_cargo && strong_undercurrent) || ship1_high_velocity;
-    }
-
-    Assertion {
-        Ship2_Complies_With_DangerousCargoRule: 
-            !(ship2_has_dangerous_cargo && strong_undercurrent) || ship2_high_velocity;
+        NoHazardousShipEntersStrait: !((ship1_carries_hazardous && ship1_velocity_low && strong_undercurrent) && ship1_in_strait);
     }
 }

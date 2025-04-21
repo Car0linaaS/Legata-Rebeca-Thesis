@@ -1,11 +1,14 @@
 property {
     define {
         ship1_hazardous = (s1.contains_hazardous == true);
-        undercurrent_strong = (theMap.undercurrent > 4);
-        ship1_fast = (s1.ship_velocity > 10);
+        ship2_hazardous = (s2.contains_hazardous == true);
+        strong_undercurrent = (theMap.undercurrent > 4);
+        ship1_low_speed = (s1.ship_velocity <= 10);
+        ship2_low_speed = (s2.ship_velocity <= 10);
     }
 
     Assertion {
-        DangerousCargoSpeedRequirement: !(ship1_hazardous && undercurrent_strong) || ship1_fast;
+        NoHazardousEntry_s1: !(ship1_hazardous && strong_undercurrent && ship1_low_speed);
+        NoHazardousEntry_s2: !(ship2_hazardous && strong_undercurrent && ship2_low_speed);
     }
 }

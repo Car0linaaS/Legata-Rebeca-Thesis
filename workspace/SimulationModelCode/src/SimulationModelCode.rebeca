@@ -817,6 +817,9 @@ reactiveclass MapServer(50) {
 		
 		boolean ship1_inside_traffic_zone;
 		boolean ship2_inside_traffic_zone;
+		boolean ship1_inside_istanbul_strait;
+		boolean ship2_inside_istanbul_strait;
+		
 		int undercurrent;
 		boolean ships_close_to_each_other;
 	}
@@ -838,6 +841,8 @@ reactiveclass MapServer(50) {
 		//ADDED
 		ship1_inside_traffic_zone = false;
 		ship2_inside_traffic_zone = false;
+		ship1_inside_istanbul_strait = false;
+		ship2_inside_istanbul_strait = false;
 		undercurrent = UNDERCURRENT_ATTR;
 		ships_close_to_each_other = false;
 		speed_safe_range = 7;
@@ -1162,14 +1167,18 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 		boolean inside_traffic_zone = isRectIntersect(rect_ship_1,traffic_zone);
 		if (1 == idx && inside_traffic_zone) {
 			ship1_inside_traffic_zone = true;
+			ship1_inside_istanbul_strait = true;
 		} else if (2 == idx && inside_traffic_zone) {
 			ship2_inside_traffic_zone = true;
+			ship2_inside_istanbul_strait = true;
 		}
 		
 		if (1 == idx && !inside_traffic_zone) {
 			ship1_inside_traffic_zone = false;
+			ship1_inside_istanbul_strait = false;
 		} else if (2 == idx && !inside_traffic_zone) {
 			ship2_inside_traffic_zone = false;
+			ship2_inside_istanbul_strait = false;
 		}
 
 	}

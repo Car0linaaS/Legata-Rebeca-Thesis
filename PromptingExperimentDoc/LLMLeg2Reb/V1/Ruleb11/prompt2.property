@@ -1,14 +1,16 @@
 property {
     define {
-        IsLargeLength = (s1.ship_length > 150);
-        IsDeepDraught = (s1.ship_draught > 10);
-        IsStrongUndercurrent = (theMap.undercurrent > 4);
-        IsHighVelocity = (s1.ship_velocity > 10);
+        isLargeVessel = (s1.ship_length > 150);
+        isDeepDraught = (s1.ship_draught > 10);
+        strongUndercurrent = (theMap.undercurrent > 4);
+        isSlow = (s1.ship_velocity <= 10);
+        inStrait = (theMap.ship1_inside_istanbul_strait == true);
     }
 
     Assertion {
-        Istanbul_Strait_Rule3_LargeVessel_Assertion: 
-        ((IsLargeLength && IsStrongUndercurrent) || (IsDeepDraught && IsStrongUndercurrent)) 
-        && IsHighVelocity;
+        Istanbul_Strait_Rule3_LargeVessel: !(
+            ((isLargeVessel && strongUndercurrent && isSlow && inStrait) ||
+             (isDeepDraught && strongUndercurrent && isSlow && inStrait))
+        );
     }
 }

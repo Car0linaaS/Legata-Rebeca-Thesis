@@ -4,59 +4,65 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-### ✅ Rebeca Property File (Assertion-based) for Legata Clause `Istanbul.Strait.Rule3.DangerousCargo`
+Here is the **Rebeca property file** that represents the Legata clause `Istanbul.Strait.Rule3.DangerousCargo`:
+
+---
+
+### ✅ **Rebeca Property File**
 
 ```rebeca
 property {
     define {
-        ship1_has_dangerous_cargo = (s1.contains_hazardous == true);
-        ship2_has_dangerous_cargo = (s2.contains_hazardous == true);
+        ship1_carries_hazardous = (s1.contains_hazardous == true);
+        ship1_velocity_low = (s1.ship_velocity <= 10);
         strong_undercurrent = (theMap.undercurrent > 4);
-        ship1_high_velocity = (s1.ship_velocity > 10);
-        ship2_high_velocity = (s2.ship_velocity > 10);
+        ship1_in_strait = (theMap.ship1_inside_istanbul_strait == true);
     }
 
     Assertion {
-        Ship1_Complies_With_DangerousCargoRule: 
-            !(ship1_has_dangerous_cargo && strong_undercurrent) || ship1_high_velocity;
-    }
-
-    Assertion {
-        Ship2_Complies_With_DangerousCargoRule: 
-            !(ship2_has_dangerous_cargo && strong_undercurrent) || ship2_high_velocity;
+        NoHazardousShipEntersStrait: !((ship1_carries_hazardous && ship1_velocity_low && strong_undercurrent) && ship1_in_strait);
     }
 }
 ```
 
 ---
 
-### 💡 Semantic Explanation of the Legata Clause and Mapping
+### ✅ **Semantic Explanation and Mapping**
 
-#### **Clause Summary (Legata)**
-- **Rule Name**: `Istanbul.Strait.Rule3.DangerousCargo`
-- **Applicability**: Applies to an "OwnShip" (OS)
-- **Condition**: The ship has **hazardous cargo** *and* the **undercurrent is stronger than 4 knots**
-- **Assure**: In such a situation, the ship’s **velocity must be greater than 10 knots**
+#### 📝 **Legata Clause Summary**
+The clause enforces a maritime safety protocol for navigating the **Istanbul Strait**. Specifically, if:
+- A ship carries **hazardous cargo**, and
+- The **undercurrent exceeds 4 knots**, and
+- The ship's **speed is 10 knots or less**,
 
-#### **Intended Semantics**
-The law mandates that any vessel carrying hazardous cargo must maintain a **minimum speed of over 10 knots** if it’s operating in an area where the **undercurrent exceeds 4 knots**. This likely reflects safety or navigational control measures in a hazardous or narrow waterway (like the Istanbul Strait).
-
----
-
-### 🧭 Mapping Legata to Timed Rebeca
-
-| **Legata Element**                       | **Rebeca Model Representation**                           |
-|------------------------------------------|-----------------------------------------------------------|
-| `OS.Cargo in ['HazardousMaterial']`      | `s1.contains_hazardous == true` / `s2.contains_hazardous == true` |
-| `OS.Undercurrent > kn(4)`                | `theMap.undercurrent > 4`                                 |
-| `OS.Velocity > kn(10)`                   | `s1.ship_velocity > 10` / `s2.ship_velocity > 10`         |
-
-Note: We assume `kn(x)` is already represented in Rebeca units (int), so no conversion is shown here.
+Then **that ship is not allowed to enter the strait**.
 
 ---
 
-Would you like to extend this with traffic zone conditions or apply this structure to another Legata clause?
+### 🔁 **Mapping Legata to Rebeca Properties**
 
+| **Legata Clause Attribute**                          | **Mapped Rebeca Variable / Expression**                         | **Description**                                                   |
+|------------------------------------------------------|------------------------------------------------------------------|-------------------------------------------------------------------|
+| `OS.Cargo in ['HazardousMaterial']`                 | `s1.contains_hazardous == true`                                 | Whether the ship carries hazardous cargo                         |
+| `OS.Undercurrent > kn(4)`                           | `theMap.undercurrent > 4`                                       | Undercurrent condition as tracked by the `MapServer`             |
+| `OS.Velocity > kn(10)`                              | `s1.ship_velocity > 10` → used via `ship1_velocity_low <= 10`   | Ship velocity check (we flip it to detect violation condition)   |
+| **Entering the strait** (implicit in Legata)         | `theMap.ship1_inside_istanbul_strait == true`                   | Whether the ship is in the Istanbul Strait                       |
+
+---
+
+### ✅ **Assertion Logic**
+
+The assertion ensures that a ship which:
+- Carries hazardous material,
+- Is moving slowly (≤ 10 kn),
+- While there's a strong undercurrent (> 4 kn),
+- And is trying to enter the Istanbul Strait,
+
+**should never actually be inside the strait**.
+
+The assertion `!((...) && ship1_in_strait)` catches violations of this rule by **forbidding the unsafe entry** scenario altogether.
+
+Let me know if you'd like the same logic applied to ship2 or extended for multiple clauses!
 
 _______________________________________________________________________________
 

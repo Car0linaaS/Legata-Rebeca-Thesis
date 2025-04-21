@@ -1,11 +1,14 @@
 property {
     define {
-        Ship1_Has_Hazardous_Cargo = (s1.contains_hazardous == true);
-        Undercurrent_High = (theMap.undercurrent > 4);
-        Ship1_High_Speed = (s1.ship_velocity > 10);
+        // Ship s1 represents OwnShip (OS)
+        is_hazardous = (s1.contains_hazardous == true);
+        current_strong = (theMap.undercurrent > 4);
+        low_speed = (s1.ship_velocity <= 10);
+        ship_in_strait = (theMap.ship1_inside_istanbul_strait == true);
     }
 
     Assertion {
-        DangerousCargoSpeedCompliance: (!(Ship1_Has_Hazardous_Cargo && Undercurrent_High) || Ship1_High_Speed);
+        NoEntryIfHazardousInStrongCurrentAndSlow:
+        !(is_hazardous && current_strong && low_speed && ship_in_strait);
     }
 }

@@ -4,68 +4,65 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-Here is the **Rebeca property file** that represents the Legata clause `Istanbul.Strait.Rule3.DangerousCargo`:
+Here is the **Rebeca property file** that encodes the semantics of the `Istanbul.Strait.Rule3.DangerousCargo` clause from Legata:
 
 ---
 
-### ✅ **Rebeca Property File**
+### 🛡️ **Rebeca Property File**
+
 ```rebeca
 property {
     define {
         ship1_hazardous = (s1.contains_hazardous == true);
-        undercurrent_strong = (theMap.undercurrent > 4);
-        ship1_fast = (s1.ship_velocity > 10);
+        ship2_hazardous = (s2.contains_hazardous == true);
+        strong_undercurrent = (theMap.undercurrent > 4);
+        ship1_low_speed = (s1.ship_velocity <= 10);
+        ship2_low_speed = (s2.ship_velocity <= 10);
     }
 
     Assertion {
-        DangerousCargoSpeedRequirement: !(ship1_hazardous && undercurrent_strong) || ship1_fast;
+        NoHazardousEntry_s1: !(ship1_hazardous && strong_undercurrent && ship1_low_speed);
+        NoHazardousEntry_s2: !(ship2_hazardous && strong_undercurrent && ship2_low_speed);
     }
 }
 ```
 
 ---
 
-### 🔍 **Explanation of Mapping and Semantics**
+### 🧠 **Explanation & Semantics**
 
-#### 📜 **Legata Clause Meaning**:
-The Legata clause `Istanbul.Strait.Rule3.DangerousCargo` sets a **requirement** for a vessel carrying hazardous material:  
-- If the **own ship (OS)** is carrying **HazardousMaterial**,  
-- **and** the **undercurrent** is **greater than 4 knots**,  
-- then the **ship's velocity** must be **greater than 10 knots**.
+#### ✅ **Legata Clause Summary**
 
-This is a regulatory clause aimed at ensuring vessels with dangerous cargo maintain higher speeds in strong currents to preserve maneuverability and safety.
+The Legata clause states:
 
----
+> If a vessel **carries hazardous material** and the **sea current exceeds 4 knots**, then it must be traveling **faster than 10 knots** to enter the Istanbul Strait.
 
-#### 🔄 **Mapping Legata to Rebeca**:
-
-| **Legata Attribute**              | **Rebeca Variable**                    | **Notes**                                                                 |
-|----------------------------------|----------------------------------------|---------------------------------------------------------------------------|
-| `OS.Cargo in ['HazardousMaterial']` | `s1.contains_hazardous == true`         | Representing ship 1 carrying hazardous cargo                             |
-| `OS.Undercurrent > kn(4)`        | `theMap.undercurrent > 4`              | "kn(4)" assumed to be 4 knots; directly mapped to an integer value       |
-| `OS.Velocity > kn(10)`           | `s1.ship_velocity > 10`                | Velocity is compared against threshold                                   |
+In simpler terms: under strong undercurrent conditions, **slow-moving hazardous cargo ships are not allowed** in the strait.
 
 ---
 
-#### 🧠 **Why use `!(A && B) || C` instead of implication**?
+#### 🔄 **Mapping Legata → Rebeca**
 
-Because Rebeca property syntax does **not allow implication**, we rewrite:
-```
-IF (A AND B) THEN C
-```
-as:
-```
-!(A AND B) || C
-```
-Which is logically equivalent.
+| Legata Concept                         | Rebeca Equivalent                       |
+|----------------------------------------|-----------------------------------------|
+| `OS.Cargo in ['HazardousMaterial']`    | `s1.contains_hazardous == true` (or `s2`) |
+| `OS.Undercurrent > kn(4)`              | `theMap.undercurrent > 4`               |
+| `OS.Velocity > kn(10)`                 | `s1.ship_velocity > 10` (or `s2`)       |
 
-So:
-```rebeca
-!(ship1_hazardous && undercurrent_strong) || ship1_fast;
-```
-ensures that *if* the ship is carrying hazardous material *and* the undercurrent is strong, then it must be moving faster than 10 knots.
+---
 
-Let me know if you’d like to adapt this for `s2` as well or simulate multiple vessels!
+#### ⚙️ **Logic of the Assertion**
+
+In Rebeca, we enforce **what should not be allowed**:
+
+> A ship **must not** be in the state where it is:  
+> carrying hazardous cargo `&&` strong undercurrent `&&` moving at 10 knots or less.
+
+That’s why we write the assertion using **negation (`!`)** of this illegal condition.
+
+---
+
+Let me know if you want this modeled for only one ship, or expanded with other vessel types (like "large" or "deep-draught" vessels).
 
 
 _______________________________________________________________________________

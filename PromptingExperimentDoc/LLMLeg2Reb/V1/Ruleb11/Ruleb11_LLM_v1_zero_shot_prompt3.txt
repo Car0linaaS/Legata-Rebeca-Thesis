@@ -4,96 +4,92 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-Here's how the Legata clause `Istanbul.Strait.Rule3.LargeVessel` can be translated into a Rebeca property file:
-
----
-
-### ✅ **Rebeca Property File:**
+Here's the **Rebeca property file** that represents the Legata clause `Istanbul.Strait.Rule3.LargeVessel`:
 
 ```rebeca
 property {
-    define {
-        isLargeShip1 = (s1.ship_length > 150);
-        isDeepDraughtShip1 = (s1.ship_draught > 10);
-        strongUndercurrent = (theMap.undercurrent > 4);
-        ship1IsFast = (s1.ship_velocity > 10);
-    }
+	define {
+		Ship1_IsLarge = (s1.ship_length > 150);
+		Ship1_IsDeepDraught = (s1.ship_draught > 10);
+		Strong_Undercurrent = (theMap.undercurrent > 4);
+		Ship1_SpeedLow = (s1.ship_velocity <= 10);
+	}
 
-    Assertion {
-        Istanbul_Strait_Rule3_LargeVessel_Ship1:
-        (!((isLargeShip1 && strongUndercurrent) || (isDeepDraughtShip1 && strongUndercurrent)) || ship1IsFast);
-    }
+	Assertion {
+		StraitEntryRestriction: !(
+			( (Ship1_IsLarge && Strong_Undercurrent && Ship1_SpeedLow) ||
+			  (Ship1_IsDeepDraught && Strong_Undercurrent && Ship1_SpeedLow)
+			)
+		);
+	}
 }
 ```
 
 ---
 
-### ✅ **Semantic Explanation of the Legata Clause:**
+### ✅ **Semantic Explanation of the Legata Clause**
 
-#### **Legata Clause: `Istanbul.Strait.Rule3.LargeVessel`**
-This clause models a maritime safety regulation applicable in the Istanbul Strait. It targets vessels that either:
-- Are large (length > 150 meters) **and** sailing in strong undercurrents (> 4 knots), **or**
-- Have a deep draught (> 10 meters) **and** are also in strong undercurrents.
+The Legata clause `Istanbul.Strait.Rule3.LargeVessel` imposes restrictions based on vessel attributes and environmental conditions:
 
-In either case, if **any** of those conditions are true, the **vessel must be moving faster than 10 knots**. This likely serves a navigational or safety purpose, possibly to ensure maneuverability or to avoid drifting due to current.
+> **"If the sea current exceeds 4 knots, then large vessels (length > 150m), deep-draught vessels (draught > 10m), or vessels carrying hazardous cargo traveling at 10 knots or less may not enter the Istanbul Strait."**
 
----
+Since the clause doesn't mention hazardous cargo separately in its conditions, and we’re modeling only what's present, we focus on:
+- **Ship size** (length > 150 meters)
+- **Ship draught** (draught > 10 meters)
+- **Sea current** (undercurrent > 4 knots)
+- **Ship velocity** (must be > 10 knots to enter)
 
-### ✅ **Mapping Legata Clause to Rebeca Properties:**
+### 🧩 **How Conditions Map to Rebeca Property Variables**
 
-| Legata Concept | Rebeca Mapping | Description |
-|----------------|----------------|-------------|
-| `OS.Length > meters(150)` | `s1.ship_length > 150` | Check if the ship is a large vessel. |
-| `OS.Draught > meters(10)` | `s1.ship_draught > 10` | Check if the ship has a deep draught. |
-| `OS.Undercurrent > kn(4)` | `theMap.undercurrent > 4` | Check if the environmental condition includes strong undercurrents. |
-| `OS.Velocity > kn(10)` | `s1.ship_velocity > 10` | Assures that the vessel's speed is sufficient if conditions are met. |
+| **Legata Attribute**             | **Mapped Rebeca Variable / Expression**            |
+|----------------------------------|-----------------------------------------------------|
+| `OS.Length > meters(150)`        | `s1.ship_length > 150`                              |
+| `OS.Draught > meters(10)`        | `s1.ship_draught > 10`                              |
+| `OS.Undercurrent > kn(4)`        | `theMap.undercurrent > 4`                           |
+| `OS.Velocity > kn(10)`           | `s1.ship_velocity > 10`                             |
 
----
+The **assertion** ensures that:
+- If the ship is large or deep-draught **and** the undercurrent is strong **and** the ship is going slow (≤10 knots), **then** the situation is invalid — hence we **negate it** with `!`.
 
-### ✅ **Assertion Logic Explanation:**
-We use logical expression transformation here:  
-The Legata clause expresses **"If condition(s), then assure"**.
+This property enforces compliance with Rule 3 by asserting that such ships **should not be present in the simulation** under those conditions.
 
-Since Rebeca properties **do not support implication (`->`)**, we write it using logical equivalence:  
-**`(condition -> assure)` becomes `(!condition || assure)`**.
-
-So we transform:
-```
-((isLarge && currentStrong) || (isDeep && currentStrong)) -> isFast
-```
-into:
-```
-!(...) || isFast
-```
-
----
-
-Let me know if you want to do this for `s2` as well, or if you’d like to generate clauses for multiple ships together!
-
+Want this adapted for `s2` or both ships at once too?
 
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: x/10
+Total points: 8/10
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
-Answer: 
+Answer: Yes
+Points: 1p
 
 2. Are all relevant attributes included? (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p) (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p)
-Answer: 
-Points:
+Answer: Partially
+Points: 2p
+
+Ship:
+ship_length ✅
+ship_draught ✅
+ship_velocity ✅
+
+theMap:
+ship_inside_istanbul_strait ❌
+undercurrent ✅
 
 3. Are correctness properties created for all relevant actors? (All = 2p, deduct 1p for each missing actor) (All = 2p, deduct 1p for each missing actor)
-Answer: 
-Points:
+Answer: Yes
+Points: 2p
 
-4. Is the output code free from hallucinations (e.g. any irrelevant code added)? (1p) (1p)
-Answer: 
-Points:
+4. Is the output code free from hallucinations (e.g. any irrelevant code added)? (1p)
+Answer: Yes
+Points: 1p
 
 5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
-Answer: 
-Points:
+Answer: Correct, Not full expression
+Points: 2p
+
+Note: Misses out on checking if vessel is inside the strait or not
 
 _______________________________________________________________________________
 

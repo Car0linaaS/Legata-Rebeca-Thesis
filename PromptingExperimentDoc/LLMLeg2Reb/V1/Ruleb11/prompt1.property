@@ -1,13 +1,10 @@
 property {
-	define {
-		ShipIsLong = (s1.ship_length > 150);
-		ShipIsDeep = (s1.ship_draught > 10);
-		StrongUndercurrent = (theMap.undercurrent > 4);
-		ShipIsFast = (s1.ship_velocity > 10);
-	}
+    define {
+        LargeVesselCondition1 = (s1.ship_length > 150) && (theMap.undercurrent > 4);
+        LargeVesselCondition2 = (s1.ship_draught > 10) && (theMap.undercurrent > 4);
+    }
 
-	Assertion {
-		LargeVesselMustBeFast:
-		((ShipIsLong && StrongUndercurrent) || (ShipIsDeep && StrongUndercurrent)) && ShipIsFast;
-	}
+    Assertion {
+        Istanbul_Strait_Rule3_LargeVessel: !( (LargeVesselCondition1 || LargeVesselCondition2) && (s1.ship_velocity <= 10) );
+    }
 }

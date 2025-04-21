@@ -1,6 +1,6 @@
 <model-checking-report>
 <system-info>
-	<total-spent-time>26</total-spent-time>
+	<total-spent-time>27</total-spent-time>
 	<reached-states>4627</reached-states>
 	<reached-transitions>5531</reached-transitions>
 	<consumed-mem>55524</consumed-mem>

@@ -1,16 +1,17 @@
+
 property{
 	define {
-// B.1
+		// B.1
 		undercurrentsAboveLimit = theMap.undercurrent > 4;
 		// Ship1
-		ship1InsideTrafficZone = theMap.ship1_inside_traffic_zone;
+		ship1InsideIstanbulStrait = theMap.ship1_inside_istanbul_strait;
 		ship1isOverLengthLimit = s1.ship_length > 150;
 		ship1isOverDraughtLimit = s1.ship_draught > 10;
 		// Is fast enough even if too long/too deep
 		ship1isFastEnough = s1.ship_velocity > 10;
 		
 		// Ship 2
-		ship2InsideTrafficZone = theMap.ship2_inside_traffic_zone;
+		ship2InsideIstanbulStrait = theMap.ship2_inside_istanbul_strait;
 		ship2isOverLengthLimit = s2.ship_length > 150;
 		ship2isOverDraughtLimit = s2.ship_draught > 10;
 		// Is fast enough even if too long/too deep
@@ -19,10 +20,10 @@ property{
 	//Om assertion är false löser den ut
 	Assertion {
 		// B.1 first
-		//s1LargeVesselB1: (!ship1InsideTrafficZone || ((!(ship1isOverLengthLimit && undercurrentsAboveLimit) || ship1isFastEnough) && (!(ship1isOverDraughtLimit && undercurrentsAboveLimit) || ship1isFastEnough)));	
-		//s2LargeVesselB1: (!ship2InsideTrafficZone || ((!(ship2isOverLengthLimit && undercurrentsAboveLimit) || ship2isFastEnough) && (!(ship2isOverDraughtLimit && undercurrentsAboveLimit) || ship2isFastEnough)));	
-		s1LargeVesselB1: !ship1InsideTrafficZone || ship1isFastEnough || !undercurrentsAboveLimit || (!ship1isOverLengthLimit || !ship1isOverDraughtLimit);
-		s2LargeVesselB1: !ship2InsideTrafficZone || ship2isFastEnough || !undercurrentsAboveLimit || (!ship2isOverLengthLimit || !ship2isOverDraughtLimit);
+		//s1LargeVesselB1: (!ship1InsideIstanbulStrait || ((!(ship1isOverLengthLimit && undercurrentsAboveLimit) || ship1isFastEnough) && (!(ship1isOverDraughtLimit && undercurrentsAboveLimit) || ship1isFastEnough)));	
+		//s2LargeVesselB1: (!ship2InsideIstanbulStrait || ((!(ship2isOverLengthLimit && undercurrentsAboveLimit) || ship2isFastEnough) && (!(ship2isOverDraughtLimit && undercurrentsAboveLimit) || ship2isFastEnough)));	
+		s1LargeVesselB1: !ship1InsideIstanbulStrait || ship1isFastEnough || !undercurrentsAboveLimit || !(ship1isOverLengthLimit || ship1isOverDraughtLimit);
+		s2LargeVesselB1: !ship2InsideIstanbulStrait || ship2isFastEnough || !undercurrentsAboveLimit || !(ship2isOverLengthLimit || ship2isOverDraughtLimit);
 
 	}
 }

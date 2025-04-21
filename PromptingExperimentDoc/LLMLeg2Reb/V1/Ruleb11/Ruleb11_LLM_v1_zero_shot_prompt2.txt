@@ -4,85 +4,100 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-Here's the **Rebeca property file** that represents the Legata clause `Istanbul.Strait.Rule3.LargeVessel`:
+Here is the **Rebeca property file** that represents the Legata clause `Istanbul.Strait.Rule3.LargeVessel`:
 
----
-
-### ✅ **Rebeca Property File**
 ```rebeca
 property {
     define {
-        IsLargeLength = (s1.ship_length > 150);
-        IsDeepDraught = (s1.ship_draught > 10);
-        IsStrongUndercurrent = (theMap.undercurrent > 4);
-        IsHighVelocity = (s1.ship_velocity > 10);
+        isLargeVessel = (s1.ship_length > 150);
+        isDeepDraught = (s1.ship_draught > 10);
+        strongUndercurrent = (theMap.undercurrent > 4);
+        isSlow = (s1.ship_velocity <= 10);
+        inStrait = (theMap.ship1_inside_istanbul_strait == true);
     }
 
     Assertion {
-        Istanbul_Strait_Rule3_LargeVessel_Assertion: 
-        ((IsLargeLength && IsStrongUndercurrent) || (IsDeepDraught && IsStrongUndercurrent)) 
-        && IsHighVelocity;
+        Istanbul_Strait_Rule3_LargeVessel: !(
+            ((isLargeVessel && strongUndercurrent && isSlow && inStrait) ||
+             (isDeepDraught && strongUndercurrent && isSlow && inStrait))
+        );
     }
 }
 ```
 
 ---
 
-### 🧠 Semantic Explanation
+### ✅ Semantic Meaning of the Clause
 
-#### 📜 **Intended Meaning of the Legata Clause**
-This clause from Legata (`Istanbul.Strait.Rule3.LargeVessel`) describes a regulation that applies to large vessels navigating through the Istanbul Strait under strong undercurrent conditions. It enforces a **minimum speed** requirement for vessels that meet **either of two conditions**:
-
-1. **Condition 1**: The vessel is longer than 150 meters and the undercurrent is stronger than 4 knots.
-2. **Condition 2**: The vessel has a draught deeper than 10 meters and the undercurrent is stronger than 4 knots.
-
-➡️ **Assure**: If either of the above conditions is met, the ship must travel faster than 10 knots.
+**Legata Clause Summary**:  
+This clause expresses a regulation for navigating the Istanbul Strait. If a vessel is considered a **large vessel** (length > 150m) **or** has a **deep draught** (draught > 10m), and the **undercurrent in the strait exceeds 4 knots**, then that vessel **must not enter the strait unless it is moving faster than 10 knots**.
 
 ---
 
-### 🔄 Mapping Legata → Rebeca
+### 🔄 Mapping Legata Attributes to Rebeca
 
-| Legata Attribute        | Rebeca Mapping                       | Notes |
-|-------------------------|--------------------------------------|-------|
-| `OS.Length > 150`       | `s1.ship_length > 150`              | OwnShip is mapped to `s1` |
-| `OS.Draught > 10`       | `s1.ship_draught > 10`              | Depth of the vessel |
-| `OS.Undercurrent > 4`   | `theMap.undercurrent > 4`           | Undercurrent measured by `MapServer` |
-| `OS.Velocity > 10`      | `s1.ship_velocity > 10`             | Required assured condition |
+| **Legata Element** | **Rebeca Mapping** | **Explanation** |
+|-------------------|--------------------|-----------------|
+| `OS.Length > meters(150)` | `s1.ship_length > 150` | Checks for large vessel |
+| `OS.Draught > meters(10)` | `s1.ship_draught > 10` | Checks for deep draught |
+| `OS.Undercurrent > kn(4)` | `theMap.undercurrent > 4` | Sea current condition |
+| `OS.Velocity > kn(10)` | `s1.ship_velocity > 10` | Assured speed requirement |
+| **Combined logic** | Assertion in property | Models prohibition of entry unless >10 kn |
 
----
+The `Assertion` ensures that **a violation of the rule (being in the strait while being large/deep, slow, and facing strong current)** must **never** happen. That is, if all those conditions are true simultaneously, the system violates the COLREG regulation described.
 
-Let me know if you'd like this adjusted for `s2` as the own ship, or want to incorporate this into a full Rebeca simulation scenario.
-
+Let me know if you’d like to extend this to include `s2` or add another rule!
 
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: x/10
+Total points: 10/10
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
-Answer: 
+Answer: Yes
+Points: 1p
 
 2. Are all relevant attributes included? (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p) (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p)
-Answer: 
-Points:
+Answer: Yes
+Points: 3p
+
+Ship:
+ship_length ✅
+ship_draught ✅
+ship_velocity ✅
+
+theMap:
+ship_inside_istanbul_strait ✅
+undercurrent ✅
 
 3. Are correctness properties created for all relevant actors? (All = 2p, deduct 1p for each missing actor) (All = 2p, deduct 1p for each missing actor)
-Answer: 
-Points:
+Answer: Yes
+Points: 2p
 
-4. Is the output code free from hallucinations (e.g. any irrelevant code added)? (1p) (1p)
-Answer: 
-Points:
+4. Is the output code free from hallucinations (e.g. any irrelevant code added)? (1p)
+Answer: Yes
+Points: 1p
 
 5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
-Answer: 
-Points:
+Answer: Correct, Full expression
+Points: 3p
 
 _______________________________________________________________________________
 
 
 ============= COMMENT =============
-<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+Our:
+!A || B || !C || !(D || E)
+
+Those varables based on our property file:
+ship1InsideIstanbulStrait = A
+ship1isFastEnough = B
+undercurrentsAboveLimit = C
+ship1isOverLengthLimit = D
+ship1isOverDraughtLimit = E
+
+Response:
+!((A && !B && C && D) || (A && !B && C && E))
 
 
 _______________________________________________________________________________
