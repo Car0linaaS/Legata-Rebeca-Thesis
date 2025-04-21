@@ -4,8 +4,48 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+### ✅ Rebeca Property File Representation
 
+```rebeca
+property {
+    define {
+        OwnShip_Near_TrafficZone = (theMap.ship1_inside_traffic_zone == true);
+        OwnShip_Visibility_High = (s1.vis_range > 0.5);
+    }
+
+    Assertion {
+        IstanbulStrait_Clause_1_Compliance: 
+        (!OwnShip_Near_TrafficZone) || (OwnShip_Visibility_High);
+    }
+}
+```
+
+---
+
+### 📘 Semantic Meaning of the Legata Clause
+
+#### Clause Summary:
+The clause `IstanbulStrait.Clause.1` enforces a regulation for a vessel (denoted as `OwnShip`, or `OS`) operating near a **Traffic Separation Zone** (in this case, within the **Istanbul Strait**). Specifically, it states:
+
+> **If the ship is within a near proximity of the traffic zone**, then **it must have a visibility range greater than 0.5 nautical miles**.
+
+This regulation ensures that any vessel operating close to a regulated or potentially congested area like a traffic separation scheme has adequate visibility to maintain safe navigation and collision avoidance.
+
+---
+
+### 🧠 Mapping Legata Concepts to Rebeca Model
+
+| **Legata Concept**                                      | **Rebeca Variable / Mapping**                               |
+|----------------------------------------------------------|--------------------------------------------------------------|
+| `OwnShip` (OS)                                           | `s1` (we assume s1 is the "own ship")                        |
+| `Map.Sea@TrafficZone.Distance in Area.Near.ProximityRange` | `theMap.ship1_inside_traffic_zone == true`                   |
+| `OS.Visibility.Range > kn(0.5)`                          | `s1.vis_range > 0.5` (unit assumed consistent with kn)       |
+
+> Note: Since the clause checks for proximity to a specific zone (`TrafficZone`), we interpret this as a boolean value in the simulation model (`ship1_inside_traffic_zone`). The unit `kn(0.5)` (nautical miles) is translated directly into a threshold value in the Rebeca property.
+
+---
+
+Let me know if you'd like to adapt this clause for `s2` (the other ship) or generalize it further!
 
 _______________________________________________________________________________
 

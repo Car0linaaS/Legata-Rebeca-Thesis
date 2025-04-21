@@ -4,7 +4,62 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+### ✅ Rebeca Property File (based on the Legata clause `IstanbulStrait.Clause.1`):
+
+```rebeca
+property {
+    define {
+        ship1_near_traffic_zone = (theMap.ship1_inside_traffic_zone == true);
+        ship2_near_traffic_zone = (theMap.ship2_inside_traffic_zone == true);
+        
+        ship1_vis_range_safe = (s1.vis_range > 0.5);
+        ship2_vis_range_safe = (s2.vis_range > 0.5);
+    }
+
+    Assertion {
+        Ship1_Complies_With_Clause1: !(ship1_near_traffic_zone) || ship1_vis_range_safe;
+    }
+
+    Assertion {
+        Ship2_Complies_With_Clause1: !(ship2_near_traffic_zone) || ship2_vis_range_safe;
+    }
+}
+```
+
+---
+
+### 📘 Explanation of the Legata Clause and Mapping
+
+**Legata Clause:**  
+`clause['IstanbulStrait.Clause.1']` describes a rule applicable to a ship (`OwnShip`) navigating in or near a **Traffic Zone** in the Istanbul Strait.  
+
+- **Condition:**  
+  The ship is within a *near* proximity to a traffic zone (`Map.Sea@TrafficZone].Distance in Area.Near.ProximityRange`). This is interpreted in Rebeca as `shipX_inside_traffic_zone == true`, for either `s1` or `s2`.
+
+- **Assure:**  
+  If that condition is met, then the ship’s **visibility range** must be greater than 0.5 nautical miles (converted to model scale as `kn(.5)` → `0.5`).
+
+---
+
+### 🔄 Mapping from Legata to Rebeca
+
+| Legata Attribute                            | Rebeca Equivalent                    | Description |
+|---------------------------------------------|--------------------------------------|-------------|
+| `OwnShip` (`OS`)                             | `s1` and `s2`                        | Representing each ship actor |
+| `Map.Sea@TrafficZone.Distance ∈ Near`       | `shipX_inside_traffic_zone == true` | Boolean flags in `MapServer` |
+| `OS.Visibility.Range > kn(.5)`              | `sX.vis_range > 0.5`                | Visibility constraint |
+
+---
+
+### 🧠 Semantics of the Property
+
+These **assertions** state that:
+- **If** a ship is near a traffic zone, **then** its visibility range **must** be greater than 0.5.
+- If it's *not* near a traffic zone, the rule does not apply (i.e., the clause is trivially satisfied).
+
+This is modeled using `!(condition) || assure`, which is equivalent to logical implication without using the `->` operator.
+
+Let me know if you want to extend this to more clauses or include other contextual factors like direction, speed, or right-of-way rules.
 
 
 _______________________________________________________________________________

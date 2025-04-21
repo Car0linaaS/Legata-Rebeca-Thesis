@@ -1,14 +1,34 @@
 property {
-    // Define the conditions of the clause
-    define {
-        IsPowerDriven = (s1.vessel_type_powerdriven == true);
-        IsLengthLessThan12 = (s1.ship_length < 12);
-        AllroundLightOn = (s1.allround_light_on == true);
-        SideLightOn = (s1.side_light_on == true);
+    // ------------------ RULE 23.a ------------------
+
+    Assertion {
+        PowerDrivenUnderwayProperLights:
+        (s1.vessel_type_powerdriven == true &&
+         s1.underway == true &&
+         s1.ship_length >= 12) &&
+        (s1.masthead_forward_light_on == true &&
+         s1.side_light_on == true &&
+         s1.stern_light_on == true)
     }
 
-    // Assertion: If vessel is power-driven and less than 12 meters, it must show an all-round white light and sidelights
-    Assertion COLREG_Rule23_d_i_Compliance: (
-        !(IsPowerDriven && IsLengthLessThan12) || (AllroundLightOn && SideLightOn)
-    );
+    // ------------------ RULE 23.a.ii ------------------
+
+    Assertion {
+        PowerDrivenAbove50M_AbaftLight:
+        (s1.vessel_type_powerdriven == true &&
+         s1.underway == true &&
+         s1.ship_length >= 50) &&
+        (s1.masthead_abaft_light_on == true)
+    }
+
+    // ------------------ RULE 23.d.i ------------------
+
+    Assertion {
+        PowerDrivenUnder12M_AlternativeLighting:
+        (s1.vessel_type_powerdriven == true &&
+         s1.underway == true &&
+         s1.ship_length < 12) &&
+        (s1.allround_light_on == true &&
+         s1.side_light_on == true)
+    }
 }

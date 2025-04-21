@@ -1,12 +1,35 @@
 property {
     define {
-        PowerDriven = (vessel_type_powerdriven == true);
-        Under12Meters = (ship_length < 12);
-        AllroundWhiteOn = (allround_light_on == true);
-        SideLightOn = (side_light_on == true);
+        isPowerDriven = (s1.vessel_type_powerdriven == true);
+        isUnderway = (s1.underway == true);
+        lengthLessThan12 = (s1.ship_length < 12);
+        lengthLessThan50 = (s1.ship_length < 50);
+        lengthGreaterThan12 = (s1.ship_length > 12);
+        lengthGreaterOrEqual50 = (s1.ship_length >= 50);
+
+        mastheadForwardOn = (s1.masthead_forward_light_on == true);
+        mastheadAbaftOn = (s1.masthead_abaft_light_on == true);
+        sideLightOn = (s1.side_light_on == true);
+        sternLightOn = (s1.stern_light_on == true);
+        allroundLightOn = (s1.allround_light_on == true);
     }
 
     Assertion {
-        COLREG_Rule23_d_i: (PowerDriven && Under12Meters) == (AllroundWhiteOn && SideLightOn);
+        COLREG_Rule23_a: 
+        (isPowerDriven && isUnderway && lengthGreaterThan12) &&
+        (mastheadForwardOn && sideLightOn && sternLightOn) &&
+        (lengthLessThan50 || mastheadAbaftOn); // Optional if <50m, required if >=50m
+    }
+
+    Assertion {
+        COLREG_Rule23_a_ii: 
+        (isPowerDriven && isUnderway && lengthGreaterOrEqual50) &&
+        (mastheadAbaftOn);
+    }
+
+    Assertion {
+        COLREG_Rule23_d_i: 
+        (isPowerDriven && isUnderway && lengthLessThan12) &&
+        (allroundLightOn && sideLightOn);
     }
 }

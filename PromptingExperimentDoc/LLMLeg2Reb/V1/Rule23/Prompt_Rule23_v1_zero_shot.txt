@@ -20,11 +20,13 @@ reactiveclass Ship(50) {
 	}
 	statevars{
 		int ship_length;
-		int velocity;
 		boolean vessel_type_powerdriven;
-		
+		boolean underway;
+
+		boolean masthead_forward_light_on;
+        boolean masthead_abaft_light_on;
 		boolean side_light_on;
-	
+		boolean stern_light_on;
 		boolean allround_light_on;
 	}
 
@@ -71,6 +73,36 @@ condition: {
 # light but may do so;
 # (iii) sidelights;
 # (iv) a sternlight.
+clause['COLREG.Rule23.a']:{
+    : {
+        condition: { 
+            :OS.Type is Vessel.Type.PowerDriven
+        }
+		exclude:{
+            :OS.Length < meters(12)		# Rule23.d.i
+		}
+        assure: { 
+            :OS.Signal.ON has 'Light.Masthead.Forward.1x'
+            :OS.Signal.ON has 'Light.Masthead.Abaft'
+            :OS.Signal.ON has 'Light.Sidelight'
+            :OS.Signal.ON has 'Light.Sternlight'
+        }
+    }
+}
+
+clause['COLREG.Rule23.a.ii']:{
+    : {
+        condition: { 
+            :OS.Type is Vessel.Type.PowerDriven
+        }
+		exclude:{
+            :OS.Length < meters(50)
+		}
+        assure: { 
+            :OS.Signal.ON has 'Light.Masthead.Abaft'
+        }
+    }
+}
 
 
 # (d)

@@ -1,21 +1,31 @@
 property{
 	define {
-		// Rule 23 D 1
+		// Rule 23
 		// Ship 1
-		ship1isPowerdriven = s1.vessel_type_powerdriven;
-		ship1underway = s1.velocity > 0;
-		ship1LongerThan12m = s1.ship_length > 12;
-		ship1LightsAreOn = s1.allround_light_on && s1.side_light_on;
-		// Ship 2
-		ship2isPowerdriven = s2.vessel_type_powerdriven;
-		ship2underway = s2.velocity > 0;
-		ship2LongerThan12m = s2.ship_length > 12;
-		ship2LightsAreOn = s2.allround_light_on && s2.side_light_on;
+		ShipUnderway = s1.underway;
+		ShipisPowerdriven = s1.vessel_type_powerdriven;
+		ShipLessThan12m = s1.ship_length < 12;
+		ShipLessThan50m = s1.ship_length < 50;
+		
+		MastheadFowardLightOn = s1.masthead_forward_light_on;
+		MastheadAbaftLightOn = s1.masthead_abaft_light_on;
+		SideLightOn = s1.side_light_on;
+		SternlightOn = s1.stern_light_on;
+		AllroundLightOn = s1.allround_light_on;
+
+
 	}
 	//Om assertion är false löser den ut
 	Assertion {
-		// Rule 23
-		ship1rule23: !ship1underway || (!(!ship1LongerThan12m && ship1isPowerdriven) || ship1LightsAreOn);
-		ship2rule23: !ship2underway || (!(!ship2LongerThan12m && ship2isPowerdriven) || ship2LightsAreOn);
+		// Rule 23 a
+		Rule23a: !ShipUnderway || ShipLessThan12m || !ShipisPowerdriven || ( 
+			MastheadFowardLightOn && MastheadAbaftLightOn && SideLightOn && SternlightOn);
+		
+		// Rule23a2
+		Rule23a2: !ShipUnderway || ShipLessThan50m || !ShipisPowerdriven || (MastheadAbaftLightOn);
+		
+		 // Rule 23d1
+		 Rule23d1: !ShipUnderway || !ShipLessThan12m || !ShipisPowerdriven || (AllroundLightOn && SideLightOn);
+		
 		}
 }

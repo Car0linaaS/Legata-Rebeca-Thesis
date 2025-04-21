@@ -62,7 +62,7 @@ env int WCET_ACTION_NAME = 30000;
 // where we have added //NROFSHIPS
 env int NROFSHIPS = 2;
 
-env int UNDERCURRENT_ATTR = 3;
+env int UNDERCURRENT_ATTR = 5;
 
 // Visual variables
 env int VISRANGEOK = 1200;
@@ -116,17 +116,28 @@ reactiveclass Ship(50) {
 		boolean contains_hazardous;
 		boolean vessel_type_powerdriven;
 		boolean engine_on;
+		boolean underway;
 		
 		boolean masthead_light;
+		boolean masthead_light_on;
 		int masthead_light_range;
+		boolean masthead_forward_light;
+		boolean masthead_forward_light_on;
+		int masthead_forward_light_range;
+		boolean masthead_abaft_light;
+		boolean masthead_abaft_light_on;
+		int masthead_abaft_light_range;
 		boolean side_light;
 		boolean side_light_on;
 		int side_light_range;
 		boolean stern_light;
+		boolean stern_light_on;
 		int stern_light_range;
 		boolean towing_light;
+		boolean towing_light_on;
 		int towing_light_range;
 		boolean signal_light;
+		boolean signal_light_on;
 		int signal_light_range;
 		
 		boolean allround_light;
@@ -153,21 +164,33 @@ reactiveclass Ship(50) {
 		contains_hazardous = is_hazardous;
 		vessel_type_powerdriven = is_powerdriven;
 		engine_on = true;
+		underway = true;
 		// Lights
 		masthead_light = true;
+		masthead_light_on = true;
 		masthead_light_range = 6;
+		masthead_forward_light = true;
+		masthead_forward_light_on = true;
+		masthead_forward_light_range = 6;
+		masthead_abaft_light = true;
+		masthead_abaft_light_on = true;
+		masthead_abaft_light_range = 6;
 		side_light = true;
 		side_light_on = true;
 		side_light_range = 3;
 		stern_light = true;
+		stern_light_on = true;
 		stern_light_range = 3;
 		towing_light = true;
+		towing_light_on = true;
 		towing_light_range = 3;
 		signal_light = true;
+		signal_light_on = true;
 		signal_light_range = 3;		
 		allround_light = true;
 		allround_light_on = true;
 		allround_light_range = 2;
+		
 		
 		ship_index = idx;  // Assigning ship index from constructor value
 		// Ship's current x and y coordinates, direction, and target x y coordinates
@@ -1550,8 +1573,8 @@ a[1204]=301.0;a[1205]=0.5150;a[1206]=-0.8572;a[1207]=-1.6643;a[1208]=302.0;a[120
 main {
 	// Contains: Ship nr, starting x, starting y, target x, target y, tolerance to target, velocity, max nr of waiting rounds, 
 	// scanfirst true/false, ship length, ship width, ship draught, contains hazardous, is powerdriven
-	@priority(3) Ship s1(theMap):(1,5,13,47,13,2,1.1,1500,false,12,20,3,false,true);
-	@priority(5) Ship s2(theMap):(2,10,5,12,10,2,1.1,2000,false,10,20,3,false,true);
+	@priority(3) Ship s1(theMap):(1,5,13,47,13,2,1.1,1500,false,12,20,20,false,true);
+	@priority(5) Ship s2(theMap):(2,10,5,12,10,2,1.1,2000,false,10,20,20,false,true);
 	@priority(1) MapServer theMap(s1,s2):(2);	
 	
 }

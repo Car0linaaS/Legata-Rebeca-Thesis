@@ -4,90 +4,151 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-### ✅ **Rebeca Property File (Assertion) for `COLREG.Rule23.d.i`**
+Here's the **Rebeca property file** that models the Legata clause transformation into Rebeca's assertion language:
+
+---
+
+### 🧾 **Rebeca Property File: Modeling COLREG Rule 23 (Power-driven Vessels Underway)**
 
 ```rebeca
 property {
+    
+    // General status
     define {
-        IsPowerDriven = (s1.vessel_type_powerdriven == true);
-        IsShortVessel = (s1.ship_length <= 12);
-        AllroundLightOn = (s1.allround_light_on == true);
-        SidelightOn = (s1.side_light_on == true);
+        isUnderway = (s1.underway == true);
+        isPowerDriven = (s1.vessel_type_powerdriven == true);
+        lengthLessThan12 = (s1.ship_length < 12);
+        lengthLessThan50 = (s1.ship_length < 50);
+        lengthAtLeast50 = (s1.ship_length >= 50);
     }
 
+    // Lights
+    define {
+        mastheadForwardOn = (s1.masthead_forward_light_on == true);
+        mastheadAbaftOn = (s1.masthead_abaft_light_on == true);
+        sidelightOn = (s1.side_light_on == true);
+        sternlightOn = (s1.stern_light_on == true);
+        allroundWhiteOn = (s1.allround_light_on == true);
+    }
+
+    // COLREG Rule 23.a - Power-driven vessel underway must show required lights
     Assertion {
-        COLREG_Rule23_d_i: (IsPowerDriven && IsShortVessel && AllroundLightOn && SidelightOn);
+        Rule23_a:
+        (isUnderway && isPowerDriven && !lengthLessThan12) ==> 
+        (mastheadForwardOn && sidelightOn && sternlightOn)
+    }
+
+    // COLREG Rule 23.a.ii - Abaft masthead required if vessel ≥ 50m
+    Assertion {
+        Rule23_a_ii:
+        (isUnderway && isPowerDriven && lengthAtLeast50) ==> 
+        (mastheadAbaftOn)
+    }
+
+    // COLREG Rule 23.d.i - <12m can instead show all-round white + sidelights
+    Assertion {
+        Rule23_d_i:
+        (isUnderway && isPowerDriven && lengthLessThan12) ==> 
+        (allroundWhiteOn && sidelightOn)
     }
 }
 ```
 
 ---
 
-### 🔍 **Semantic Meaning of the Clause**
+### ✅ **Semantic Meaning and Mapping Explanation**
 
-The Legata clause `COLREG.Rule23.d.i` captures a specific exemption for **power-driven vessels under 12 meters** in length. Instead of displaying the full set of navigational lights required under Rule 23(a), such vessels **may** show a simplified light configuration:
-- An **all-round white light**, and
-- **Sidelights**.
-
-This exemption simplifies lighting requirements for smaller vessels that may lack the physical structure to support full lighting arrangements like dual masthead lights.
+Each Legata clause describes a **maritime rule condition** and the **lights/signals a vessel must exhibit** under those conditions. Here's how they are interpreted and mapped to Rebeca:
 
 ---
 
-### 🧠 **Mapping Legata to Rebeca Property**
+#### 🛥️ **Legata clause['COLREG.Rule23.a']**
 
-| **Legata Attribute**               | **Mapped Rebeca Attribute**      | **Explanation** |
-|-----------------------------------|----------------------------------|-----------------|
-| `OS.Type is Vessel.Type.PowerDriven` | `s1.vessel_type_powerdriven == true` | Indicates the vessel is power-driven. |
-| `OS.Length > meters(12)` (exclude) | `s1.ship_length <= 12`            | The clause only applies to vessels **less than or equal to 12 meters**. |
-| `OS.Signal.ON has 'Light.Allround.White'` | `s1.allround_light_on == true` | Ensures the vessel is showing an all-round white light. |
-| `OS.Signal.ON has 'Light.Sidelight'` | `s1.side_light_on == true` | Ensures the sidelights are on. |
-
-Note: The `exclude` in Legata is interpreted as an inverse condition, i.e., it excludes vessels **greater than** 12 meters, so we assert that the vessel is **less than or equal to** 12 meters in the property.
+- **Meaning:** If a vessel is power-driven and underway, it must display:
+  - A masthead light forward
+  - A masthead light abaft (unless it’s < 50m)
+  - Sidelights
+  - A sternlight
+- **Mapped Rebeca Variables:**
+  - `s1.underway` ⟶ `:OS.Operation has 'UNDERWAY'`
+  - `s1.vessel_type_powerdriven` ⟶ `:OS.Type is PowerDriven`
+  - `s1.ship_length` (used for exclusion check <12m)
+  - `s1.masthead_forward_light_on`, `s1.side_light_on`, `s1.stern_light_on`
 
 ---
 
-Let me know if you want to generate similar assertions for other clauses or simulate violations in Rebeca.
+#### 🛳️ **Legata clause['COLREG.Rule23.a.ii']**
+
+- **Meaning:** Vessels ≥ 50m must display the **second masthead light abaft**.
+- **Mapped Rebeca Variables:**
+  - `s1.ship_length >= 50` enforces the size condition
+  - `s1.masthead_abaft_light_on` ensures abaft masthead is active
+
+---
+
+#### 🚤 **Legata clause['COLREG.Rule23.d.i']**
+
+- **Meaning:** Vessels <12m may substitute the above lights with:
+  - All-round white light
+  - Sidelights
+- **Mapped Rebeca Variables:**
+  - `s1.ship_length < 12`
+  - `s1.allround_light_on`, `s1.side_light_on`
+
+---
+
+Let me know if you'd like to extend this for another clause, or simulate a scenario in Rebeca with two vessels!
 
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: 6/10
+Total points: x/10
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
-Answer: Yes
-Points: 1p
+Answer: No
+Points: 7p
 
 2. Are all relevant attributes included? (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p) (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p)
-Answer: No
-Points: 2p
+Answer: Yes
+Points: 3p
 
-Attributes:
-Ship: [exists for ship]
-vessel_type_powerdriven✅
-shipunderway❌
-ship_length ✅
-allround_light_on ✅ 
-side_light_on ✅
+Ship: [exists for ship1]
+Underway ✅
+Powerdriven ✅
+ship_length_below/over_12 ✅
+ship_length_below/over_50 ✅
+Masthead_forward_on ✅
+Masthead_abaft_on ✅
+Sidelight_on ✅
+Sternlight_on ✅
+Allround_on ✅
+✅❌
 
 3. Are correctness properties created for all relevant actors? (All = 2p, deduct 1p for each missing actor) (All = 2p, deduct 1p for each missing actor)
-Answer: Yes 
+Answer: Yes
 Points: 2p
 
 4. Is the output code free from hallucinations (e.g. any irrelevant code added)? (1p)
-Answer: Yes
-Points: 1p
-
-5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
-Answer: Not at all
+Answer: No
 Points: 0p
 
-Note: It correctly checks for <= 12 metres
+Note: Uses implication arrow
+
+5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
+Answer: Partially correct, full expression
+Points: 2p
+
+Note: Rule 23.a, The logic is correct for when the ship is powerdriven, underway and above or equal to 12 metres in length.
+The problem with that is that the assertion fails when there is a ship the rule itself shouldn't adhere to, e.g. less than 12 metres in length.
+
+It seems to create the logic in an "implication" way, where it wrote (A && !B && C) && (E && G && H) which would have been 
+fine if syntax existed for implication, e.g. (A && !B && C) -> (E && G && H)
 
 _______________________________________________________________________________
 
 
 ============= COMMENT =============
-<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+Multiple define- and assertion-blocks in the property file.
 
 
 _______________________________________________________________________________

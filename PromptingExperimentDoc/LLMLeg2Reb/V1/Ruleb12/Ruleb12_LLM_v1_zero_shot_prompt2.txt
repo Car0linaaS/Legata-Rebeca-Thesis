@@ -4,7 +4,68 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here is the **Rebeca property file** that represents the Legata clause `Istanbul.Strait.Rule3.DangerousCargo`:
+
+---
+
+### ✅ **Rebeca Property File**
+```rebeca
+property {
+    define {
+        ship1_hazardous = (s1.contains_hazardous == true);
+        undercurrent_strong = (theMap.undercurrent > 4);
+        ship1_fast = (s1.ship_velocity > 10);
+    }
+
+    Assertion {
+        DangerousCargoSpeedRequirement: !(ship1_hazardous && undercurrent_strong) || ship1_fast;
+    }
+}
+```
+
+---
+
+### 🔍 **Explanation of Mapping and Semantics**
+
+#### 📜 **Legata Clause Meaning**:
+The Legata clause `Istanbul.Strait.Rule3.DangerousCargo` sets a **requirement** for a vessel carrying hazardous material:  
+- If the **own ship (OS)** is carrying **HazardousMaterial**,  
+- **and** the **undercurrent** is **greater than 4 knots**,  
+- then the **ship's velocity** must be **greater than 10 knots**.
+
+This is a regulatory clause aimed at ensuring vessels with dangerous cargo maintain higher speeds in strong currents to preserve maneuverability and safety.
+
+---
+
+#### 🔄 **Mapping Legata to Rebeca**:
+
+| **Legata Attribute**              | **Rebeca Variable**                    | **Notes**                                                                 |
+|----------------------------------|----------------------------------------|---------------------------------------------------------------------------|
+| `OS.Cargo in ['HazardousMaterial']` | `s1.contains_hazardous == true`         | Representing ship 1 carrying hazardous cargo                             |
+| `OS.Undercurrent > kn(4)`        | `theMap.undercurrent > 4`              | "kn(4)" assumed to be 4 knots; directly mapped to an integer value       |
+| `OS.Velocity > kn(10)`           | `s1.ship_velocity > 10`                | Velocity is compared against threshold                                   |
+
+---
+
+#### 🧠 **Why use `!(A && B) || C` instead of implication**?
+
+Because Rebeca property syntax does **not allow implication**, we rewrite:
+```
+IF (A AND B) THEN C
+```
+as:
+```
+!(A AND B) || C
+```
+Which is logically equivalent.
+
+So:
+```rebeca
+!(ship1_hazardous && undercurrent_strong) || ship1_fast;
+```
+ensures that *if* the ship is carrying hazardous material *and* the undercurrent is strong, then it must be moving faster than 10 knots.
+
+Let me know if you’d like to adapt this for `s2` as well or simulate multiple vessels!
 
 
 _______________________________________________________________________________
