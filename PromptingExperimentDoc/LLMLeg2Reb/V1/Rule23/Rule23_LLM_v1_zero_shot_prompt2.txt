@@ -102,11 +102,11 @@ Let me know if you'd like to extend this for another clause, or simulate a scena
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: x/10
+Total points: 7/10
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
 Answer: No
-Points: 7p
+Points: 0p
 
 2. Are all relevant attributes included? (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p) (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p)
 Answer: Yes
