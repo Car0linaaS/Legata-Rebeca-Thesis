@@ -50,26 +50,35 @@ Let me know if you'd like to adapt this clause for `s2` (the other ship) or gene
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: x/10
+Total points: 10/10
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
-Answer: 
+Answer: Yes
+Points: 1p
 
 2. Are all relevant attributes included? (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p) (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p)
-Answer: 
-Points:
+Answer: Yes
+Points: 3p
+
+Ship:
+vis_range ✅
+
+theMap:
+ship_inside_traffic_zone ✅
 
 3. Are correctness properties created for all relevant actors? (All = 2p, deduct 1p for each missing actor) (All = 2p, deduct 1p for each missing actor)
-Answer: 
-Points:
+Answer: Yes
+Points: 2p
 
 4. Is the output code free from hallucinations (e.g. any irrelevant code added)? (1p) (1p)
-Answer: 
-Points:
+Answer: Yes
+Points: 1p
 
 5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
-Answer: 
-Points:
+Answer: Correct, Full expression
+Points: 3p
+
+Note: The response uses 0.5 nautical miles, while we have converted to metres. ChatGPT is more correct than we are in this case.
 
 _______________________________________________________________________________
 
