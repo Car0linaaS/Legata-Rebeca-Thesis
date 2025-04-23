@@ -137,11 +137,8 @@ Note: Uses implication arrow
 Answer: Partially correct, full expression
 Points: 2p
 
-Note: Rule 23.a, The logic is correct for when the ship is powerdriven, underway and above or equal to 12 metres in length.
-The problem with that is that the assertion fails when there is a ship the rule itself shouldn't adhere to, e.g. less than 12 metres in length.
-
-It seems to create the logic in an "implication" way, where it wrote (A && !B && C) && (E && G && H) which would have been 
-fine if syntax existed for implication, e.g. (A && !B && C) -> (E && G && H)
+Note: It seems to create the logic in an "implication" way, where it wrote (A && !B && C) ==>  (E && G && H) which would have been 
+fine if syntax existed for implication
 
 _______________________________________________________________________________
 
@@ -149,5 +146,41 @@ _______________________________________________________________________________
 ============= COMMENT =============
 Multiple define- and assertion-blocks in the property file.
 
+
+Our:
+Rule23a: !A || B || !C || (E && F && G && H)
+Rule23a2: !A || !C || D || (F)
+Rule23d1: !A || !B || !C || (I && G)
+ShipUnderway = A;
+ShipLessThan12m = B;
+ShipShipisPowerdriven = C;
+ShipLessThan50m = D;
+MastheadFowardLightOn = E;
+MastheadAbaftLightOn = F;
+SideLightOn = G;
+SternlightOn = H;
+AllroundLightOn = I;
+
+    Assertion {
+        Rule23_a:
+        (ShipUnderway && ShipisPowerdriven && !ShipLessThan12m) ==> 
+        (MastheadFowardLightOn && SideLightOn && SternlightOn)
+        (A && !B && C) ==> 
+            (E && G && H)
+    }
+
+    Assertion {
+        Rule23_a_ii:
+        (ShipUnderway && ShipisPowerdriven && lengthAtLeast50) ==> 
+        (MastheadAbaftLightOn)
+        (A && C && !D) ==> (F)
+    }
+
+    Assertion {
+        Rule23_d_i:
+        (ShipUnderway && ShipisPowerdriven && ShipLessThan12m) ==> 
+        (AllroundLightOn && SideLightOn)
+        (A && B && C) ==> (G && I)
+    }
 
 _______________________________________________________________________________
