@@ -25,11 +25,7 @@ Ruleb12_LLM_v1_zero_shot_prompt1: 10/10
 Ruleb12_LLM_v1_zero_shot_prompt2: 8/10
 Ruleb12_LLM_v1_zero_shot_prompt3: 10/10
 
+Total: 149/180
 
-
-
-
-//This may be wrong, later problem
 ============= AVERAGE FULFILLED CRITERA FOR ALL PROMPTS =============
-Average: x/4
-
+Average: 8,2778/10

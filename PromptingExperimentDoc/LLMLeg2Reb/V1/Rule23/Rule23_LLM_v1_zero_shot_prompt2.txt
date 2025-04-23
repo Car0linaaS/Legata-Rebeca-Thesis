@@ -122,7 +122,6 @@ Masthead_abaft_on ✅
 Sidelight_on ✅
 Sternlight_on ✅
 Allround_on ✅
-✅❌
 
 3. Are correctness properties created for all relevant actors? (All = 2p, deduct 1p for each missing actor) (All = 2p, deduct 1p for each missing actor)
 Answer: Yes
