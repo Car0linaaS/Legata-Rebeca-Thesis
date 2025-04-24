@@ -1,45 +1,61 @@
 property{
 	define {
-		onTarget1 = s1.distance2target <=s1.target_tolerance; //s1.rx==s1.targetX && s1.ry==s1.targetY;
+		// Is either ship on target within tolerance? Checks if all have reached their target
+		onTarget1 = s1.distance2target <=s1.target_tolerance; 
 		done1 = s1.moves[0]>0 && s1.moves[0]-s1.moveidx<=s1.target_tolerance;
-		
-		onTarget2 = s2.distance2target <=s2.target_tolerance; //s2.rx==s2.targetX && s2.ry==s2.targetY;
+		onTarget2 = s2.distance2target <=s2.target_tolerance;
 		done2 = s2.moves[0]>0 && s2.moves[0]-s2.moveidx<=s2.target_tolerance;		
 
+		// The ships visual range is good enough for entering Istanbul strait (926 metres or 0.5 nautical miles)
 		ship1visRangeOK = (s1.vis_range > 926);
 		ship2visRangeOK = (s2.vis_range > 926);
+		// Check whether either ship is inside the Istanbul strait traffic zone
+		// (different naming because of Legata, same derived value for both) 
 		ship1InsideTrafficZone = theMap.ship1_inside_traffic_zone;
 		ship2InsideTrafficZone = theMap.ship2_inside_traffic_zone;		
-	
-		// B.1
-		undercurrentsAboveLimit = theMap.undercurrent > 4;
 		ship1InsideIstanbulStrait = theMap.ship1_inside_istanbul_strait;
 		ship2InsideIstanbulStrait = theMap.ship2_inside_istanbul_strait;
-		// Ship1
+		
+		// B.1
+		// The undercurrent limit for big ships entering the strait is 4 knots,
+		// otherwise they have to have a minimum velocity of 10 knots
+		undercurrentsAboveLimit = theMap.undercurrent > 4;
+		// Ship 1 Check length/draught limits, or if the ship contains hazardous material
 		ship1isOverLengthLimit = s1.ship_length > 150;
 		ship1isOverDraughtLimit = s1.ship_draught > 10;
 		ship1containsHazardous = s1.contains_hazardous;
-		// Is fast enough even if too long/too deep
-		ship1isFastEnough = s1.ship_velocity > 10;
-		
-		// Ship 2
+		// Check that Ship 1 has a minimum velocity of 10, needed if undercurrent is
+		// above 4 and ship is above length/draught limit or contains hazardous material
+		ship1isFastEnough = s1.ship_velocity > 10;	
+		// Ship 2 Check length/draught limits, or if the ship contains hazardous material
 		ship2isOverLengthLimit = s2.ship_length > 150;
 		ship2isOverDraughtLimit = s2.ship_draught > 10;
 		ship2containsHazardous = s2.contains_hazardous;
-		// Is fast enough even if too long/too deep
+		// Check that Ship 2 has a minimum velocity of 10, needed if undercurrent is
+		// above 4 and ship is above length/draught limit or contains hazardous material
 		ship2isFastEnough = s2.ship_velocity > 10;
 		
 		// Rule 19 b
+		// As there are no specific distance for "ships close to each other" in Colreg
+		// we have abstracted that to a boolean
 		shipsClose = theMap.ships_close_to_each_other;
-		// Ship 1
+		// True if Ship 1 is in fog, and has restricted visibility
 		ship1restrictedVisibility = s1.restricted_visibility;
+		// True if Ship 1 is power driven
 		ship1isPowerdriven = s1.vessel_type_powerdriven;
+		// As there are no specific velocity for "safe speed range" in Colreg
+		// we have abstracted that
 		ship1safeSpeedLowVis = s1.ship_velocity < theMap.speed_safe_range;
+		// True if Ship 1's engine is on
 		ship1engineOn = s1.engine_on;
-		// Ship 2
+		// True if Ship 2 is in fog, and has restricted visibility
 		ship2restrictedVisibility = s2.restricted_visibility;
+		// True if Ship 2 is power driven
 		ship2isPowerdriven = s2.vessel_type_powerdriven;
+		// As there are no specific velocity for "safe speed range" in Colreg
+		// we have abstracted that
 		ship2safeSpeedLowVis = s2.ship_velocity < theMap.speed_safe_range;
+		// True if Ship 2's engine is on
 		ship2engineOn = s2.engine_on;
 		
 		// Rule 22 a
@@ -67,7 +83,6 @@ property{
 		
 		
 	}
-	//Om assertion är false löser den ut
 	Assertion {
 		// Rule 23 a
 		Rule23a: !ShipUnderway || ShipLessThan12m || !ShipisPowerdriven || ( 
@@ -89,13 +104,11 @@ property{
 		ship1rule622: (!ship1InsideTrafficZone || ship1visRangeOK);
 		ship2rule622: (!ship2InsideTrafficZone || ship2visRangeOK);
 		
-		// B.1 first
-		//s1LargeVesselB1: (!ship1InsideTrafficZone || ((!(ship1isOverLengthLimit && undercurrentsAboveLimit) || ship1isFastEnough) && (!(ship1isOverDraughtLimit && undercurrentsAboveLimit) || ship1isFastEnough)));	
-		//s2LargeVesselB1: (!ship2InsideTrafficZone || ((!(ship2isOverLengthLimit && undercurrentsAboveLimit) || ship2isFastEnough) && (!(ship2isOverDraughtLimit && undercurrentsAboveLimit) || ship2isFastEnough)));	
+		// B.1.1
 		s1LargeVesselB1: !ship1InsideIstanbulStrait || ship1isFastEnough || !undercurrentsAboveLimit || !(ship1isOverLengthLimit || ship1isOverDraughtLimit);
 		s2LargeVesselB1: !ship2InsideIstanbulStrait || ship2isFastEnough || !undercurrentsAboveLimit || !(ship2isOverLengthLimit || ship2isOverDraughtLimit);
 
-		// B.1 second
+		// B.1.2
 		s1HazardousVesselB1: (!ship1InsideIstanbulStrait || (!(ship1containsHazardous && undercurrentsAboveLimit) || ship1isFastEnough));	
 		s2HazardousVesselB1: (!ship2InsideIstanbulStrait || (!(ship2containsHazardous && undercurrentsAboveLimit) || ship2isFastEnough));
 		
