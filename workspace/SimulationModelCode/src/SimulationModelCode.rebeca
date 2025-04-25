@@ -37,7 +37,6 @@ env double LASERSCAN_MAX_DISTANCE = 10.0;	//= max range in meters
 // when the path was chosen to avoid obstacle corners
 env boolean COMBINE_ZICZAC = true;
 
-// Used for path??
 env int BUFFER_SIZE = 101;	//generic bufffer size + 1 (counter)
 
 //directions, start from East = 0, moving counter-clockwise 45o each direction
@@ -61,8 +60,8 @@ env int WCET_ACTION_NAME = 30000;
 
 // =======================
 // Variables for Legata clauses
-// If this one is changed, we want to change everywhere
-// where we have added //NROFSHIPS
+// If this NROFSHIPS is changed, we want to change everywhere
+// where we have added the attribute NROFSHIPS
 env int NROFSHIPS = 2;
 
 // Undercurrent velocity in knots
@@ -814,7 +813,7 @@ reactiveclass Ship(50) {
 }
 
 
-
+// MapServer acts like a sort of control tower for our scenario,
 reactiveclass MapServer(50) {
 	knownrebecs{
 		Ship s1;

@@ -1,3 +1,6 @@
+// All defined attributes and each assertion is created based on respective Colreg rule as modeled in Legata.
+// See folder PromptingExperimentDoc/LegataClausesOriginal for the Legata clauses and descriptions of the rules.
+
 property{
 	define {
 		// Is either ship on target within tolerance? Checks if all have reached their target
@@ -59,17 +62,19 @@ property{
 		ship2engineOn = s2.engine_on;
 		
 		// Rule 22 a
-		// Ship 1
+		// The rule checks that lights are visible from a specified range
+		// Ship 1, rule applies if longer than 50 metres
 		ship1LongerThan50m = s1.ship_length > 50;
 		ship1LongerThan50mContainsAllLights = s1.masthead_light && s1.side_light && s1.stern_light && s1.towing_light && s1.signal_light;
 		ship1LongerThan50mLightRangeOK = s1.masthead_light_range >= 6 && s1.side_light_range >= 3 && s1.stern_light_range >= 3 && s1.towing_light_range >= 3 && s1.signal_light_range >= 3;
-		// Ship 2
+		// Ship 2, rule applies if longer than 50 metres
 		ship2LongerThan50m = s2.ship_length > 50;
 		ship2LongerThan50mContainsAllLights = s2.masthead_light && s2.side_light && s2.stern_light && s2.towing_light && s2.signal_light;
 		ship2LongerThan50mLightRangeOK = s2.masthead_light_range >= 6 && s2.side_light_range >= 3 && s2.stern_light_range >= 3 && s2.towing_light_range >= 3 && s2.signal_light_range >= 3;
 		
 		// Rule 23
-		// Ship 1
+		// The rule specifies that a vessel underway should have certain lights on
+		// Ship 1, rule applies if under and powerdriven, different lights depending on length of vessel
 		ShipUnderway = s1.underway;
 		ShipisPowerdriven = s1.vessel_type_powerdriven;
 		ShipLessThan12m = s1.ship_length < 12;
@@ -87,16 +92,16 @@ property{
 		// Rule 23 a
 		Rule23a: !ShipUnderway || ShipLessThan12m || !ShipisPowerdriven || ( 
 		MastheadFowardLightOn && MastheadAbaftLightOn && SideLightOn && SternlightOn);
-		// Rule23a2
+		// Rule23 a ii
 		Rule23a2: !ShipUnderway || ShipLessThan50m || !ShipisPowerdriven || (MastheadAbaftLightOn);
-		// Rule 23d1
+		// Rule 23 d i
 		Rule23d1: !ShipUnderway || !ShipLessThan12m || !ShipisPowerdriven || (AllroundLightOn && SideLightOn);
 			
-		// Rule 22
+		// Rule 22a
 		ship1rule22: !ship1LongerThan50m || ship1LongerThan50mContainsAllLights && ship1LongerThan50mLightRangeOK;
 		ship2rule22: !ship2LongerThan50m || ship2LongerThan50mContainsAllLights && ship2LongerThan50mLightRangeOK;
 		
-		// Rule 19
+		// Rule 19 a b
 		ship1rule19: (!shipsClose || !(ship1restrictedVisibility || ship2restrictedVisibility)) || (!ship1isPowerdriven || ship1safeSpeedLowVis && ship1engineOn);
 		ship2rule19: (!shipsClose || !(ship1restrictedVisibility || ship2restrictedVisibility)) || (!ship2isPowerdriven || ship2safeSpeedLowVis && ship2engineOn);
 		
