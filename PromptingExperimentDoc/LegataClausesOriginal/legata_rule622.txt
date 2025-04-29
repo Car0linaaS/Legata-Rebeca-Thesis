@@ -7,7 +7,7 @@ define: {
 
 clause['IstanbulStrait.Clause.1']:{
 	condition: {
-		: {OwnShip, Map.Sea@TrafficZone].Distance
+		: [OwnShip, Map.Sea@TrafficZone].Distance
 			in Area.Near.ProximityRange
 	}
 	assure: {
