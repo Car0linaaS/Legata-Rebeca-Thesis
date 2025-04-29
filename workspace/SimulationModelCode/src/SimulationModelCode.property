@@ -1,6 +1,9 @@
 // All defined attributes and each assertion is created based on respective Colreg rule as modeled in Legata.
-// See folder PromptingExperimentDoc/LegataClausesOriginal for the Legata clauses and descriptions of the rules.
-
+/*
+----------------------------------------------------------------------------------------------------------------
+See folder PromptingExperimentDoc/LegataClausesOriginal for the Legata clauses and descriptions of the rules.
+----------------------------------------------------------------------------------------------------------------
+*/
 property{
 	define {
 		// Is either ship on target within tolerance? Checks if all have reached their target
