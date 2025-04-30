@@ -2,11 +2,10 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
 - family-names: "Samuelsson"
-    given-names: "Jackiie"
-    affiliation: "Mälardalen University"
+  given-names: "Jackiie"
+  affiliation: "Mälardalen University"
 - family-names: "Smigan"
   given-names: "Carolina"
   affiliation: "Mälardalen University"
-
 title: "Legata-Rebeca-Thesis"
 url: "https://github.com/Car0linaaS/Legata-Rebeca-Thesis"
