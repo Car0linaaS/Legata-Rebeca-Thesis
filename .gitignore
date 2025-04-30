@@ -14,6 +14,9 @@
 .metadata
 progress
 workspace/SimulationModelCode/out/\*
+workspace/SimulationModelCode/out/SimulationModelCode/\*
+workspace/SimulationModelCode/out/SimulationModelCode/properties.txt
+
 
 workspace/SimulationModelCode/src/script/cppfiles/
 workspace/SimulationModelCode/src/script/output/
