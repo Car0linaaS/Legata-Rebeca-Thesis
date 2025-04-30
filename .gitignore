@@ -13,6 +13,7 @@
 *.spec
 .metadata
 progress
+workspace/SimulationModelCode/out/\*
 
 workspace/SimulationModelCode/src/script/cppfiles/
 workspace/SimulationModelCode/src/script/output/
