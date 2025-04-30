@@ -11,6 +11,7 @@
 *.dot
 *.history
 *.spec
+*.py
 .metadata
 progress
 workspace/SimulationModelCode/out/\*
