@@ -1,0 +1,66 @@
+Context: Legata is a domain language that describes abstract legal concepts regarding COLREG (Collision Regulations). In Legata there are various clauses that describe different laws and regulations that vessels must adhere to. These clauses are intended for modeling regulatory compliance and simulation of maritime scenarios.
+The structure of a clause is as follows:
+
+clause['NameOfClause']:{
+condition: {
+: Condition1
+: Condition2
+}
+assure: {
+: BooleanExpression
+}
+}
+
+Timed Rebeca (Reactive Objects Language) is used for modeling and simulating concurrent, reactive systems. The code below is part of a model used to simulate vessels, created in Timed Rebeca. 
+The relevant actors are Ship s1, Ship s2 and MapServer theMap. The actors are modeled like this:
+
+reactiveclass Ship(50) {
+	knownrebecs {
+		MapServer theMap;
+	}
+	statevars{
+		int vis_range;
+	}
+
+reactiveclass MapServer(50) {
+	knownrebecs{
+		Ship s1;
+		Ship s2;
+	}
+	statevars{
+		boolean ship1_inside_traffic_zone;
+		boolean ship2_inside_traffic_zone;
+	}
+
+The property file is constructed like this:
+property{
+	define {
+    Variable = (BooleanExpression);
+	}
+
+	Assertion {
+        AssertionName: (BooleanExpression);
+	}
+}
+
+Instruction: In Rebeca syntax, create a property file that represents the law in the Legata clause. We are only interested in Assertions, not TCTL. After generating the property code, explain the intended semantic meaning of the Legata clause, and how the Legata clause attributes/conditions is mapped to the property variables/attributes. 
+Allowed operators: <, >, ==, <=, >=, !, ||, &&, ^.
+Do not use implication (->, =>) and do not define chained variables in define.
+
+Legata clause to transform: 
+
+define: {
+    OS: OwnShip
+}
+
+
+clause['IstanbulStrait.Clause.1']:{
+	condition: {
+		: {OwnShip, Map.Sea@TrafficZone].Distance
+			in Area.Near.ProximityRange
+	}
+	assure: {
+		: OS.Visibility.Range > kn(.5)
+	}
+}
+

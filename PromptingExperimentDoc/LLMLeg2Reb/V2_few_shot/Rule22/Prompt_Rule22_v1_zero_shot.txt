@@ -1,0 +1,89 @@
+Context: Legata is a domain language that describes abstract legal concepts regarding COLREG (Collision Regulations). In Legata there are various clauses that describe different laws and regulations that vessels must adhere to. These clauses are intended for modeling regulatory compliance and simulation of maritime scenarios.
+The structure of a clause is as follows:
+
+clause['NameOfClause']:{
+condition: {
+: Condition1
+: Condition2
+}
+assure: {
+: BooleanExpression
+}
+}
+
+Timed Rebeca (Reactive Objects Language) is used for modeling and simulating concurrent, reactive systems. The code below is part of a model used to simulate vessels, created in Timed Rebeca. 
+The relevant actors are Ship s1, Ship s2 and MapServer theMap. The actors are modeled like this:
+
+reactiveclass Ship(50) {
+	knownrebecs {
+		MapServer theMap;
+	}
+	statevars{
+		int ship_length;
+		
+		boolean masthead_light;
+		int masthead_light_range;
+		boolean side_light;
+		boolean side_light_on;
+		int side_light_range;
+		boolean stern_light;
+		int stern_light_range;
+		boolean towing_light;
+		int towing_light_range;
+		boolean signal_light;
+		int signal_light_range;
+	}
+
+reactiveclass MapServer(50) {
+	knownrebecs{
+		Ship s1;
+		Ship s2;
+	}
+	statevars{
+
+	}
+
+The property file is constructed like this:
+property{
+	define {
+    Variable = (BooleanExpression);
+	}
+
+	Assertion {
+        AssertionName: (BooleanExpression);
+	}
+}
+
+Instruction: In Rebeca syntax, create a property file that represents the law in the Legata clause. We are only interested in Assertions, not TCTL. After generating the property code, explain the intended semantic meaning of the Legata clause, and how the Legata clause attributes/conditions is mapped to the property variables/attributes. 
+Allowed operators: <, >, ==, <=, >=, !, ||, &&, ^.
+Do not use implication (->, =>) and do not define chained variables in define.
+
+Legata clause to transform: 
+
+define: {
+    OS: OwnShip
+}
+
+# Visibility of Lights
+# The lights prescribed in these Rules shall have an intensity as specified in Section 8
+# Annex I to these Regulation so as to be visible at the following minimum ranges:
+# (a) In vessels of 50 metres or more in length:
+# - a masthead light, 6 miles;
+# - a sidelight, 3 miles;
+# - a sternlight, 3 miles;
+# - a towing light, 3 miles;
+# - a white, red, green or yellow all-round light, 3 miles.
+clause['COLREG.Rule22.a']:{
+    : {
+        condition: { 
+            : OS.Length > meters(50)
+         }
+        assure: { 
+            : OS.Equipment.MastheadLight.Range >= miles(6) 
+            : OS.Equipment.SideLight.Range >= miles(3) 
+            : OS.Equipment.SternLight.Range >= miles(3) 
+            : OS.Equipment.TowingLight.Range >= miles(3) 
+            : OS.Equipment.SignalLight.Range >= miles(3)    # All-round light 
+        }
+    }
+}

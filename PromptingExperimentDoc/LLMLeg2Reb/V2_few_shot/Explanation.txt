@@ -1,0 +1,1 @@
+This folder contains the documentation of the LLM output for all propmts, few-shot.
