@@ -1,0 +1,31 @@
+The overall result for this prompt version:
+
+============= FULFILLED CRITERIA FOR EACH PROMPT =============
+Rule19_LLM_v2_few_shot_prompt1: /10
+Rule19_LLM_v2_few_shot_prompt2: /10
+Rule19_LLM_v2_few_shot_prompt3: /10
+
+Rule22_LLM_v2_few_shot_prompt1: /10
+Rule22_LLM_v2_few_shot_prompt2: /10
+Rule22_LLM_v2_few_shot_prompt3: /10
+
+Rule23_LLM_v2_few_shot_prompt1: /10
+Rule23_LLM_v2_few_shot_prompt2: /10
+Rule23_LLM_v2_few_shot_prompt3: /10
+
+Rule622_LLM_v2_few_shot_prompt1: /10
+Rule622_LLM_v2_few_shot_prompt2: /10
+Rule622_LLM_v2_few_shot_prompt3: /10
+
+Ruleb11_LLM_v2_few_shot_prompt1: /10
+Ruleb11_LLM_v2_few_shot_prompt2: /10
+Ruleb11_LLM_v2_few_shot_prompt3: /10
+
+Ruleb12_LLM_v2_few_shot_prompt1: /10
+Ruleb12_LLM_v2_few_shot_prompt2: /10
+Ruleb12_LLM_v2_few_shot_prompt3: /10
+
+Total: /180
+
+============= AVERAGE FULFILLED CRITERA FOR ALL PROMPTS =============
+Average: /10
