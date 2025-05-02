@@ -46,6 +46,42 @@ property{
 	}
 }
 
+Example:
+
+Legata clause:
+define: {
+    OS: OwnShip
+}
+
+clause['IstanbulStrait.Clause.1']:{
+	condition: {
+		: [OwnShip, Map.Sea@TrafficZone].Distance
+			in Area.Near.ProximityRange
+	}
+	assure: {
+		: OS.Visibility.Range > kn(.5)
+	}
+}
+
+Corresponding Rebeca property file:
+property{
+	define {
+		ship1visRangeOK = (s1.vis_range > 926);
+		ship2visRangeOK = (s2.vis_range > 926);
+		ship1InsideTrafficZone = theMap.ship1_inside_traffic_zone;
+		ship2InsideTrafficZone = theMap.ship2_inside_traffic_zone;
+		
+	}
+	Assertion {
+		ship1rule622: (!ship1InsideTrafficZone || ship1visRangeOK);
+		ship2rule622: (!ship2InsideTrafficZone || ship2visRangeOK);	
+	}
+}
+Explanation:
+The distance check between OwnShip and TrafficZone is mapped to ship1InsideTrafficZone
+OS.Visibility.Range > kn(.5) is mapped to ship1visRangeOK = (s1.vis_range > 926); where we have used the length of 0.5 nautical miles in meters.
+
+
 Instruction: In Rebeca syntax, create a property file that represents the law in the Legata clause. We are only interested in Assertions, not TCTL. After generating the property code, explain the intended semantic meaning of the Legata clause, and how the Legata clause attributes/conditions is mapped to the property variables/attributes. 
 Allowed operators: <, >, ==, <=, >=, !, ||, &&, ^.
 Do not use implication (->, =>) and do not define chained variables in define.

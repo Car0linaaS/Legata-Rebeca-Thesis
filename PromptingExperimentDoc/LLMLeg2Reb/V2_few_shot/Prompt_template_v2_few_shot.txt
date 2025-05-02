@@ -29,6 +29,15 @@ property{
 	}
 }
 
+Example:
+
+Legata clause:
+<Legata clause>
+Corresponding Rebeca property file:
+<Rebeca property code>
+Explanation:
+<Explain the mapping of variables>
+
 Instruction: In Rebeca syntax, create a property file that represents the law in the Legata clause. We are only interested in Assertions, not TCTL. After generating the property code, explain the intended semantic meaning of the Legata clause, and how the Legata clause attributes/conditions is mapped to the property variables/attributes. 
 Allowed operators: <, >, ==, <=, >=, !, ||, &&, ^.
 Do not use implication (->, =>) and do not define chained variables in define.
