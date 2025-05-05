@@ -4,7 +4,66 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here is the **Rebeca property file** that corresponds to the provided Legata clause `COLREG.Rule19.b`:
+
+---
+
+### ✅ **Rebeca Property File**
+
+```rebeca
+property {
+	define {
+		ship1IsPowerDriven = s1.vessel_type_powerdriven;
+		ship2IsPowerDriven = s2.vessel_type_powerdriven;
+
+		ship1SpeedSafe = (s1.ship_velocity <= theMap.speed_safe_range);
+		ship2SpeedSafe = (s2.ship_velocity <= theMap.speed_safe_range);
+
+		ship1InRestrictedVisibility = s1.restricted_visibility;
+		ship2InRestrictedVisibility = s2.restricted_visibility;
+
+		ship1EngineOn = s1.engine_on;
+		ship2EngineOn = s2.engine_on;
+	}
+
+	Assertion {
+		ship1rule19b: (!ship1InRestrictedVisibility || !ship1IsPowerDriven || !ship1SpeedSafe || ship1EngineOn);
+		ship2rule19b: (!ship2InRestrictedVisibility || !ship2IsPowerDriven || !ship2SpeedSafe || ship2EngineOn);
+	}
+}
+```
+
+---
+
+### 🔍 **Explanation of Semantics and Mapping**
+
+#### 🔹 **Semantic Meaning of the Legata Clause `COLREG.Rule19.b`**:
+
+This clause enforces specific requirements when a **power-driven vessel** is navigating under **restricted visibility conditions**:
+
+1. The ship must proceed at a **safe speed** suitable for the visibility and environmental conditions.
+2. Its **engine must be ready**, i.e., turned **ON**, for immediate maneuvering.
+
+#### 🔹 **Breakdown of Legata Clause and Its Mapping in Rebeca**:
+
+| Legata Element                                                   | Rebeca Mapping                                               | Explanation                                                         |
+| ---------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `OS.Type is Vessel.Type.PowerDriven`                             | `ship1IsPowerDriven`, `ship2IsPowerDriven`                   | The vessel is power-driven.                                         |
+| `OS.Speed in Vessel.RestrictedVisibility.Speed.Safe.Range`       | `ship1SpeedSafe`, `ship2SpeedSafe`                           | Ship’s speed is within the safe limit during restricted visibility. |
+| `OS.Engine.State in ['Vessel.Engine.ON']`                        | `ship1EngineOn`, `ship2EngineOn`                             | The ship's engine must be ON.                                       |
+| `OS.Restriction in ['COLREG.Rule19.*']` (implied restricted vis) | `ship1InRestrictedVisibility`, `ship2InRestrictedVisibility` | Indicates if the ship is under restricted visibility.               |
+
+#### 🔹 **Assertion Explanation**:
+
+* The assertion uses **guarded compliance logic**:
+
+  * If the ship is **not in restricted visibility**, then the rule doesn't apply — assertion holds.
+  * If the ship is **not power-driven**, rule doesn't apply.
+  * If the ship is **not within safe speed**, rule doesn't apply.
+  * But if **all three apply**, then the **engine must be ON**, otherwise the assertion fails.
+
+Would you like me to also convert the full Rule 19 clause, including part (a), into a corresponding Rebeca property file?
+
 
 
 _______________________________________________________________________________

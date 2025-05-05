@@ -4,7 +4,81 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here is the **Rebeca property file** that represents the Legata clause `COLREG.Rule19.b`, including variable definitions and assertions based on the described semantics:
+
+---
+
+### ✅ **Rebeca Property File**
+
+```rebeca
+property{
+	define {
+		ship1NotInSight = (!theMap.ships_close_to_each_other);
+		ship2NotInSight = (!theMap.ships_close_to_each_other);
+
+		ship1InRestrictedVisibility = s1.restricted_visibility;
+		ship2InRestrictedVisibility = s2.restricted_visibility;
+
+		ship1IsPowerDriven = s1.vessel_type_powerdriven;
+		ship2IsPowerDriven = s2.vessel_type_powerdriven;
+
+		ship1SafeSpeed = (s1.ship_velocity <= theMap.speed_safe_range);
+		ship2SafeSpeed = (s2.ship_velocity <= theMap.speed_safe_range);
+
+		ship1EngineOn = s1.engine_on;
+		ship2EngineOn = s2.engine_on;
+	}
+
+	Assertion {
+		ship1Rule19b: (!(ship1NotInSight && ship1InRestrictedVisibility && ship1IsPowerDriven && ship1SafeSpeed) || ship1EngineOn);
+		ship2Rule19b: (!(ship2NotInSight && ship2InRestrictedVisibility && ship2IsPowerDriven && ship2SafeSpeed) || ship2EngineOn);
+	}
+}
+```
+
+---
+
+### 🔍 **Explanation of the Semantics and Mapping**
+
+#### **Legata Clause Summary (`COLREG.Rule19.b`):**
+
+* This clause applies when a power-driven vessel is **not in sight of another** and is **in or near an area of restricted visibility**.
+* Under those conditions, the vessel must:
+
+  1. **Proceed at a safe speed**, and
+  2. **Have engines ready for immediate maneuvering** (i.e., engine should be ON).
+
+---
+
+### 🧩 **Mapping of Legata to Rebeca**
+
+| **Legata Concept**                            | **Mapped Rebeca Expression**                  | **Explanation**                                                                        |
+| --------------------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `(OS, TS).Visible is true`                    | `!theMap.ships_close_to_each_other`           | Ships not in sight is interpreted as *not being close* (assumed proxy for visibility). |
+| `OS.Position in RestrictedVisibility Area`    | `s1.restricted_visibility`                    | `restricted_visibility` is a boolean state var in `Ship`.                              |
+| `OS.Type is Vessel.Type.PowerDriven`          | `s1.vessel_type_powerdriven`                  | Explicit boolean for type check.                                                       |
+| `OS.Speed in RestrictedVisibility.Safe.Range` | `s1.ship_velocity <= theMap.speed_safe_range` | `speed_safe_range` defines max allowed velocity in restricted visibility.              |
+| `OS.Engine.State in ['Vessel.Engine.ON']`     | `s1.engine_on`                                | Engine ON is directly mapped as a boolean.                                             |
+
+---
+
+### ✅ **Assertion Semantics**
+
+* The assertion logic follows the format:
+
+  ```
+  if (preconditions are all true) then (engine must be on)
+  ```
+* Since implications (`->`) are not allowed, the format used is:
+
+  ```
+  !Preconditions || Consequence
+  ```
+
+This ensures the clause is **only enforced when applicable**, and the system allows flexibility outside those conditions.
+
+Would you like a version of this for more than two ships or additional COLREG rules?
+
 
 
 _______________________________________________________________________________
