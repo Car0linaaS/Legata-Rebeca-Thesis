@@ -4,7 +4,63 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here is the **Rebeca property file** corresponding to the given Legata clause:
+
+```rebeca
+property {
+	define {
+		ship1IsLarge = (s1.ship_length > 150);
+		ship2IsLarge = (s2.ship_length > 150);
+		
+		ship1IsDeep = (s1.ship_draught > 10);
+		ship2IsDeep = (s2.ship_draught > 10);
+		
+		currentStrong = (theMap.undercurrent > 740); // 4 knots in meters/minute
+		
+		ship1Slow = (s1.ship_velocity <= 1852); // 10 knots in meters/minute
+		ship2Slow = (s2.ship_velocity <= 1852);
+	}
+
+	Assertion {
+		ship1rule3: !( (currentStrong && (ship1IsLarge || ship1IsDeep)) && ship1Slow );
+		ship2rule3: !( (currentStrong && (ship2IsLarge || ship2IsDeep)) && ship2Slow );
+	}
+}
+```
+
+---
+
+### ✅ **Explanation of Semantic Meaning (Legata clause):**
+
+The clause states that:
+
+> **When the sea current exceeds 4 knots**, then:
+>
+> * **Large vessels** (length > 150 meters),
+> * **Deep-draught vessels** (draught > 10 meters), or
+> * **Hazardous cargo vessels** (not modeled here)
+>
+> **must not enter the strait if their speed is 10 knots or less**.
+
+Since we are modeling only ship size and draught (not hazardous cargo), we focus on:
+
+* If a ship is large or deep, and the undercurrent is strong (over 4 knots), **it must maintain a speed greater than 10 knots.**
+
+---
+
+### ✅ **Mapping of Legata Conditions to Rebeca Properties:**
+
+| Legata Concept              | Rebeca Equivalent                                                    | Notes                                                 |          |
+| --------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------- | -------- |
+| `OS.Length > meters(150)`   | `s1.ship_length > 150`                                               | Units assumed in meters.                              |          |
+| `OS.Draught > meters(10)`   | `s1.ship_draught > 10`                                               | Units assumed in meters.                              |          |
+| `OS.Undercurrent > kn(4)`   | `theMap.undercurrent > 740`                                          | 1 knot ≈ 0.5144 m/s = 30.86 m/min → 4 kn ≈ 740 m/min. |          |
+| `OS.Velocity > kn(10)`      | `s1.ship_velocity > 1852`                                            | 10 knots ≈ 1852 m/min.                                |          |
+| Assure clause               | Rebeca assertion enforces required condition if precondition is met. |                                                       |          |
+| Multiple conditions (`and`) | Translated using Rebeca boolean operators (`&&`, \`                  |                                                       | `, `!\`) |
+
+Would you like a version that also considers the third case, e.g., hazardous cargo, if such information becomes available in the model?
+
 
 
 _______________________________________________________________________________

@@ -4,7 +4,66 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here is the **Rebeca property file** that corresponds to the Legata clause `Istanbul.Strait.Rule3.LargeVessel`:
+
+---
+
+### ✅ Rebeca Property File
+
+```rebeca
+property {
+	define {
+		ship1isLarge = (s1.ship_length > 150);
+		ship2isLarge = (s2.ship_length > 150);
+
+		ship1isDeep = (s1.ship_draught > 10);
+		ship2isDeep = (s2.ship_draught > 10);
+
+		strongUndercurrent = (theMap.undercurrent > 7); // 4 kn ≈ 7.408 m/s, use threshold of 7 for practical integer comparison
+
+		ship1TooSlow = (s1.ship_velocity <= 10);
+		ship2TooSlow = (s2.ship_velocity <= 10);
+	}
+
+	Assertion {
+		ship1Rule3: (!(ship1isLarge && strongUndercurrent && ship1TooSlow)
+		             && !(ship1isDeep && strongUndercurrent && ship1TooSlow));
+
+		ship2Rule3: (!(ship2isLarge && strongUndercurrent && ship2TooSlow)
+		             && !(ship2isDeep && strongUndercurrent && ship2TooSlow));
+	}
+}
+```
+
+---
+
+### 🔍 **Semantic Meaning of the Legata Clause**
+
+The Legata clause titled `Istanbul.Strait.Rule3.LargeVessel` expresses a conditional restriction:
+
+* If a ship is a **large vessel** (length > 150 meters) **or** a **deep-draught vessel** (draught > 10 meters),
+* **And** the sea **undercurrent exceeds 4 knots**,
+* Then that ship **must not enter the Istanbul Strait unless its speed is over 10 knots**.
+
+The clause is effectively a **regulatory safeguard** against slow, large or deep vessels entering the strait during strong undercurrent, which can pose navigational hazards.
+
+---
+
+### 🔄 **Mapping from Legata Clause to Rebeca Property**
+
+| **Legata Concept**                     | **Mapped Rebeca Expression**                                         |
+| -------------------------------------- | -------------------------------------------------------------------- |
+| `OS.Length > meters(150)`              | `s1.ship_length > 150` (meters used directly)                        |
+| `OS.Draught > meters(10)`              | `s1.ship_draught > 10`                                               |
+| `OS.Undercurrent > kn(4)`              | `theMap.undercurrent > 7` (approx. 4 knots in m/s)                   |
+| `OS.Velocity > kn(10)`                 | `s1.ship_velocity > 10`                                              |
+| Clause assurance: ship must go > 10 kn | `ship_velocity > 10`, inverted as `shipTooSlow <=10`                 |
+| Multiple conditions (OR logic)         | Modeled as separate AND-gated expressions joined via OR inside `!()` |
+
+---
+
+Would you like a visualization of this rule in a flowchart or logic diagram format?
+
 
 
 _______________________________________________________________________________

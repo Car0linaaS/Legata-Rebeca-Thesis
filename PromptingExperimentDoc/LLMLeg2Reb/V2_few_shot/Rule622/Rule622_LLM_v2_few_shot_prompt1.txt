@@ -4,7 +4,57 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here is the **Rebeca property file** that represents the Legata clause `IstanbulStrait.Clause.1`:
+
+---
+
+### ✅ **Rebeca Property File**
+
+```rebeca
+property{
+	define {
+		ship1NearTrafficZone = theMap.ship1_inside_traffic_zone;
+		ship1HasEnoughVisibility = s1.vis_range > 0.5;
+
+		ship2NearTrafficZone = theMap.ship2_inside_traffic_zone;
+		ship2HasEnoughVisibility = s2.vis_range > 0.5;
+	}
+
+	Assertion {
+		s1VisibilityCompliance: !ship1NearTrafficZone || ship1HasEnoughVisibility;
+		s2VisibilityCompliance: !ship2NearTrafficZone || ship2HasEnoughVisibility;
+	}
+}
+```
+
+---
+
+### 📘 **Explanation**
+
+#### 🔹 **Legata Clause Semantics:**
+
+This clause specifies that **if a ship is in *near proximity* to the Istanbul Strait traffic zone**, then it must have **a visibility range greater than 0.5 nautical miles (kn)**. The goal is to **prevent entry or operation in a restricted area under poor visibility**, ensuring navigational safety.
+
+#### 🔹 **Mapping from Legata to Rebeca:**
+
+| Legata Element                                                        | Rebeca Mapping                                             |
+| --------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `OwnShip in Map.Sea@TrafficZone.Distance in Area.Near.ProximityRange` | `ship1NearTrafficZone = theMap.ship1_inside_traffic_zone;` |
+| `OS.Visibility.Range > kn(.5)`                                        | `ship1HasEnoughVisibility = s1.vis_range > 0.5;`           |
+
+This mapping is done for both **s1** and **s2**, as they are the vessels of interest.
+
+#### 🔹 **Assertion Semantics:**
+
+Each assertion ensures that:
+
+* Either the ship is **not** near the traffic zone, or
+* The ship **has sufficient visibility** (> 0.5 kn)
+
+This guards against scenarios where a vessel with poor visibility might enter or operate close to the traffic zone, which is non-compliant with the rule.
+
+Would you like me to help translate more Legata clauses into Rebeca assertions?
+
 
 
 _______________________________________________________________________________

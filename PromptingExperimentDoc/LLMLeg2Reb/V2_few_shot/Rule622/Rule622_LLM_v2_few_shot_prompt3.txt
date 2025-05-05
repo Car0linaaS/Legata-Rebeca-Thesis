@@ -4,7 +4,74 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here is the **Rebeca property file** that represents the Legata clause `IstanbulStrait.Clause.1`:
+
+```rebeca
+property{
+	define {
+		ship1NearTrafficZone = theMap.ship1_inside_traffic_zone;
+		ship1VisibilitySufficient = s1.vis_range > 0.5;
+
+		ship2NearTrafficZone = theMap.ship2_inside_traffic_zone;
+		ship2VisibilitySufficient = s2.vis_range > 0.5;
+	}
+
+	Assertion {
+		s1ProximityVisibilityRule: !ship1NearTrafficZone || ship1VisibilitySufficient;
+		s2ProximityVisibilityRule: !ship2NearTrafficZone || ship2VisibilitySufficient;
+	}
+}
+```
+
+---
+
+### ✅ **Explanation of Semantic Meaning (Legata → Rebeca Translation)**
+
+#### 🔸 **Legata Clause Summary**
+
+This clause states:
+
+> *If a vessel (OwnShip) is in near proximity to the Istanbul Strait Traffic Zone, it must have a visibility range greater than 0.5 nautical miles to comply with the regulation.*
+
+---
+
+#### 🔸 **Condition Mapping**
+
+* **Legata:**
+  `OwnShip, Map.Sea@TrafficZone].Distance in Area.Near.ProximityRange`
+  means the vessel is **close to the traffic zone**.
+
+* **Rebeca Mapping:**
+  This is mapped to the boolean variable:
+  `ship1NearTrafficZone = theMap.ship1_inside_traffic_zone;`
+  and similarly for `ship2`.
+
+  While the Legata clause specifies a spatial condition, the Rebeca model abstracts this into a boolean flag `shipX_inside_traffic_zone`, indicating whether the ship is within the near proximity of the traffic zone.
+
+---
+
+#### 🔸 **Assure Mapping**
+
+* **Legata:**
+  `OS.Visibility.Range > kn(0.5)`
+  means the ship’s **visibility range must exceed 0.5 nautical miles**.
+
+* **Rebeca Mapping:**
+  This is mapped as:
+  `ship1VisibilitySufficient = s1.vis_range > 0.5;`
+  and similarly for `ship2`.
+
+---
+
+#### 🔸 **Assertion Logic**
+
+* The assertion:
+  `!ship1NearTrafficZone || ship1VisibilitySufficient;`
+  ensures that either the ship is not in the near traffic zone, **or** it has sufficient visibility.
+  This directly reflects the semantic intention: *you must not be near the zone with low visibility.*
+
+Would you like to convert additional Legata clauses to Rebeca properties?
+
 
 
 _______________________________________________________________________________

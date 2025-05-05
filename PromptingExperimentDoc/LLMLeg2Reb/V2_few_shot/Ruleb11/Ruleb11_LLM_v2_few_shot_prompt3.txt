@@ -4,7 +4,67 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here is the **Rebeca property file** that represents the Legata clause `Istanbul.Strait.Rule3.LargeVessel`:
+
+```rebeca
+property{
+	define {
+		ship1isLarge = (s1.ship_length > 150);
+		ship2isLarge = (s2.ship_length > 150);
+
+		ship1isDeepDraught = (s1.ship_draught > 10);
+		ship2isDeepDraught = (s2.ship_draught > 10);
+
+		undercurrentStrong = (theMap.undercurrent > 7408); // 4 knots in meters/hour
+
+		ship1Slow = (s1.ship_velocity <= 18520); // 10 knots in meters/hour
+		ship2Slow = (s2.ship_velocity <= 18520); // 10 knots in meters/hour
+	}
+
+	Assertion {
+		ship1rule3: !(undercurrentStrong && ((ship1isLarge || ship1isDeepDraught) && ship1Slow));
+		ship2rule3: !(undercurrentStrong && ((ship2isLarge || ship2isDeepDraught) && ship2Slow));
+	}
+}
+```
+
+---
+
+### **Explanation of the Legata Clause Semantics**
+
+**Legata Clause Summary**:
+If the **sea undercurrent exceeds 4 knots**, then ships that are either:
+
+* **Large vessels** (length > 150 meters), or
+* **Deep-draught vessels** (draught > 10 meters)
+  **must not enter the strait if they are moving slower than 10 knots**.
+
+**Rebeca Property Mapping**:
+
+* `OS.Length > meters(150)` → `ship1isLarge = (s1.ship_length > 150)`
+
+* `OS.Draught > meters(10)` → `ship1isDeepDraught = (s1.ship_draught > 10)`
+
+* `OS.Undercurrent > kn(4)` → `undercurrentStrong = (theMap.undercurrent > 7408)`
+
+  * (4 knots ≈ 7408 meters/hour)
+
+* `OS.Velocity > kn(10)` becomes a negated check for invalidity:
+  Ships **must** have speed **>10 kn**, so slow ships under strong current are disallowed:
+  `ship1Slow = (s1.ship_velocity <= 18520)`
+
+  * (10 knots ≈ 18520 meters/hour)
+
+* The final assertion checks that **if the undercurrent is strong and the ship is large or deep-draught, it must not be slow**. That is:
+
+  ```rebeca
+  !(undercurrentStrong && ((ship1isLarge || ship1isDeepDraught) && ship1Slow))
+  ```
+
+This means any such ship must exceed 10 knots if trying to enter the strait under strong current.
+
+Would you like a diagram to visualize this rule logic?
+
 
 
 _______________________________________________________________________________

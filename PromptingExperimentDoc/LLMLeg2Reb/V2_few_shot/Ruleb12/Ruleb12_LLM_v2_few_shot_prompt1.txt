@@ -4,7 +4,62 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here's the **Rebeca property file** that captures the semantics of the provided **Legata clause `Istanbul.Strait.Rule3.DangerousCargo`**:
+
+---
+
+### ✅ **Rebeca Property File**
+
+```rebeca
+property{
+	define {
+		ship1HasHazardous = s1.contains_hazardous;
+		ship2HasHazardous = s2.contains_hazardous;
+		
+		ship1VelocityOK = (s1.ship_velocity > 1852 * 10);
+		ship2VelocityOK = (s2.ship_velocity > 1852 * 10);
+		
+		undercurrentStrong = (theMap.undercurrent > 1852 * 4);
+	}
+
+	Assertion {
+		ship1ruleDangerousCargo: (!(ship1HasHazardous && undercurrentStrong) || ship1VelocityOK);
+		ship2ruleDangerousCargo: (!(ship2HasHazardous && undercurrentStrong) || ship2VelocityOK);
+	}
+}
+```
+
+---
+
+### 🔍 **Semantic Meaning of the Legata Clause**
+
+**Clause**: `Istanbul.Strait.Rule3.DangerousCargo`
+
+* **Condition**:
+
+  * Applies if:
+
+    * The **OwnShip (OS)** carries **HazardousMaterial**, and
+    * The **undercurrent** in the area is **stronger than 4 knots**
+* **Assure**:
+
+  * Then the ship must be traveling at a **speed greater than 10 knots**
+
+This rule is a **preventive safety requirement** ensuring that slow-moving hazardous cargo ships **do not enter the strait** when sea conditions (specifically, undercurrents) are strong. It is likely meant to avoid loss of control or grounding.
+
+---
+
+### 🔄 **Mapping Explanation**
+
+| **Legata Concept**                                      | **Rebeca Mapping**                                        | **Explanation**                                      |          |                                                                                  |
+| ------------------------------------------------------- | --------------------------------------------------------- | ---------------------------------------------------- | -------- | -------------------------------------------------------------------------------- |
+| `OS.Cargo in ['HazardousMaterial']`                     | `s1.contains_hazardous` / `s2.contains_hazardous`         | Boolean field indicating hazardous material presence |          |                                                                                  |
+| `OS.Undercurrent > kn(4)`                               | `theMap.undercurrent > 1852 * 4`                          | Converts 4 knots to meters per hour (knots × 1852)   |          |                                                                                  |
+| `OS.Velocity > kn(10)`                                  | `s1.ship_velocity > 1852 * 10` / `s2.ship_velocity > ...` | Converts 10 knots similarly                          |          |                                                                                  |
+| `condition AND` → assert implication via de Morgan laws | \`!(condition)                                            |                                                      | assure\` | To respect instruction of no implication operator (`->`), use logical OR negated |
+
+Would you like to generate similar assertions for other vessel types or scenarios in the strait?
+
 
 
 _______________________________________________________________________________

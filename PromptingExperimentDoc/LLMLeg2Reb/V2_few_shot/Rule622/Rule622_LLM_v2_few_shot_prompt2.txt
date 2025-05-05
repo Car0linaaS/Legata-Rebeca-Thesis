@@ -4,7 +4,50 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here is the **Rebeca property file** that represents the Legata clause `'IstanbulStrait.Clause.1'`:
+
+```rebeca
+property{
+	define {
+		ship1NearTrafficZone = theMap.ship1_inside_traffic_zone;
+		ship1VisibilityAdequate = s1.vis_range > 0.5;
+
+		ship2NearTrafficZone = theMap.ship2_inside_traffic_zone;
+		ship2VisibilityAdequate = s2.vis_range > 0.5;
+	}
+
+	Assertion {
+		s1VisibilityCheck: !ship1NearTrafficZone || ship1VisibilityAdequate;
+		s2VisibilityCheck: !ship2NearTrafficZone || ship2VisibilityAdequate;
+	}
+}
+```
+
+---
+
+### **Semantic Meaning of the Legata Clause**
+
+The clause `'IstanbulStrait.Clause.1'` expresses a **visibility requirement for vessels near a traffic zone in the Istanbul Strait**. The rule states:
+
+* **Condition**: If a ship (OwnShip) is **near** the traffic zone (`Distance in Area.Near.ProximityRange`)
+* **Assurance**: Then the ship's **visibility range** must be **greater than 0.5 nautical miles**
+
+This is a **safety regulation**, likely intended to prevent ships from entering busy or narrow traffic zones with poor visibility, which could lead to collisions or navigation hazards.
+
+---
+
+### **Mapping Legata Attributes to Rebeca Property Variables**
+
+| **Legata Expression**                          | **Mapped Rebeca Variable**         | **Explanation**                                         |
+| ---------------------------------------------- | ---------------------------------- | ------------------------------------------------------- |
+| `OwnShip.Distance in Area.Near.ProximityRange` | `theMap.ship1_inside_traffic_zone` | Assumes proximity is captured by boolean zone presence  |
+| `OwnShip.Visibility.Range > kn(.5)`            | `s1.vis_range > 0.5`               | Visibility range stored directly in `s1` as `vis_range` |
+| `OwnShip` → both `s1` and `s2`                 | `ship1`, `ship2`                   | Applied to both ships independently                     |
+
+---
+
+Would you like a version that uses a more precise spatial model instead of the boolean traffic zone flag?
+
 
 
 _______________________________________________________________________________

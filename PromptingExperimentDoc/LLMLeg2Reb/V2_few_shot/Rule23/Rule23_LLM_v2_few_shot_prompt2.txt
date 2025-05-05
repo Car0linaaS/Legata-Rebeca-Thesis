@@ -4,7 +4,107 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here is the **Rebeca property file** that captures the semantics of the Legata clauses `COLREG.Rule23.a`, `COLREG.Rule23.a.ii`, and `COLREG.Rule23.d.i`:
+
+---
+
+### ✅ **Rebeca Property File**
+
+```rebeca
+property{
+	define {
+		ship1IsPowerDriven = s1.vessel_type_powerdriven;
+		ship1IsUnderway = s1.underway;
+		ship1LengthUnder12 = s1.ship_length < 12;
+		ship1LengthUnder50 = s1.ship_length < 50;
+		ship1LengthOver12 = s1.ship_length >= 12;
+		ship1LengthOver50 = s1.ship_length >= 50;
+
+		ship1HasMastheadForward = s1.masthead_forward_light_on;
+		ship1HasMastheadAbaft = s1.masthead_abaft_light_on;
+		ship1HasSidelight = s1.side_light_on;
+		ship1HasSternlight = s1.stern_light_on;
+		ship1HasAllround = s1.allround_light_on;
+
+		ship2IsPowerDriven = s2.vessel_type_powerdriven;
+		ship2IsUnderway = s2.underway;
+		ship2LengthUnder12 = s2.ship_length < 12;
+		ship2LengthUnder50 = s2.ship_length < 50;
+		ship2LengthOver12 = s2.ship_length >= 12;
+		ship2LengthOver50 = s2.ship_length >= 50;
+
+		ship2HasMastheadForward = s2.masthead_forward_light_on;
+		ship2HasMastheadAbaft = s2.masthead_abaft_light_on;
+		ship2HasSidelight = s2.side_light_on;
+		ship2HasSternlight = s2.stern_light_on;
+		ship2HasAllround = s2.allround_light_on;
+	}
+
+	Assertion {
+		// Rule 23(a): Power-driven vessels underway and ≥12m must exhibit all 4 lights
+		s1Rule23a: !(ship1IsPowerDriven && ship1IsUnderway && ship1LengthOver12) || 
+			(ship1HasMastheadForward && ship1HasMastheadAbaft && ship1HasSidelight && ship1HasSternlight);
+		
+		s2Rule23a: !(ship2IsPowerDriven && ship2IsUnderway && ship2LengthOver12) || 
+			(ship2HasMastheadForward && ship2HasMastheadAbaft && ship2HasSidelight && ship2HasSternlight);
+
+		// Rule 23(a)(ii): Power-driven vessels ≥50m must have second masthead light (abaft)
+		s1Rule23a_ii: !(ship1IsPowerDriven && ship1IsUnderway && ship1LengthOver50) || ship1HasMastheadAbaft;
+		s2Rule23a_ii: !(ship2IsPowerDriven && ship2IsUnderway && ship2LengthOver50) || ship2HasMastheadAbaft;
+
+		// Rule 23(d)(i): Power-driven vessels <12m may use all-round white + sidelights instead
+		s1Rule23d_i: !(ship1IsPowerDriven && ship1IsUnderway && ship1LengthUnder12) || 
+			(ship1HasAllround && ship1HasSidelight);
+
+		s2Rule23d_i: !(ship2IsPowerDriven && ship2IsUnderway && ship2LengthUnder12) || 
+			(ship2HasAllround && ship2HasSidelight);
+	}
+}
+```
+
+---
+
+### ✅ **Semantic Meaning and Mappings**
+
+**Legata Clause Summary:**
+
+1. **`COLREG.Rule23.a`**
+   A power-driven vessel underway and longer than 12 meters must show:
+
+   * masthead forward light,
+   * a second masthead light (abaft),
+   * sidelights,
+   * a sternlight.
+
+2. **`COLREG.Rule23.a.ii`**
+   If the vessel is **50 meters or more**, it **must** have the **second masthead light (abaft)**.
+
+3. **`COLREG.Rule23.d.i`**
+   A power-driven vessel **less than 12 meters** **may** substitute all those with:
+
+   * an **all-round white** light, and
+   * sidelights.
+
+---
+
+### 🔄 **Mappings from Legata to Rebeca Properties**
+
+| **Legata Expression**                          | **Rebeca Variable**                    |
+| ---------------------------------------------- | -------------------------------------- |
+| `OS.Type is Vessel.Type.PowerDriven`           | `s1.vessel_type_powerdriven` / `s2...` |
+| `OS.Operation has 'Vessel.Operation.UNDERWAY'` | `s1.underway` / `s2.underway`          |
+| `OS.Length < meters(12)`                       | `s1.ship_length < 12` / `s2...`        |
+| `OS.Length < meters(50)`                       | `s1.ship_length < 50` / `s2...`        |
+| `OS.Signal.ON has 'Light.Masthead.Forward.1x'` | `s1.masthead_forward_light_on`         |
+| `OS.Signal.ON has 'Light.Masthead.Abaft'`      | `s1.masthead_abaft_light_on`           |
+| `OS.Signal.ON has 'Light.Sidelight'`           | `s1.side_light_on`                     |
+| `OS.Signal.ON has 'Light.Sternlight'`          | `s1.stern_light_on`                    |
+| `OS.Signal.ON has 'Light.Allround.White'`      | `s1.allround_light_on`                 |
+
+---
+
+Would you like this transformed into a CSV format for traceability or validation documentation?
+
 
 
 _______________________________________________________________________________

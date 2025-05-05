@@ -4,7 +4,59 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here's the **Rebeca property file** that represents the Legata clause `COLREG.Rule22.a`:
+
+---
+
+```rebeca
+property {
+	define {
+		ship1isOver50m = s1.ship_length > 50;
+		ship2isOver50m = s2.ship_length > 50;
+
+		ship1mastheadLightVisible = s1.masthead_light_range >= 6;
+		ship1sideLightVisible = s1.side_light_range >= 3;
+		ship1sternLightVisible = s1.stern_light_range >= 3;
+		ship1towingLightVisible = s1.towing_light_range >= 3;
+		ship1signalLightVisible = s1.signal_light_range >= 3;
+
+		ship2mastheadLightVisible = s2.masthead_light_range >= 6;
+		ship2sideLightVisible = s2.side_light_range >= 3;
+		ship2sternLightVisible = s2.stern_light_range >= 3;
+		ship2towingLightVisible = s2.towing_light_range >= 3;
+		ship2signalLightVisible = s2.signal_light_range >= 3;
+	}
+
+	Assertion {
+		s1LightVisibilityRule22a: !ship1isOver50m || (ship1mastheadLightVisible && ship1sideLightVisible && ship1sternLightVisible && ship1towingLightVisible && ship1signalLightVisible);
+		s2LightVisibilityRule22a: !ship2isOver50m || (ship2mastheadLightVisible && ship2sideLightVisible && ship2sternLightVisible && ship2towingLightVisible && ship2signalLightVisible);
+	}
+}
+```
+
+---
+
+### 📘 Explanation of Semantics
+
+**Legata Clause Meaning:**
+The clause `COLREG.Rule22.a` enforces **minimum visibility ranges** for navigation lights on vessels that are **50 meters or more in length**. These requirements ensure visibility to other ships to avoid collisions, especially at night or in poor visibility.
+
+**Mapping of Legata to Rebeca:**
+
+| Legata Expression                        | Rebeca Variable                    | Explanation                                                  |
+| ---------------------------------------- | ---------------------------------- | ------------------------------------------------------------ |
+| `OS.Length > meters(50)`                 | `ship1isOver50m`, `ship2isOver50m` | Checks if the vessel length is over 50 meters                |
+| `OS.Equipment.MastheadLight.Range >= 6`  | `ship1mastheadLightVisible` etc.   | Ensures masthead light has at least 6 miles visibility       |
+| `... >= 3` (Side, Stern, Towing, Signal) | `... >= 3` for each ship           | Ensures each specified light has at least 3 miles visibility |
+
+**Assertion Logic:**
+
+* If a ship is not over 50 meters (`!ship1isOver50m`), the requirement doesn’t apply.
+* If it **is** over 50 meters, then **all** light ranges must meet or exceed the regulation values.
+* Logical OR (`||`) and AND (`&&`) are used to represent this: "If condition, then requirements" is represented as `!condition || requirements`.
+
+Would you like to generate another clause into Rebeca format?
+
 
 
 _______________________________________________________________________________

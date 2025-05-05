@@ -4,7 +4,63 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here is the **Rebeca property file** that corresponds to the **Legata clause `COLREG.Rule22.a`**:
+
+---
+
+### ✅ Rebeca Property File Representation:
+
+```rebeca
+property {
+	define {
+		ship1isOver50m = s1.ship_length > 50;
+		ship1mastheadLightVisible = s1.masthead_light_range >= 6;
+		ship1sideLightVisible = s1.side_light_range >= 3;
+		ship1sternLightVisible = s1.stern_light_range >= 3;
+		ship1towingLightVisible = s1.towing_light_range >= 3;
+		ship1signalLightVisible = s1.signal_light_range >= 3;
+
+		ship2isOver50m = s2.ship_length > 50;
+		ship2mastheadLightVisible = s2.masthead_light_range >= 6;
+		ship2sideLightVisible = s2.side_light_range >= 3;
+		ship2sternLightVisible = s2.stern_light_range >= 3;
+		ship2towingLightVisible = s2.towing_light_range >= 3;
+		ship2signalLightVisible = s2.signal_light_range >= 3;
+	}
+
+	Assertion {
+		s1LightVisibilityCompliance: !ship1isOver50m || (ship1mastheadLightVisible && ship1sideLightVisible && ship1sternLightVisible && ship1towingLightVisible && ship1signalLightVisible);
+		s2LightVisibilityCompliance: !ship2isOver50m || (ship2mastheadLightVisible && ship2sideLightVisible && ship2sternLightVisible && ship2towingLightVisible && ship2signalLightVisible);
+	}
+}
+```
+
+---
+
+### 💡 Semantic Meaning of the Legata Clause:
+
+The Legata clause `COLREG.Rule22.a` enforces light visibility requirements for vessels **50 meters or longer**. According to COLREG (Rule 22, Annex I), the following navigational lights must meet **minimum visibility ranges**:
+
+* **Masthead Light**: visible at **≥ 6 miles**
+* **Side Light, Stern Light, Towing Light, All-Round Light (Signal Light)**: visible at **≥ 3 miles**
+
+---
+
+### 🔄 Mapping Explanation (Legata → Rebeca):
+
+| Legata Expression                              | Rebeca Equivalent Variable                                 |
+| ---------------------------------------------- | ---------------------------------------------------------- |
+| `OS.Length > meters(50)`                       | `ship1isOver50m = s1.ship_length > 50`                     |
+| `OS.Equipment.MastheadLight.Range >= miles(6)` | `ship1mastheadLightVisible = s1.masthead_light_range >= 6` |
+| `OS.Equipment.SideLight.Range >= miles(3)`     | `ship1sideLightVisible = s1.side_light_range >= 3`         |
+| `OS.Equipment.SternLight.Range >= miles(3)`    | `ship1sternLightVisible = s1.stern_light_range >= 3`       |
+| `OS.Equipment.TowingLight.Range >= miles(3)`   | `ship1towingLightVisible = s1.towing_light_range >= 3`     |
+| `OS.Equipment.SignalLight.Range >= miles(3)`   | `ship1signalLightVisible = s1.signal_light_range >= 3`     |
+
+The assertions check that **if a ship is over 50 meters**, then **all required light visibility conditions are satisfied**. If the ship is under 50 meters, then the rule does not apply (the assertion passes by default).
+
+Would you like to generate a visualization or truth table for this property?
+
 
 
 _______________________________________________________________________________

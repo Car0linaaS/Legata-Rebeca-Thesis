@@ -4,7 +4,63 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here is the **Rebeca property file** that corresponds to the Legata clause `COLREG.Rule22.a`:
+
+```rebeca
+property {
+	define {
+		ship1isLarge = s1.ship_length > 50;
+		ship1hasVisibleMastheadLight = s1.masthead_light_range >= 6;
+		ship1hasVisibleSideLight = s1.side_light_range >= 3;
+		ship1hasVisibleSternLight = s1.stern_light_range >= 3;
+		ship1hasVisibleTowingLight = s1.towing_light_range >= 3;
+		ship1hasVisibleSignalLight = s1.signal_light_range >= 3;
+
+		ship2isLarge = s2.ship_length > 50;
+		ship2hasVisibleMastheadLight = s2.masthead_light_range >= 6;
+		ship2hasVisibleSideLight = s2.side_light_range >= 3;
+		ship2hasVisibleSternLight = s2.stern_light_range >= 3;
+		ship2hasVisibleTowingLight = s2.towing_light_range >= 3;
+		ship2hasVisibleSignalLight = s2.signal_light_range >= 3;
+	}
+	
+	Assertion {
+		s1LightVisibilityCompliance: !ship1isLarge || (ship1hasVisibleMastheadLight && ship1hasVisibleSideLight && ship1hasVisibleSternLight && ship1hasVisibleTowingLight && ship1hasVisibleSignalLight);
+		s2LightVisibilityCompliance: !ship2isLarge || (ship2hasVisibleMastheadLight && ship2hasVisibleSideLight && ship2hasVisibleSternLight && ship2hasVisibleTowingLight && ship2hasVisibleSignalLight);
+	}
+}
+```
+
+---
+
+### **Explanation**
+
+#### **Semantic Meaning of the Legata Clause**
+
+The clause `COLREG.Rule22.a` enforces minimum visibility ranges for specific navigation lights on vessels that are **50 meters or more in length**. These requirements help ensure that large vessels are visible to other ships under various conditions, promoting safety and compliance with COLREG (Collision Regulations).
+
+Specifically, for vessels longer than 50 meters:
+
+* Masthead light must be visible at **at least 6 miles**.
+* Sidelight, sternlight, towing light, and all-round signal light must each be visible at **at least 3 miles**.
+
+#### **Mapping from Legata to Rebeca**
+
+| Legata Attribute                               | Rebeca Property Definition                                     |
+| ---------------------------------------------- | -------------------------------------------------------------- |
+| `OS.Length > meters(50)`                       | `ship1isLarge = s1.ship_length > 50;`                          |
+| `OS.Equipment.MastheadLight.Range >= miles(6)` | `ship1hasVisibleMastheadLight = s1.masthead_light_range >= 6;` |
+| `OS.Equipment.SideLight.Range >= miles(3)`     | `ship1hasVisibleSideLight = s1.side_light_range >= 3;`         |
+| `OS.Equipment.SternLight.Range >= miles(3)`    | `ship1hasVisibleSternLight = s1.stern_light_range >= 3;`       |
+| `OS.Equipment.TowingLight.Range >= miles(3)`   | `ship1hasVisibleTowingLight = s1.towing_light_range >= 3;`     |
+| `OS.Equipment.SignalLight.Range >= miles(3)`   | `ship1hasVisibleSignalLight = s1.signal_light_range >= 3;`     |
+
+The same logic applies to ship2 (`s2`) for symmetrical verification.
+
+The assertions enforce that **if a ship is 50 meters or longer**, then **all required light visibility conditions must be satisfied**. Otherwise, the assertion holds vacuously (i.e., if the ship is not large, the regulation does not apply).
+
+Would you like this mapped to more ships or expanded to include violations?
+
 
 
 _______________________________________________________________________________

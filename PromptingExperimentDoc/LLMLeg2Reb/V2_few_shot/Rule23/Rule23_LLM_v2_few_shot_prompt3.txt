@@ -4,7 +4,143 @@ According to prompt file per rule and version.
 _______________________________________________________________________________
 
 ============= COMPLETE LLM OUTPUT =============
-<The complete output from the LLM>
+Here's the **Rebeca property file** representing the Legata clauses `COLREG.Rule23.a`, `COLREG.Rule23.a.ii`, and `COLREG.Rule23.d.i`:
+
+---
+
+### ✅ **Rebeca Property File:**
+
+```rebeca
+property{
+	define {
+		s1Underway = s1.underway;
+		s2Underway = s2.underway;
+
+		s1isPowerDriven = s1.vessel_type_powerdriven;
+		s2isPowerDriven = s2.vessel_type_powerdriven;
+
+		s1LengthLessThan12 = s1.ship_length < 12;
+		s2LengthLessThan12 = s2.ship_length < 12;
+
+		s1LengthLessThan50 = s1.ship_length < 50;
+		s2LengthLessThan50 = s2.ship_length < 50;
+
+		s1MastheadForwardLightOn = s1.masthead_forward_light_on;
+		s2MastheadForwardLightOn = s2.masthead_forward_light_on;
+
+		s1MastheadAbaftLightOn = s1.masthead_abaft_light_on;
+		s2MastheadAbaftLightOn = s2.masthead_abaft_light_on;
+
+		s1SideLightOn = s1.side_light_on;
+		s2SideLightOn = s2.side_light_on;
+
+		s1SternLightOn = s1.stern_light_on;
+		s2SternLightOn = s2.stern_light_on;
+
+		s1AllroundLightOn = s1.allround_light_on;
+		s2AllroundLightOn = s2.allround_light_on;
+	}
+
+	Assertion {
+		// COLREG.Rule23.a for s1 and s2
+		s1Rule23a: !(s1Underway && s1isPowerDriven && !s1LengthLessThan12) || 
+			(s1MastheadForwardLightOn && s1SideLightOn && s1SternLightOn);
+		
+		s2Rule23a: !(s2Underway && s2isPowerDriven && !s2LengthLessThan12) || 
+			(s2MastheadForwardLightOn && s2SideLightOn && s2SternLightOn);
+
+		// COLREG.Rule23.a.ii for s1 and s2
+		s1Rule23a_ii: !(s1Underway && s1isPowerDriven && !s1LengthLessThan50) || 
+			s1MastheadAbaftLightOn;
+
+		s2Rule23a_ii: !(s2Underway && s2isPowerDriven && !s2LengthLessThan50) || 
+			s2MastheadAbaftLightOn;
+
+		// COLREG.Rule23.d.i for s1 and s2
+		s1Rule23d_i: !(s1Underway && s1isPowerDriven && s1LengthLessThan12) || 
+			(s1AllroundLightOn && s1SideLightOn);
+
+		s2Rule23d_i: !(s2Underway && s2isPowerDriven && s2LengthLessThan12) || 
+			(s2AllroundLightOn && s2SideLightOn);
+	}
+}
+```
+
+---
+
+### 🧭 **Explanation of Semantic Meaning and Mapping**
+
+The Legata clauses implement **navigation light requirements for power-driven vessels underway** according to COLREG Rule 23:
+
+---
+
+#### Clause: `COLREG.Rule23.a`
+
+**Meaning**:
+If a vessel is:
+
+* Underway
+* Power-driven
+* And **12 meters or more in length**
+
+➡️ Then it **must display**:
+
+* A masthead light forward
+* A sidelights pair
+* A sternlight
+
+**Mapping**:
+
+* `OS.Operation has 'UNDERWAY'` → `s1.underway == true`
+* `OS.Type is PowerDriven` → `s1.vessel_type_powerdriven == true`
+* `OS.Length < 12` (excluded) → `s1.ship_length < 12`
+* `Signal.ON has ...` → mapped to light-related booleans
+
+---
+
+#### Clause: `COLREG.Rule23.a.ii`
+
+**Meaning**:
+If a vessel is:
+
+* Power-driven
+* 50 meters or more in length
+
+➡️ Then it **must also display**:
+
+* A second masthead light abaft and higher
+
+**Mapping**:
+
+* Condition and exclusion: like above
+* `ship_length < 50` as exclusion
+* `masthead_abaft_light_on == true` as requirement
+
+---
+
+#### Clause: `COLREG.Rule23.d.i`
+
+**Meaning**:
+If a vessel is:
+
+* Power-driven
+* **Less than 12 meters**
+
+➡️ It **may**, in place of Rule 23(a), display:
+
+* An all-round white light
+* Sidelights
+
+**Mapping**:
+
+* Inclusion of `ship_length < 12`
+* No masthead/stern light required
+* Check for `allround_light_on` and `side_light_on`
+
+---
+
+Would you like a visualization diagram that explains the logic transitions for the various vessel categories and their required lights?
+
 
 
 _______________________________________________________________________________
