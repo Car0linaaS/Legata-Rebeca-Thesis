@@ -1,0 +1,22 @@
+property {
+	define {
+		ship1isLarge = (s1.ship_length > 150);
+		ship2isLarge = (s2.ship_length > 150);
+
+		ship1isDeep = (s1.ship_draught > 10);
+		ship2isDeep = (s2.ship_draught > 10);
+
+		strongUndercurrent = (theMap.undercurrent > 7); // 4 kn ≈ 7.408 m/s, use threshold of 7 for practical integer comparison
+
+		ship1TooSlow = (s1.ship_velocity <= 10);
+		ship2TooSlow = (s2.ship_velocity <= 10);
+	}
+
+	Assertion {
+		ship1Rule3: (!(ship1isLarge && strongUndercurrent && ship1TooSlow)
+		             && !(ship1isDeep && strongUndercurrent && ship1TooSlow));
+
+		ship2Rule3: (!(ship2isLarge && strongUndercurrent && ship2TooSlow)
+		             && !(ship2isDeep && strongUndercurrent && ship2TooSlow));
+	}
+}

@@ -1,0 +1,53 @@
+property{
+	define {
+		s1Underway = s1.underway;
+		s2Underway = s2.underway;
+
+		s1isPowerDriven = s1.vessel_type_powerdriven;
+		s2isPowerDriven = s2.vessel_type_powerdriven;
+
+		s1LengthLessThan12 = s1.ship_length < 12;
+		s2LengthLessThan12 = s2.ship_length < 12;
+
+		s1LengthLessThan50 = s1.ship_length < 50;
+		s2LengthLessThan50 = s2.ship_length < 50;
+
+		s1MastheadForwardLightOn = s1.masthead_forward_light_on;
+		s2MastheadForwardLightOn = s2.masthead_forward_light_on;
+
+		s1MastheadAbaftLightOn = s1.masthead_abaft_light_on;
+		s2MastheadAbaftLightOn = s2.masthead_abaft_light_on;
+
+		s1SideLightOn = s1.side_light_on;
+		s2SideLightOn = s2.side_light_on;
+
+		s1SternLightOn = s1.stern_light_on;
+		s2SternLightOn = s2.stern_light_on;
+
+		s1AllroundLightOn = s1.allround_light_on;
+		s2AllroundLightOn = s2.allround_light_on;
+	}
+
+	Assertion {
+		// COLREG.Rule23.a for s1 and s2
+		s1Rule23a: !(s1Underway && s1isPowerDriven && !s1LengthLessThan12) || 
+			(s1MastheadForwardLightOn && s1SideLightOn && s1SternLightOn);
+		
+		s2Rule23a: !(s2Underway && s2isPowerDriven && !s2LengthLessThan12) || 
+			(s2MastheadForwardLightOn && s2SideLightOn && s2SternLightOn);
+
+		// COLREG.Rule23.a.ii for s1 and s2
+		s1Rule23a_ii: !(s1Underway && s1isPowerDriven && !s1LengthLessThan50) || 
+			s1MastheadAbaftLightOn;
+
+		s2Rule23a_ii: !(s2Underway && s2isPowerDriven && !s2LengthLessThan50) || 
+			s2MastheadAbaftLightOn;
+
+		// COLREG.Rule23.d.i for s1 and s2
+		s1Rule23d_i: !(s1Underway && s1isPowerDriven && s1LengthLessThan12) || 
+			(s1AllroundLightOn && s1SideLightOn);
+
+		s2Rule23d_i: !(s2Underway && s2isPowerDriven && s2LengthLessThan12) || 
+			(s2AllroundLightOn && s2SideLightOn);
+	}
+}

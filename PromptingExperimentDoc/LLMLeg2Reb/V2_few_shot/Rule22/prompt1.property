@@ -1,0 +1,22 @@
+property {
+	define {
+		ship1isOver50m = s1.ship_length > 50;
+		ship1mastheadLightVisible = s1.masthead_light_range >= 6;
+		ship1sideLightVisible = s1.side_light_range >= 3;
+		ship1sternLightVisible = s1.stern_light_range >= 3;
+		ship1towingLightVisible = s1.towing_light_range >= 3;
+		ship1signalLightVisible = s1.signal_light_range >= 3;
+
+		ship2isOver50m = s2.ship_length > 50;
+		ship2mastheadLightVisible = s2.masthead_light_range >= 6;
+		ship2sideLightVisible = s2.side_light_range >= 3;
+		ship2sternLightVisible = s2.stern_light_range >= 3;
+		ship2towingLightVisible = s2.towing_light_range >= 3;
+		ship2signalLightVisible = s2.signal_light_range >= 3;
+	}
+
+	Assertion {
+		s1LightVisibilityCompliance: !ship1isOver50m || (ship1mastheadLightVisible && ship1sideLightVisible && ship1sternLightVisible && ship1towingLightVisible && ship1signalLightVisible);
+		s2LightVisibilityCompliance: !ship2isOver50m || (ship2mastheadLightVisible && ship2sideLightVisible && ship2sternLightVisible && ship2towingLightVisible && ship2signalLightVisible);
+	}
+}

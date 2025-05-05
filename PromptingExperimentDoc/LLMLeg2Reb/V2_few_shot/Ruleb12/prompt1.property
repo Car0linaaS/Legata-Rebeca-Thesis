@@ -1,0 +1,16 @@
+property{
+	define {
+		ship1HasHazardous = s1.contains_hazardous;
+		ship2HasHazardous = s2.contains_hazardous;
+		
+		ship1VelocityOK = (s1.ship_velocity > 1852 * 10);
+		ship2VelocityOK = (s2.ship_velocity > 1852 * 10);
+		
+		undercurrentStrong = (theMap.undercurrent > 1852 * 4);
+	}
+
+	Assertion {
+		ship1ruleDangerousCargo: (!(ship1HasHazardous && undercurrentStrong) || ship1VelocityOK);
+		ship2ruleDangerousCargo: (!(ship2HasHazardous && undercurrentStrong) || ship2VelocityOK);
+	}
+}

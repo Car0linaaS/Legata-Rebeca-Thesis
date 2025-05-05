@@ -1,0 +1,19 @@
+property {
+	define {
+		ship1IsLarge = (s1.ship_length > 150);
+		ship2IsLarge = (s2.ship_length > 150);
+		
+		ship1IsDeep = (s1.ship_draught > 10);
+		ship2IsDeep = (s2.ship_draught > 10);
+		
+		currentStrong = (theMap.undercurrent > 740); // 4 knots in meters/minute
+		
+		ship1Slow = (s1.ship_velocity <= 1852); // 10 knots in meters/minute
+		ship2Slow = (s2.ship_velocity <= 1852);
+	}
+
+	Assertion {
+		ship1rule3: !( (currentStrong && (ship1IsLarge || ship1IsDeep)) && ship1Slow );
+		ship2rule3: !( (currentStrong && (ship2IsLarge || ship2IsDeep)) && ship2Slow );
+	}
+}

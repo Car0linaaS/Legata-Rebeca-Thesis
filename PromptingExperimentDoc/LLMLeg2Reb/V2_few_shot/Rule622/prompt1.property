@@ -1,0 +1,14 @@
+property{
+	define {
+		ship1NearTrafficZone = theMap.ship1_inside_traffic_zone;
+		ship1HasEnoughVisibility = s1.vis_range > 0.5;
+
+		ship2NearTrafficZone = theMap.ship2_inside_traffic_zone;
+		ship2HasEnoughVisibility = s2.vis_range > 0.5;
+	}
+
+	Assertion {
+		s1VisibilityCompliance: !ship1NearTrafficZone || ship1HasEnoughVisibility;
+		s2VisibilityCompliance: !ship2NearTrafficZone || ship2HasEnoughVisibility;
+	}
+}

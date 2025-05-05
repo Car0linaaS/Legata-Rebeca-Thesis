@@ -1,0 +1,48 @@
+property {
+	define {
+		ship1isPowerDriven = s1.vessel_type_powerdriven;
+		ship1isUnderway = s1.underway;
+		ship1isOver12m = s1.ship_length >= 12;
+		ship1isOver50m = s1.ship_length >= 50;
+
+		ship1hasMastheadForwardLight = s1.masthead_forward_light_on;
+		ship1hasMastheadAbaftLight = s1.masthead_abaft_light_on;
+		ship1hasSideLight = s1.side_light_on;
+		ship1hasSternLight = s1.stern_light_on;
+		ship1hasAllroundWhiteLight = s1.allround_light_on;
+
+		ship2isPowerDriven = s2.vessel_type_powerdriven;
+		ship2isUnderway = s2.underway;
+		ship2isOver12m = s2.ship_length >= 12;
+		ship2isOver50m = s2.ship_length >= 50;
+
+		ship2hasMastheadForwardLight = s2.masthead_forward_light_on;
+		ship2hasMastheadAbaftLight = s2.masthead_abaft_light_on;
+		ship2hasSideLight = s2.side_light_on;
+		ship2hasSternLight = s2.stern_light_on;
+		ship2hasAllroundWhiteLight = s2.allround_light_on;
+	}
+
+	Assertion {
+		// Rule 23.a — General lighting for power-driven vessels underway and >= 12m
+		s1Rule23a: !(ship1isPowerDriven && ship1isUnderway && ship1isOver12m) 
+			|| (ship1hasMastheadForwardLight && ship1hasSideLight && ship1hasSternLight);
+
+		s2Rule23a: !(ship2isPowerDriven && ship2isUnderway && ship2isOver12m) 
+			|| (ship2hasMastheadForwardLight && ship2hasSideLight && ship2hasSternLight);
+
+		// Rule 23.a.ii — Abaft masthead light for power-driven vessels >= 50m
+		s1Rule23a_ii: !(ship1isPowerDriven && ship1isUnderway && ship1isOver50m) 
+			|| ship1hasMastheadAbaftLight;
+
+		s2Rule23a_ii: !(ship2isPowerDriven && ship2isUnderway && ship2isOver50m) 
+			|| ship2hasMastheadAbaftLight;
+
+		// Rule 23.d.i — Small vessels (<12m) may exhibit all-round white + sidelights instead
+		s1Rule23d_i: !(ship1isPowerDriven && ship1isUnderway && !ship1isOver12m)
+			|| (ship1hasAllroundWhiteLight && ship1hasSideLight);
+
+		s2Rule23d_i: !(ship2isPowerDriven && ship2isUnderway && !ship2isOver12m)
+			|| (ship2hasAllroundWhiteLight && ship2hasSideLight);
+	}
+}

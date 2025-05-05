@@ -1,0 +1,20 @@
+property{
+	define {
+		ship1PowerDriven = s1.vessel_type_powerdriven;
+		ship2PowerDriven = s2.vessel_type_powerdriven;
+
+		ship1SafeSpeedInRestrictedVisibility = (s1.ship_velocity <= theMap.speed_safe_range);
+		ship2SafeSpeedInRestrictedVisibility = (s2.ship_velocity <= theMap.speed_safe_range);
+
+		ship1EngineReady = s1.engine_on;
+		ship2EngineReady = s2.engine_on;
+
+		ship1InRestrictedVisibility = s1.restricted_visibility;
+		ship2InRestrictedVisibility = s2.restricted_visibility;
+	}
+
+	Assertion {
+		ship1Rule19b: (!ship1InRestrictedVisibility || !ship1PowerDriven || !ship1SafeSpeedInRestrictedVisibility || ship1EngineReady);
+		ship2Rule19b: (!ship2InRestrictedVisibility || !ship2PowerDriven || !ship2SafeSpeedInRestrictedVisibility || ship2EngineReady);
+	}
+}

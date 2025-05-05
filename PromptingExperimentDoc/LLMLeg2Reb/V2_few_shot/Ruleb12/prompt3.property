@@ -1,0 +1,15 @@
+property {
+	define {
+		ship1CarriesHazardous = (s1.contains_hazardous);
+		ship2CarriesHazardous = (s2.contains_hazardous);
+		strongUndercurrent = (theMap.undercurrent > 1852); // 4 kn = 1852 meters per hour
+
+		ship1IsFastEnough = (s1.ship_velocity > 4630); // 10 kn = 4630 meters per hour
+		ship2IsFastEnough = (s2.ship_velocity > 4630);
+	}
+
+	Assertion {
+		ship1rule3: (!(ship1CarriesHazardous && strongUndercurrent) || ship1IsFastEnough);
+		ship2rule3: (!(ship2CarriesHazardous && strongUndercurrent) || ship2IsFastEnough);
+	}
+}

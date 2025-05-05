@@ -1,0 +1,19 @@
+property{
+	define {
+		ship1isLarge = (s1.ship_length > 150);
+		ship2isLarge = (s2.ship_length > 150);
+
+		ship1isDeepDraught = (s1.ship_draught > 10);
+		ship2isDeepDraught = (s2.ship_draught > 10);
+
+		undercurrentStrong = (theMap.undercurrent > 7408); // 4 knots in meters/hour
+
+		ship1Slow = (s1.ship_velocity <= 18520); // 10 knots in meters/hour
+		ship2Slow = (s2.ship_velocity <= 18520); // 10 knots in meters/hour
+	}
+
+	Assertion {
+		ship1rule3: !(undercurrentStrong && ((ship1isLarge || ship1isDeepDraught) && ship1Slow));
+		ship2rule3: !(undercurrentStrong && ((ship2isLarge || ship2isDeepDraught) && ship2Slow));
+	}
+}

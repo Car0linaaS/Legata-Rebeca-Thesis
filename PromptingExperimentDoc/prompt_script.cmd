@@ -15,9 +15,9 @@
 setlocal enabledelayedexpansion
 
 @REM Relative file path for property files to run
-set "BASE=LLMLeg2Reb\V1\Ruleb12"
+set "BASE=LLMLeg2Reb\V2_few_shot\Rule19"
 @REM Relative file path for rebeca model code files to run
-set "SCEN_DIR=RebecaCodeScenarios\Ruleb12RebecaCodeScenarios"
+set "SCEN_DIR=RebecaCodeScenarios\Rule19RebecaCodeScenarios"
 
 @REM We want to test every property file that exists in the specified folder
 @REM to check both syntax and verification results
