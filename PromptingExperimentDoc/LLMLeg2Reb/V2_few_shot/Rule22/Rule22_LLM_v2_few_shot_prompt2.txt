@@ -76,7 +76,7 @@ Points:
 Answer: 
 Points:
 
-4. Is the output code free from hallucinations (e.g. any irrelevant code added)? (1p) (1p)
+4. Is the output code free from hallucinations (e.g. any irrelevant code added)? (1p)
 Answer: 
 Points:
 
