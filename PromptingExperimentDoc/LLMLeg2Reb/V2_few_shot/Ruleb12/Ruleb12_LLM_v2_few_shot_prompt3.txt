@@ -54,33 +54,56 @@ Would you like a similar transformation for other clauses from your Legata file?
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: x/10
+Total points: 7/10
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
-Answer: 
-Points:
+Answer: Yes
+Points: 1p
 
 2. Are all relevant attributes included? (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p) (0%-<33%=0p, >=33%-<67%=1p, >=67%-<100%=2p, 100%=3p)
-Answer: 
-Points:
+Answer: Partially
+Points: 2p
+
+Ship:
+ship_hazardous ✅
+ship_velocity ✅
+
+theMap:
+ship_inside_istanbul_strait ❌
+undercurrent ✅
 
 3. Are correctness properties created for all relevant actors? (All = 2p, deduct 1p for each missing actor) (All = 2p, deduct 1p for each missing actor)
-Answer: 
-Points:
+Answer: Yes
+Points: 2p
 
 4. Is the output code free from hallucinations (e.g. any irrelevant code added)? (1p)
-Answer: 
-Points:
+Answer: No
+Points: 0p
+
+Note: Probably because of our example, where we convert 0.5 knots to 926 meters, it
+tries to convert 4 knots to metres per hour, and ends up 1852 meters per hour, which is actually
+1 knot in metres per hour.
+For 10 knots it then takes the previous value times 2.5 (4*2.5=10) and gets 4630 (1852*2.5=4630)
+which would be 2.5 knots.
 
 5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
-Answer: 
-Points:
+Answer: Correct, not full expression
+Points: 2p
 
 _______________________________________________________________________________
 
 
 ============= COMMENT =============
-<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+Our:
+!A || B || !C || !D
 
+Those varables based on our property file:
+ship1InsideIstanbulStrait = A
+ship1isFastEnough = B
+undercurrentsAboveLimit = C
+ship1containsHazardous = D
+
+Response:
+(!(D && C) || B)
 
 _______________________________________________________________________________
