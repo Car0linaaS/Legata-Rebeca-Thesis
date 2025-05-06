@@ -1,0 +1,171 @@
+<model-checking-report>
+<system-info>
+	<total-spent-time>0</total-spent-time>
+	<reached-states>2</reached-states>
+	<reached-transitions>2</reached-transitions>
+	<consumed-mem>24</consumed-mem>
+</system-info>
+<checked-property>
+	<type>Reachability</type>
+	<name>Deadlock-Freedom and No Deadline Missed</name>
+	<result>assertion failed</result>
+	<message>s1Rule23a</message>
+<options>
+	<option>Export state space</option>
+	<option>Safe mode is enabled</option>
+	<option>FTTS</option>
+</options>
+</checked-property>
+<counter-example-trace>
+<state id="1_0" atomicpropositions="ship1isPowerDriven,ship1isUnderway,ship1isOver12m,ship2isPowerDriven,ship2isUnderway," >
+	<rebec name="s1">
+		<statevariables>
+			<variable name="Ship.ship_index" type="byte">1</variable>
+			<variable name="Ship.targetX" type="int">47</variable>
+			<variable name="Ship.targetY" type="int">13</variable>
+			<variable name="Ship.distance2target" type="int">9999</variable>
+			<variable name="Ship.target_tolerance" type="int">2</variable>
+			<variable name="Ship.obstacles" type="int[101]">[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]</variable>
+			<variable name="Ship.front_obstacle" type="int">0</variable>
+			<variable name="Ship.targets" type="int[11]">[1, 10131047, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]</variable>
+			<variable name="Ship.moves" type="int[101]">[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]</variable>
+			<variable name="Ship.moveidx" type="int">0</variable>
+			<variable name="Ship.isWaiting" type="boolean">false</variable>
+			<variable name="Ship.waits" type="int">0</variable>
+			<variable name="Ship.max_waiting_rounds" type="int">16</variable>
+			<variable name="Ship.failures" type="int">0</variable>
+			<variable name="Ship.scan_before_move" type="boolean">false</variable>
+			<variable name="Ship.default_time_cross" type="int">1819</variable>
+			<variable name="Ship.default_time_cross_diag" type="int">2572</variable>
+			<variable name="Ship.default_velocity" type="int">1</variable>
+			<variable name="Ship.ship_x" type="int">5</variable>
+			<variable name="Ship.ship_y" type="int">13</variable>
+			<variable name="Ship.ship_dir" type="int">2</variable>
+			<variable name="Ship.velocity" type="int">0</variable>
+			<variable name="Ship.ship_length" type="int">12</variable>
+			<variable name="Ship.ship_width" type="int">20</variable>
+			<variable name="Ship.ship_draught" type="int">20</variable>
+			<variable name="Ship.ship_velocity" type="int">11</variable>
+			<variable name="Ship.original_velocity" type="int">11</variable>
+			<variable name="Ship.vis_range" type="int">1200</variable>
+			<variable name="Ship.restricted_visibility" type="boolean">false</variable>
+			<variable name="Ship.contains_hazardous" type="boolean">false</variable>
+			<variable name="Ship.vessel_type_powerdriven" type="boolean">true</variable>
+			<variable name="Ship.engine_on" type="boolean">true</variable>
+			<variable name="Ship.underway" type="boolean">true</variable>
+			<variable name="Ship.masthead_light" type="boolean">true</variable>
+			<variable name="Ship.masthead_light_on" type="boolean">false</variable>
+			<variable name="Ship.masthead_light_range" type="int">0</variable>
+			<variable name="Ship.masthead_forward_light" type="boolean">true</variable>
+			<variable name="Ship.masthead_forward_light_on" type="boolean">false</variable>
+			<variable name="Ship.masthead_forward_light_range" type="int">0</variable>
+			<variable name="Ship.masthead_abaft_light" type="boolean">true</variable>
+			<variable name="Ship.masthead_abaft_light_on" type="boolean">false</variable>
+			<variable name="Ship.masthead_abaft_light_range" type="int">0</variable>
+			<variable name="Ship.side_light" type="boolean">true</variable>
+			<variable name="Ship.side_light_on" type="boolean">false</variable>
+			<variable name="Ship.side_light_range" type="int">0</variable>
+			<variable name="Ship.stern_light" type="boolean">true</variable>
+			<variable name="Ship.stern_light_on" type="boolean">false</variable>
+			<variable name="Ship.stern_light_range" type="int">0</variable>
+			<variable name="Ship.towing_light" type="boolean">true</variable>
+			<variable name="Ship.towing_light_on" type="boolean">false</variable>
+			<variable name="Ship.towing_light_range" type="int">0</variable>
+			<variable name="Ship.signal_light" type="boolean">true</variable>
+			<variable name="Ship.signal_light_on" type="boolean">false</variable>
+			<variable name="Ship.signal_light_range" type="int">0</variable>
+			<variable name="Ship.allround_light" type="boolean">true</variable>
+			<variable name="Ship.allround_light_on" type="boolean">false</variable>
+			<variable name="Ship.allround_light_range" type="int">0</variable>
+		</statevariables>
+		<queue>
+		</queue>
+		<now>0</now>
+	</rebec>
+	<rebec name="s2">
+		<statevariables>
+			<variable name="Ship.ship_index" type="byte">2</variable>
+			<variable name="Ship.targetX" type="int">12</variable>
+			<variable name="Ship.targetY" type="int">10</variable>
+			<variable name="Ship.distance2target" type="int">9999</variable>
+			<variable name="Ship.target_tolerance" type="int">2</variable>
+			<variable name="Ship.obstacles" type="int[101]">[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]</variable>
+			<variable name="Ship.front_obstacle" type="int">0</variable>
+			<variable name="Ship.targets" type="int[11]">[1, 10101012, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]</variable>
+			<variable name="Ship.moves" type="int[101]">[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]</variable>
+			<variable name="Ship.moveidx" type="int">0</variable>
+			<variable name="Ship.isWaiting" type="boolean">false</variable>
+			<variable name="Ship.waits" type="int">0</variable>
+			<variable name="Ship.max_waiting_rounds" type="int">21</variable>
+			<variable name="Ship.failures" type="int">0</variable>
+			<variable name="Ship.scan_before_move" type="boolean">false</variable>
+			<variable name="Ship.default_time_cross" type="int">1819</variable>
+			<variable name="Ship.default_time_cross_diag" type="int">2572</variable>
+			<variable name="Ship.default_velocity" type="int">1</variable>
+			<variable name="Ship.ship_x" type="int">10</variable>
+			<variable name="Ship.ship_y" type="int">5</variable>
+			<variable name="Ship.ship_dir" type="int">2</variable>
+			<variable name="Ship.velocity" type="int">0</variable>
+			<variable name="Ship.ship_length" type="int">10</variable>
+			<variable name="Ship.ship_width" type="int">20</variable>
+			<variable name="Ship.ship_draught" type="int">20</variable>
+			<variable name="Ship.ship_velocity" type="int">11</variable>
+			<variable name="Ship.original_velocity" type="int">11</variable>
+			<variable name="Ship.vis_range" type="int">1200</variable>
+			<variable name="Ship.restricted_visibility" type="boolean">false</variable>
+			<variable name="Ship.contains_hazardous" type="boolean">false</variable>
+			<variable name="Ship.vessel_type_powerdriven" type="boolean">true</variable>
+			<variable name="Ship.engine_on" type="boolean">true</variable>
+			<variable name="Ship.underway" type="boolean">true</variable>
+			<variable name="Ship.masthead_light" type="boolean">true</variable>
+			<variable name="Ship.masthead_light_on" type="boolean">false</variable>
+			<variable name="Ship.masthead_light_range" type="int">0</variable>
+			<variable name="Ship.masthead_forward_light" type="boolean">true</variable>
+			<variable name="Ship.masthead_forward_light_on" type="boolean">false</variable>
+			<variable name="Ship.masthead_forward_light_range" type="int">0</variable>
+			<variable name="Ship.masthead_abaft_light" type="boolean">true</variable>
+			<variable name="Ship.masthead_abaft_light_on" type="boolean">false</variable>
+			<variable name="Ship.masthead_abaft_light_range" type="int">0</variable>
+			<variable name="Ship.side_light" type="boolean">true</variable>
+			<variable name="Ship.side_light_on" type="boolean">false</variable>
+			<variable name="Ship.side_light_range" type="int">0</variable>
+			<variable name="Ship.stern_light" type="boolean">true</variable>
+			<variable name="Ship.stern_light_on" type="boolean">false</variable>
+			<variable name="Ship.stern_light_range" type="int">0</variable>
+			<variable name="Ship.towing_light" type="boolean">true</variable>
+			<variable name="Ship.towing_light_on" type="boolean">false</variable>
+			<variable name="Ship.towing_light_range" type="int">0</variable>
+			<variable name="Ship.signal_light" type="boolean">true</variable>
+			<variable name="Ship.signal_light_on" type="boolean">false</variable>
+			<variable name="Ship.signal_light_range" type="int">0</variable>
+			<variable name="Ship.allround_light" type="boolean">true</variable>
+			<variable name="Ship.allround_light_on" type="boolean">false</variable>
+			<variable name="Ship.allround_light_range" type="int">0</variable>
+		</statevariables>
+		<queue>
+		</queue>
+		<now>0</now>
+	</rebec>
+	<rebec name="theMap">
+		<statevariables>
+			<variable name="MapServer.ship_loc_dir_vel" type="int[9]">[2, -1, -1, 0, 0, -1, -1, 0, 0, ]</variable>
+			<variable name="MapServer.speed_safe_range" type="int">7</variable>
+			<variable name="MapServer.ship1_inside_traffic_zone" type="boolean">false</variable>
+			<variable name="MapServer.ship2_inside_traffic_zone" type="boolean">false</variable>
+			<variable name="MapServer.undercurrent" type="int">5</variable>
+			<variable name="MapServer.ships_close_to_each_other" type="boolean">false</variable>
+		</statevariables>
+		<queue>
+			<message arrival="0" deadline="infinity" sender="theMap">scanObstacles(s2, 2, 100, 180, 6)</message>
+			<message arrival="0" deadline="infinity" sender="theMap">scanObstacles(s1, 1, 100, 180, 6)</message>
+			<message arrival="0" deadline="infinity" sender="s1">generatePath(s1, 1, 5, 13, 47, 13, 12, 20)</message>
+			<message arrival="0" deadline="infinity" sender="s2">generatePath(s2, 2, 10, 5, 12, 10, 10, 20)</message>
+		</queue>
+		<now>0</now>
+	</rebec>
+</state>
+<transition source="1_0" destination="assertion failed" executionTime="0" shift="0"> <messageserver sender="theMap" owner="theMap" title="SCANOBSTACLES"/></transition>
+<state id="assertion failed" atomicpropositions="assertion failed">
+</state>
+</counter-example-trace>
+</model-checking-report>
