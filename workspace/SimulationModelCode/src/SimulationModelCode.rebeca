@@ -1,3 +1,6 @@
+//This model is an adapted version based on a model created by Hiep Hong Trinh
+//which can be found at https://github.com/thhiep/ros2rebeca_model/tree/main/src
+
 // This model is based around two ships doing path-finding from their 
 // starting coordinates to their target coordinates, finding a way around
 // land and obstacles. Our map consists of a 50x50 grid, loosely based on
