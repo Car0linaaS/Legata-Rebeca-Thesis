@@ -1,31 +1,31 @@
 The overall result for this prompt version:
 
 ============= FULFILLED CRITERIA FOR EACH PROMPT =============
-Rule19_LLM_v2_few_shot_prompt1: 8/9
-Rule19_LLM_v2_few_shot_prompt2: 7/9
-Rule19_LLM_v2_few_shot_prompt3: 7/9
+Rule19_LLM_v2_few_shot_prompt1: 7/9
+Rule19_LLM_v2_few_shot_prompt2: 6/9
+Rule19_LLM_v2_few_shot_prompt3: 6/9
 
-Rule22_LLM_v2_few_shot_prompt1: 10/9
-Rule22_LLM_v2_few_shot_prompt2: 10/9
-Rule22_LLM_v2_few_shot_prompt3: 10/9
+Rule22_LLM_v2_few_shot_prompt1: 9/9
+Rule22_LLM_v2_few_shot_prompt2: 9/9
+Rule22_LLM_v2_few_shot_prompt3: 9/9
 
-Rule23_LLM_v2_few_shot_prompt1: 10/9
-Rule23_LLM_v2_few_shot_prompt2: 10/9
-Rule23_LLM_v2_few_shot_prompt3: 10/9
+Rule23_LLM_v2_few_shot_prompt1: 9/9
+Rule23_LLM_v2_few_shot_prompt2: 9/9
+Rule23_LLM_v2_few_shot_prompt3: 9/9
 
-Rule622_LLM_v2_few_shot_prompt1: 10/9
-Rule622_LLM_v2_few_shot_prompt2: 10/9
-Rule622_LLM_v2_few_shot_prompt3: 10/9
+Rule622_LLM_v2_few_shot_prompt1: 9/9
+Rule622_LLM_v2_few_shot_prompt2: 9/9
+Rule622_LLM_v2_few_shot_prompt3: 9/9
 
-Ruleb11_LLM_v2_few_shot_prompt1: 7/9
-Ruleb11_LLM_v2_few_shot_prompt2: 7/9
-Ruleb11_LLM_v2_few_shot_prompt3: 8/9
+Ruleb11_LLM_v2_few_shot_prompt1: 6/9
+Ruleb11_LLM_v2_few_shot_prompt2: 6/9
+Ruleb11_LLM_v2_few_shot_prompt3: 7/9
 
-Ruleb12_LLM_v2_few_shot_prompt1: 8/9
-Ruleb12_LLM_v2_few_shot_prompt2: 8/9
-Ruleb12_LLM_v2_few_shot_prompt3: 7/9
+Ruleb12_LLM_v2_few_shot_prompt1: 7/9
+Ruleb12_LLM_v2_few_shot_prompt2: 7/9
+Ruleb12_LLM_v2_few_shot_prompt3: 6/9
 
-Total: 157/180
+Total: 139/162
 
 ============= AVERAGE FULFILLED CRITERA FOR ALL PROMPTS =============
-Average: 8.72/9
+Average: 8.58/9

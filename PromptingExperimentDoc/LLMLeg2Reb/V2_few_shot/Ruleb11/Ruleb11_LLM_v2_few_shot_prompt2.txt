@@ -66,7 +66,7 @@ Would you like a version that also considers the third case, e.g., hazardous car
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: 7/9
+Total points: 6/9
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
 Answer: Yes
@@ -99,7 +99,7 @@ tries to convert 4 knots to metres per minute (which is ridiculous), and ends up
 
 5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
 Answer: Correct, not full expression
-Points: 2p
+Points: 1p
 
 _______________________________________________________________________________
 

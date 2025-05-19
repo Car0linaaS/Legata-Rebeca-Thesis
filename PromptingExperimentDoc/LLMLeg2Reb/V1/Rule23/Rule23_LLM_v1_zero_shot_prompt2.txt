@@ -140,6 +140,9 @@ Points: 2p
 Note: It seems to create the logic in an "implication" way, where it wrote (A && !B && C) ==>  (E && G && H) which would have been 
 fine if syntax existed for implication
 
+Note: 23.a: It differs from ours as we include MastheadAbaftLightOn, as in the Legata clause, but it does not have
+to be included according to the COLREG text itself
+
 _______________________________________________________________________________
 
 

@@ -70,7 +70,7 @@ Would you like a diagram to visualize this rule logic?
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: 8/9
+Total points: 7/9
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
 Answer: Yes
@@ -102,7 +102,7 @@ converts knots to meters per hour, but does it correctly
 
 5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
 Answer: Correct, not full expression
-Points: 2p
+Points: 1p
 
 _______________________________________________________________________________
 
