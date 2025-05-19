@@ -69,7 +69,7 @@ Would you like a visualization of this rule in a flowchart or logic diagram form
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: 7/10
+Total points: 7/9
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
 Answer: Yes
@@ -100,7 +100,7 @@ Note: Probably because of our example, where we convert 0.5 knots to 926 meters,
 tries to convert 4 knots to m/s, and ends up with 7.408 (rounded down to 7), which is actually
 4 knots in metres per hour divided by 1000.
 
-5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
+5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
 Answer: Correct, not full expression
 Points: 2p
 

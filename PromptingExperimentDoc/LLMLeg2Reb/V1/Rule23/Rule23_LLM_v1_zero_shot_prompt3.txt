@@ -90,7 +90,7 @@ Let me know if you want these clauses applied to `s2` or for dynamic simulations
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: 7/10
+Total points: 6/9
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
 Answer: No
@@ -121,9 +121,9 @@ Points: 0p
 
 Note: Multiple assertion blocks
 
-5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
-Answer: Partially correct, full expression
-Points: 2p
+5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
+Answer: Not correct, full expression
+Points: 1p
 
 Note: Rule 23.a, The logic is correct for when the ship is powerdriven, underway and above or equal to 12 metres in length.
 The problem with that is that the assertion fails when there is a ship the rule itself shouldn't adhere to, e.g. less than 12 metres in length.
@@ -137,5 +137,24 @@ _______________________________________________________________________________
 ============= COMMENT =============
 Multiple assertion blocks in the property file.
 
+
+Our:
+Rule23a: !A || B || !C || (E && F && G && H)
+Rule23a2: !A || !C || D || (F)
+Rule23d1: !A || !B || !C || (I && G)
+ShipUnderway = A;
+ShipLessThan12m = B;
+ShipShipisPowerdriven = C;
+ShipLessThan50m = D;
+MastheadFowardLightOn = E;
+MastheadAbaftLightOn = F;
+SideLightOn = G;
+SternlightOn = H;
+AllroundLightOn = I;
+
+
+(C && A && !B) && (E && G && H) && (D || F)
+(C && A && !D) && (F)
+(C && A && B) && (I && G)
 
 _______________________________________________________________________________

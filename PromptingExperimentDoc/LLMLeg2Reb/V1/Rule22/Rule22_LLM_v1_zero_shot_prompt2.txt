@@ -67,7 +67,7 @@ Let me know if you want the property for a different ship (e.g., `s2`), or if yo
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: 9/10
+Total points: 8/9
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
 Answer: Yes
@@ -102,9 +102,9 @@ Points: 2p
 Answer: Yes
 Points: 1p
 
-5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
-Answer: Partially correct, Full expression
-Points: 2p
+5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
+Answer: Not correct, Full expression
+Points: 1p
 
 (A && B && C && D && E && F)
 

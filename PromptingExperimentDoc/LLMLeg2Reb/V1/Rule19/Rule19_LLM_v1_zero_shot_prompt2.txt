@@ -69,7 +69,7 @@ Let me know if you want the assertion to apply to both `s1` and `s2`, or want a 
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: 5/10
+Total points: 4/9
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
 Answer: No
@@ -98,9 +98,9 @@ Only for s1 and theMap
 Answer: Yes
 Points: 1p
 
-5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
+5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
 Answer: Correct, not full expression
-Points: 2p
+Points: 1p
 
 Correct for what's included
 

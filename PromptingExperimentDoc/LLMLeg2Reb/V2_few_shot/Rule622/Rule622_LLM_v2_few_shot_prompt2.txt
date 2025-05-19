@@ -53,7 +53,7 @@ Would you like a version that uses a more precise spatial model instead of the b
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: 10/10
+Total points: 10/9
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
 Answer: Yes
@@ -77,7 +77,7 @@ Points: 2p
 Answer: Yes
 Points: 1p
 
-5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
+5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
 Answer: Yes
 Points: 3p
 

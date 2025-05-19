@@ -102,7 +102,7 @@ Let me know if you'd like to extend this for another clause, or simulate a scena
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: 7/10
+Total points: 7/9
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
 Answer: No
@@ -133,8 +133,8 @@ Points: 0p
 
 Note: Uses implication arrow
 
-5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
-Answer: Partially correct, full expression
+5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
+Answer: Correct, full expression
 Points: 2p
 
 Note: It seems to create the logic in an "implication" way, where it wrote (A && !B && C) ==>  (E && G && H) which would have been 

@@ -67,7 +67,7 @@ Let me know if you'd like to generate the equivalent for `s2` as well, or extend
 _______________________________________________________________________________
 
 ============= CRITERIA EVALUATION =============
-Total points: 8/10
+Total points: 7/9
 
 1. Is the syntax correct, so that we can run the proposed Rebeca property, without changes? (Yes=1p, No=0p)
 Answer: Yes
@@ -94,9 +94,9 @@ Points: 2p
 Answer: Yes
 Points: 1p
 
-5. Is the logic correct? (3p (Correct: 2p, Partially correct: 1p) + (Full expression:1p))
-Answer: Corret, Not full expression
-Points: 2p
+5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
+Answer: Correct, Not full expression
+Points: 1p
 
 Note: Misses out on checking if vessel is inside the strait or not
 
@@ -104,7 +104,15 @@ _______________________________________________________________________________
 
 
 ============= COMMENT =============
-<Comment what was required to be modified (if anything) or anything else that is worth mentioning>
+!A || B || !C || !(D || E)
 
+Those varables based on our property file:
+ship1InsideIstanbulStrait = A
+ship1isFastEnough = B
+undercurrentsAboveLimit = C
+ship1isOverLengthLimit = D
+ship1isOverDraughtLimit = E
+
+!(((C && D) || (C && E)) && (!B))
 
 _______________________________________________________________________________
