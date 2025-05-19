@@ -98,7 +98,7 @@ Answer: Yes
 Points: 1p
 
 5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
-Answer: Not correct, not full expression
+Answer: Not full expression, Not correct 
 Points: 0p
 
 !(D && B && E) || F

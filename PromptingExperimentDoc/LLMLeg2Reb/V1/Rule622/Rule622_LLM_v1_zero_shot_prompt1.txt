@@ -92,7 +92,7 @@ Points: 0p
 Note: Multiple assertion blocks
 
 5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
-Answer: Correct, Full expression
+Answer: Full expression, Correct
 Points: 2p
 
 Note: The response uses 0.5 nautical miles, while we have converted to metres. ChatGPT is more correct than we are in this case.

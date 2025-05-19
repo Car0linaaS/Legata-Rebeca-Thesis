@@ -99,7 +99,7 @@ Answer: Yes
 Points: 1p
 
 5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
-Answer: Correct, not full expression
+Answer: Not full expression, Correct
 Points: 1p
 
 Correct for what's included

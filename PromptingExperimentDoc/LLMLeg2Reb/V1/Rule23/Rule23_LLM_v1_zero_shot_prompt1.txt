@@ -119,7 +119,7 @@ Points: 0p
 Note: Multiple assertion blocks
 
 5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
-Answer: Not correct, full expression
+Answer: Full expression, not correct 
 Points: 1p
 
 Note: Rule 23.a, The logic is correct for when the ship is powerdriven, underway and above or equal to 12 metres in length.

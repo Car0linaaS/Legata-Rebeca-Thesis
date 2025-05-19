@@ -95,7 +95,7 @@ Note: Probably because of our example, where we convert 0.5 knots to 926 meters,
 converts knots to meters per hour, but does it correctly
 
 5. Is the logic correct? (2p (Full expression: 1p, Correct: 1p) )
-Answer: Correct, not full expression
+Answer: Not full expression, Correct
 Points: 1p
 
 _______________________________________________________________________________
