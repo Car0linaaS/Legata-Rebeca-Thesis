@@ -12,39 +12,7 @@ assure: {
 }
 
 Timed Rebeca (Reactive Objects Language) is used for modeling and simulating concurrent, reactive systems. The code below is part of a model used to simulate vessels, created in Timed Rebeca. 
-The relevant actors are Ship s1, Ship s2 and MapServer theMap. The actors are modeled like this:
 
-reactiveclass Ship(50) {
-	knownrebecs {
-		MapServer theMap;
-	}
-	statevars{
-		int ship_length;
-		int ship_draught;
-		int ship_velocity;
-	}
-
-reactiveclass MapServer(50) {
-	knownrebecs{
-		Ship s1;
-		Ship s2;
-	}
-	statevars{
-		boolean ship1_inside_istanbul_strait;
-		boolean ship2_inside_istanbul_strait;
-		int undercurrent;
-	}
-
-The property file is constructed like this:
-property{
-	define {
-    Variable = (BooleanExpression);
-	}
-
-	Assertion {
-        AssertionName: (BooleanExpression);
-	}
-}
 
 Example:
 
@@ -86,6 +54,39 @@ Instruction: In Rebeca syntax, create a property file that represents the law in
 Allowed operators: <, >, ==, <=, >=, !, ||, &&, ^.
 Do not use implication (->, =>) and do not define chained variables in define.
 
+The relevant actors are Ship s1, Ship s2 and MapServer theMap. The actors are modeled like this:
+
+reactiveclass Ship(50) {
+	knownrebecs {
+		MapServer theMap;
+	}
+	statevars{
+		int ship_length;
+		int ship_draught;
+		int ship_velocity;
+	}
+
+reactiveclass MapServer(50) {
+	knownrebecs{
+		Ship s1;
+		Ship s2;
+	}
+	statevars{
+		boolean ship1_inside_istanbul_strait;
+		boolean ship2_inside_istanbul_strait;
+		int undercurrent;
+	}
+
+The property file is constructed like this:
+property{
+	define {
+    Variable = (BooleanExpression);
+	}
+
+	Assertion {
+        AssertionName: (BooleanExpression);
+	}
+}
 
 Legata clause to transform: 
 

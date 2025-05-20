@@ -12,28 +12,7 @@ assure: {
 }
 
 Timed Rebeca (Reactive Objects Language) is used for modeling and simulating concurrent, reactive systems. The code below is part of a model used to simulate vessels, created in Timed Rebeca. 
-The relevant actors are Ship s1, Ship s2 and MapServer theMap. The actors are modeled like this:
 
-reactiveclass Ship(50) {
-	knownrebecs {
-		MapServer theMap;
-	}
-	statevars{
-		int ship_velocity;
-		boolean restricted_visibility;
-		boolean vessel_type_powerdriven;
-		boolean engine_on;
-	}
-
-reactiveclass MapServer(50) {
-	knownrebecs{
-		Ship s1;
-		Ship s2;
-	}
-	statevars{
-		int speed_safe_range;
-		boolean ships_close_to_each_other;
-	}
 
 The property file is constructed like this:
 property{
@@ -85,6 +64,29 @@ OS.Visibility.Range > kn(.5) is mapped to ship1visRangeOK = (s1.vis_range > 926)
 Instruction: In Rebeca syntax, create a property file that represents the law in the Legata clause. We are only interested in Assertions, not TCTL. After generating the property code, explain the intended semantic meaning of the Legata clause, and how the Legata clause attributes/conditions is mapped to the property variables/attributes. 
 Allowed operators: <, >, ==, <=, >=, !, ||, &&, ^.
 Do not use implication (->, =>) and do not define chained variables in define.
+
+The relevant actors are Ship s1, Ship s2 and MapServer theMap. The actors are modeled like this:
+
+reactiveclass Ship(50) {
+	knownrebecs {
+		MapServer theMap;
+	}
+	statevars{
+		int ship_velocity;
+		boolean restricted_visibility;
+		boolean vessel_type_powerdriven;
+		boolean engine_on;
+	}
+
+reactiveclass MapServer(50) {
+	knownrebecs{
+		Ship s1;
+		Ship s2;
+	}
+	statevars{
+		int speed_safe_range;
+		boolean ships_close_to_each_other;
+	}
 
 Legata clause to transform: 
 
